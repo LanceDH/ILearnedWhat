@@ -22,7 +22,7 @@ local _playerLeveled = false;
 local _openedDuringCombat = false;
 local DEBUGLEVEL = 1;
 local DEBUGSPEC = nil;
-local _debugMode = false;
+local _debugMode = true;
 
 local UNLOCKTYPE_SPELL = "spell";
 local UNLOCKTYPE_TALENT = "talent";
@@ -50,23 +50,24 @@ local function OpenSpellBookAtSpell(searchName)
 	local buttonNr = 1;
 	local buttonPerPage = 12;
 	local spellName = "";
-	local firsTimeInTab = true;
+	local firsTimeInTab = false;
 	
 	SpellBookSkillLineTab_OnClick(_G["SpellBookSkillLineTab"..tabNr]);
 	while (tabNr <= maxTabs) do
 	
-		if (firsTimeInTab) then
-			-- go to the first page 
+		-- go to the first page 
+		if (not firsTimeInTab) then
 			while (SpellBookPrevPageButton:IsEnabled()) do
 				SpellBookPrevPageButton_OnClick();
 			end
-			firsTimeInTab = false;
+			firsTimeInTab = true;
 		end
 	
+		-- if target slot has a spell in it
 		if _G["SpellButton"..buttonNr.."SpellName"] ~= nil and _G["SpellButton"..buttonNr.."SpellName"]:IsShown() then
-			-- if target slot has a spell in it
+			-- if the current tab still has unchecked spells
 			if (buttonNr <= buttonPerPage) then
-				-- if the current tab still has unchecked spells
+				
 				spellName = _G["SpellButton"..buttonNr.."SpellName"]:GetText();
 				
 				if (spellName == searchName) then
@@ -77,22 +78,24 @@ local function OpenSpellBookAtSpell(searchName)
 				buttonNr = buttonNr + 2;
 
 				-- reached limit on uneven, go even
+				-- Needed because slotNr goes L->R U->D while spells go U->D L->R
 				if (buttonNr > 12 and buttonNr %2 == 1) then
 					buttonNr = 2;
 				end
 			end
-		else
-			-- else check for next page
+		else -- else check for next page
+			
+			-- has next page, flip page
 			if (SpellBookNextPageButton:IsEnabled() ) then
-				-- has next page, flip page
+				
 				SpellBookNextPageButton_OnClick();
 				buttonNr = 1;
-			else
-				-- else next tab
+			else -- else next tab
+				
 				buttonNr = 1;
 				tabNr = tabNr + 1;
 				SpellBookSkillLineTab_OnClick(_G["SpellBookSkillLineTab"..tabNr]);
-				firsTimeInTab = true;
+				firsTimeInTab = false;
 			end			
 		end	
 	end
@@ -415,7 +418,7 @@ function ILW_SpellBookHighlight_OnUpdate(self)
 	if (self:IsShown() and self.increasing ~= nil) then
 		local alpha = self:GetAlpha();
 		if (self.increasing and alpha ~= 1) then 
-			self:SetAlpha(alpha + .02); 
+			self:SetAlpha(alpha + .03); 
 		end
 		
 		if(self.increasing and alpha == 1) then
@@ -423,11 +426,12 @@ function ILW_SpellBookHighlight_OnUpdate(self)
 		end
 		
 		if(not self.increasing) then
-			self:SetAlpha(alpha - .02); 
+			self:SetAlpha(alpha - .03); 
 		end
 		
 		if (not self.increasing and alpha == 0) then
 			self:Hide();
+			ILW_SpellBookHighlight:ClearAllPoints();
 		end
 	end
 end
@@ -919,8 +923,11 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 		ShowUnlockContainer();
 	end
 	
-	-- If there's saved data, load the levels, otherwise check level and spec
-	if (ILW_SavedData ~= nil and ILW_SavedData.specLastLevel ~= nil) then
+	-- If there's no saved data, ignore the rest
+	if (ILW_SavedData == nil) then return; end
+
+	-- load the levels, otherwise check level and spec
+	if (ILW_SavedData.specLastLevel ~= nil) then
 		for k, v in pairs(ILW_SavedData.specLastLevel) do
 			_specLastLevel[""..k] = v;
 		end
@@ -946,7 +953,7 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	end
 	
 	-- check for previous unread messages
-	if (ILW_SavedData ~= nil and ILW_SavedData.unlockedList ~= nil) then
+	if (ILW_SavedData.unlockedList ~= nil) then
 		unlockedList = ILW_SavedData.unlockedList;
 		ILW_ShowUnlockedContent();
 		ShowPopUp();
