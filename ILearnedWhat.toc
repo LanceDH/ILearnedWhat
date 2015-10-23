@@ -1,0 +1,9 @@
+﻿## Interface: 60200
+## Title: ILearnedWhat
+## Notes: Keep track of the things you learn and unlock while leveling.
+## Author: LanceDH
+## Version: 6.2b1
+## SavedVariablesPerCharacter: ILW_SavedData
+ILearnedWhat.xml
+ILearnedWhat.lua
+UnlockInfo.lua
