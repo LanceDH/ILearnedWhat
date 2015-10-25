@@ -22,28 +22,42 @@ local _playerLeveled = false;
 local _openedDuringCombat = false;
 local DEBUGLEVEL = 1;
 local DEBUGSPEC = nil;
-local _debugMode = true;
+local _debugMode = false;
+
+_addonData.variables = {}
+local _aVar = _addonData.variables;
+
+_addonData.help = {}
+local _help = _addonData.help;
 
 local UNLOCKTYPE_SPELL = "spell";
 local UNLOCKTYPE_TALENT = "talent";
 local UNLOCKTYPE_GLYPH = "glyph";
 local UNLOCKTYPE_DUNGEON = "instance";
 local UNLOCKTYPE_PVP = "pvp";
+local UNLOCKTYPE_RIDING = "riding";
+local UNLOCKTYPE_TUTORIAL = "tutorial";
 local UNLOCKS_PER_PAGE = 6;
 local ICON_TALENT = "Interface/ICONS/Ability_Marksmanship";
 local ICON_GLYPH = "Interface/ICONS/INV_Glyph_PrimeDruid";
-ILW_INSTANCEID_TBC_HEROIC = -1;
-ILW_INSTANCEID_WOTLK_HEROIC = -3;
-ILW_INSTANCEID_WOTLK_RAID = -4;
-ILW_INSTANCEID_CATA_HEROIC = -5;
-ILW_INSTANCEID_CATA_RAID = -6;
-ILW_INSTANCEID_MOP_HEROIC = -7;
-ILW_INSTANCEID_MOP_RAID = -8;
-ILW_INSTANCEID_WOD_HEROIC = -9;
-ILW_INSTANCEID_WOD_RAID = -10;
+_aVar.TBC_HEROIC = -1;
+_aVar.WOTLK_HEROIC = -3;
+_aVar.WOTLK_RAID = -4;
+_aVar.CATA_HEROIC = -5;
+_aVar.CATA_RAID = -6;
+_aVar.MOP_HEROIC = -7;
+_aVar.MOP_RAID = -8;
+_aVar.WOD_HEROIC = -9;
+_aVar.WOD_RAID = -10;
+local HELP_INFO = "As you level up you will unlock new content such as new abilities, talent points and dungeons.\n\nLeft clicking the unlocks will open related windows and remove them from the list.\n\nLeft clicking or dragging abilities allows you to move them to your action bars.\n\nRight clicking the unlocks will remove them from the list."
 
+local UnlockContainer_HelpPlate = {
+	FramePos = { x = 5,	y = -25 },
+	FrameSize = { width = 440, height = 495	},
+	[1] = { ButtonPos = { x = 200,	y = -95}, HighLightBox = { x = 20, y = -85, width = 405, height = 420 }, ToolTipDir = "DOWN", ToolTipText = HELP_INFO }
+}
 
-
+--[[ How to tain the SpellBook 101
 local function OpenSpellBookAtSpell(searchName)
 	local tabNr = 1;
 	local maxTabs = 2;
@@ -104,6 +118,37 @@ local function OpenSpellBookAtSpell(searchName)
 	
 end
 
+]]--
+
+function ILW_ShowTutorialUnlocks(show)
+	if (show and #unlockedList == 0) then
+		table.insert(unlockedList, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 3, ["icon"] = "Interface/ICONS/spell_fire_fireball02", ["name"] = "Example Ability", ["subText"] = "Ability"});
+		table.insert(unlockedList, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 5, ["icon"] = "Interface/ICONS/spell_frost_frostbolt02", ["name"] = "Example Ability", ["subText"] = "Ability"});
+		table.insert(unlockedList, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 5, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL", ["name"] = "Example Dungeon", ["subText"] = "Dungeon"});
+		table.insert(unlockedList, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 7, ["icon"] = "Interface/ICONS/spell_nature_wispsplode", ["name"] = "Example Ability", ["subText"] = "Ability"});
+		table.insert(unlockedList, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 7, ["icon"] = "Interface/ICONS/ability_mage_wintersgrasp", ["name"] = "Example Passive", ["subText"] = "Passive"});
+	end
+	
+	if not show then
+		for i=#unlockedList, 1, -1 do
+			if (unlockedList[i]["type"] == UNLOCKTYPE_TUTORIAL) then
+				table.remove(unlockedList, i);
+			end
+		end
+	end
+	
+	ILW_ShowUnlockedContent();
+end
+
+function ILW_TutorialButton_OnClick()
+	if ILW_HelpFrame:IsShown() then
+		_help:HideTutorial();
+		ILW_ShowTutorialUnlocks(false);
+	else
+		_help:ShowTutorial();
+		ILW_ShowTutorialUnlocks(true);
+	end
+end
 
 function ILW_Unlockbutton_OnClick(self, button)
 	self:SetChecked(false);
@@ -112,33 +157,13 @@ function ILW_Unlockbutton_OnClick(self, button)
 	nr = nr + ((ILW_UnlockContainer.CurrentPage - 1) * UNLOCKS_PER_PAGE);
 	table.remove(unlockedList, nr);
 	
-	--print(self.unlockType, self.unlockId);
-	
 	-- Don't have to opent anything if it's right mouse
 	if (button == "RightButton") then
 		ILW_ShowUnlockedContent();
 		return;
 	-- Open spellbook if spell
 	elseif (self.unlockType == UNLOCKTYPE_SPELL) then
-		local spellName = self.SpellName:GetText();
-		local success, slot = OpenSpellBookAtSpell(spellName);
-		if success then
-			ILW_SpellBookHighlight:ClearAllPoints();
-			ILW_SpellBookHighlight:SetPoint("TOPLEFT", slot, "TOPRIGHT");
-			ILW_SpellBookHighlight:Show();
-			ILW_SpellBookHighlight.increasing = true;
-			ILW_SpellBookHighlight:SetAlpha(0); 
-		else
-			print("|cFFFFD100ILWhat:|r |cFFFF5555" .. spellName .." is not in the spellbook. It might be hidden.|r");
-			SpellBookSkillLineTab_OnClick(_G["SpellBookSkillLineTab2"]);
-			while (SpellBookPrevPageButton:IsEnabled()) do
-				SpellBookPrevPageButton_OnClick();
-			end
-		end
-		
-		if (not SpellBookFrame:IsShown()) then
-			ToggleSpellBook(BOOKTYPE_SPELL);
-		end
+		PickupSpell(self.unlockId);
 	-- Open talents
 	elseif (self.unlockType == UNLOCKTYPE_TALENT) then
 		if (PlayerTalentFrame == nil or not PlayerTalentFrame:IsShown()) then
@@ -160,31 +185,31 @@ function ILW_Unlockbutton_OnClick(self, button)
 			-- actual instance
 			if (self.unlockId > 0) then
 				EncounterJournal_DisplayInstance(self.unlockId);
-			elseif (self.unlockId == ILW_INSTANCEID_TBC_HEROIC) then
+			elseif (self.unlockId == _addonData.variables.TBC_HEROIC) then
 				EncounterJournal_TierDropDown_Select(_, 2)
 				EJ_ContentTab_Select(2);
-			elseif (self.unlockId == ILW_INSTANCEID_WOTLK_HEROIC) then
+			elseif (self.unlockId == _addonData.variables.WOTLK_HEROIC) then
 				EncounterJournal_TierDropDown_Select(_, 3)
 				EJ_ContentTab_Select(2);
-			elseif (self.unlockId == ILW_INSTANCEID_WOTLK_RAID) then
+			elseif (self.unlockId == _addonData.variables.WOTLK_RAID) then
 				EncounterJournal_TierDropDown_Select(_, 3)
 				EJ_ContentTab_Select(3);
-			elseif (self.unlockId == ILW_INSTANCEID_CATA_HEROIC) then
+			elseif (self.unlockId == _addonData.variables.CATA_HEROIC) then
 				EncounterJournal_TierDropDown_Select(_, 4)
 				EJ_ContentTab_Select(2);
-			elseif (self.unlockId == ILW_INSTANCEID_CATA_RAID) then
+			elseif (self.unlockId == _addonData.variables.CATA_RAID) then
 				EncounterJournal_TierDropDown_Select(_, 4)
 				EJ_ContentTab_Select(3);
-			elseif (self.unlockId == ILW_INSTANCEID_MOP_HEROIC) then
+			elseif (self.unlockId == _addonData.variables.MOP_HEROIC) then
 				EncounterJournal_TierDropDown_Select(_, 5)
 				EJ_ContentTab_Select(2);
-			elseif (self.unlockId == ILW_INSTANCEID_MOP_RAID) then
+			elseif (self.unlockId == _addonData.variables.MOP_RAID) then
 				EncounterJournal_TierDropDown_Select(_, 5)
 				EJ_ContentTab_Select(3);
-			elseif (self.unlockId == ILW_INSTANCEID_WOD_HEROIC) then
+			elseif (self.unlockId == _addonData.variables.WOD_HEROIC) then
 				EncounterJournal_TierDropDown_Select(_, 6)
 				EJ_ContentTab_Select(2);
-			elseif (self.unlockId == ILW_INSTANCEID_WOD_RAID) then
+			elseif (self.unlockId == _addonData.variables.WOD_RAID) then
 				EncounterJournal_TierDropDown_Select(_, 6)
 				EJ_ContentTab_Select(3);
 			end
@@ -201,19 +226,21 @@ end
 
 local function ShowUnlockContainer()
 
-	ILW_AlertPopup:Hide();
-	if UnitAffectingCombat("player") then 
+	
+	if InCombatLockdown() then 
 		_openedDuringCombat = true;
 		print("|cFFFFD100ILWhat:|r |cFFFF5555Can't open that during combat. It will open once you leave combat.|r");
 		return;
 	else
+		ILW_AlertPopup:Hide();
+		ILW_SpellBookTab:SetChecked(true);
 		ILW_UnlockContainer:Show();
 		PlaySound("igSpellBookOpen");
 	end
 	
 end
 
-function ILW_Popup_OnClick(self, button)
+local function Popup_OnClick(self, button)
 	if(button == "LeftButton") then
 		ShowUnlockContainer();
 	end
@@ -222,11 +249,6 @@ end
 
 function ILW_ClearButton_OnClick()
 	ILW_ResetEverything();
-end
-
-function ILW_ClearButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -3);
-	GameTooltip:SetText("Remove all unread unlocks.");
 end
 
 local function ToggleOptionFrame()
@@ -276,16 +298,6 @@ function ILW_OptionsButton_OnClick()
 	ToggleOptionFrame();
 end
 
-function ILW_OptionsButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -3);
-	GameTooltip:SetText("Toggle options.");
-end
-
-function ILW_Unlockbutton_OnLoad(self)
-	self:RegisterForDrag("LeftButton");
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-end
-
 function ILW_UnlockButton_OnEnter(self, motion)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (self.unlockType == UNLOCKTYPE_SPELL) then
@@ -296,6 +308,8 @@ function ILW_UnlockButton_OnEnter(self, motion)
 		GameTooltip:SetText("Left click to open the encounter\n journal for this instance.");
 	elseif (self.unlockType == UNLOCKTYPE_GLYPH) then
 		GameTooltip:SetText("Left click to pick your new glyphs.");
+	elseif (self.unlockType == UNLOCKTYPE_PVP) then
+		GameTooltip:SetText("Left click to open the\n battleground window.");
 	end
 end
 
@@ -355,9 +369,7 @@ function ILW_UpdateNavigation()
 	
 	ILW_UnlockContainer.Navigation.Prev:Enable();
 	ILW_UnlockContainer.Navigation.Next:Enable();
-	
-	
-	
+
 	-- disable prev on first page;
 	if (ILW_UnlockContainer.CurrentPage == 1) then
 		ILW_UnlockContainer.Navigation.Prev:Disable();
@@ -407,85 +419,46 @@ local function ShowPopUp()
 	ILW_AlertPopup:Show();
 	ILW_AlertPopup:SetAlpha(1);
 	ILW_AlertPopup.text:SetText(#unlockedList.." unread unlock" .. (#unlockedList == 1 and "" or "s") .."!")
-	ILW_AlertPopup.time = GetTime();
-	ILW_AlertPopup.showDuration = nil;
-	ILW_AlertPopup.highlight:SetAlpha(0);
-	ILW_AlertPopup.highlight:Show();
-	ILW_AlertPopup.highlight.increasing = true;
 end
 
-function ILW_SpellBookHighlight_OnUpdate(self)
-	if (self:IsShown() and self.increasing ~= nil) then
-		local alpha = self:GetAlpha();
-		if (self.increasing and alpha ~= 1) then 
-			self:SetAlpha(alpha + .03); 
-		end
-		
-		if(self.increasing and alpha == 1) then
-			self.increasing = false;
-		end
-		
-		if(not self.increasing) then
-			self:SetAlpha(alpha - .03); 
-		end
-		
-		if (not self.increasing and alpha == 0) then
-			self:Hide();
-			ILW_SpellBookHighlight:ClearAllPoints();
-		end
-	end
-end
-
-function ILW_Popup_OnUpdate(self)
-
-	if (self.highlight:IsShown()) then
-		local alpha = self.highlight:GetAlpha();
-		if (ILW_AlertPopup.highlight.increasing and alpha ~= 1) then 
-			self.highlight:SetAlpha(alpha + .1); 
-		end
-		
-		if(ILW_AlertPopup.highlight.increasing and alpha == 1) then
-			ILW_AlertPopup.highlight.increasing = false;
-		end
-		
-		if(not ILW_AlertPopup.highlight.increasing) then
-			self.highlight:SetAlpha(alpha - .1); 
-		end
-		
-		if (not ILW_AlertPopup.highlight.increasing and alpha == 0) then
-			self.highlight:Hide();
-		end
-	end
-
+local function CreatePopupAnimation(self)
+	self.animationA = self:CreateAnimationGroup();
+	self.animationA.alpha = self.animationA:CreateAnimation("Alpha");
+	self.animationA.alpha:SetChange(-1);
+	self.animationA.alpha:SetSmoothing("IN");
+	self.animationB = self:CreateAnimationGroup();
+	self.animationB.alpha = self.animationB:CreateAnimation("Alpha");
+	self.animationB.alpha:SetChange(-1);
+	self.animationB.alpha:SetSmoothing("OUT");
 	
-	if (self.showDuration == nil) or (self.time == nil) then return; end
+	self.animationA:SetScript("OnFinished", function() self.animationB:Play(); end);
+	self.animationB:SetScript("OnFinished", function() self:Hide(); end);
+end
 
-	if (self.time < GetTime() - self.showDuration) then
-		local alpha = self:GetAlpha();
-		if (alpha ~= 0) then 
-			self:SetAlpha(alpha - .05); 
-			self.text:SetAlpha(alpha - .05);
-		end
-		if (alpha == 0) then
-			self:Hide();
-		end
-		
+local function PlayPopupAnimation(self)
+	self:Show();
+	if not self.animationA then
+		CreatePopupAnimation(self)
 	end
+	self.animationA.alpha:SetDuration(0.3);
+	self.animationB.alpha:SetDuration(0.3);
+	self.animationA:Play(true);
 end
 
 local function ILW_CreatePopup()
-	ILW_AlertPopup:SetPoint("center", UIParent, "center", -400, 0);
+	ILW_AlertPopup:SetPoint("center", UIParent, "center", 400, 0);
 	ILW_AlertPopup:RegisterForDrag("LeftButton");
 	ILW_AlertPopup:SetScript("OnDragStart", ILW_AlertPopup.StartMoving );
 	ILW_AlertPopup:SetScript("OnDragStop", ILW_AlertPopup.StopMovingOrSizing);
+	ILW_AlertPopup:SetScript("OnShow", function(self) PlayPopupAnimation(self.highlight) end );
+	ILW_AlertPopup:SetScript("OnClick", function(self, button) Popup_OnClick(self, button);end );
 	ILW_AlertPopup:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	ILW_AlertPopup.showDuration = nil;
-	ILW_AlertPopup.time = GetTime();
 end
 
 local function ToggleUnlockedPage(show)
-
-	if(show) then
+	if InCombatLockdown() then return; end
+	
+	if (show) then
 		ShowUnlockContainer();
 	else
 		ILW_UnlockContainer:Hide();
@@ -499,9 +472,20 @@ local function CreateSpellbookIcon()
 	L_ILW_SpellBookTab:SetPoint("bottomleft", SpellBookSideTabsFrame, "bottomright", 0, 50);
 	L_ILW_SpellBookTab:Show();
 	-- overwrite script from template
-	L_ILW_SpellBookTab:SetScript("OnEnter", function() end);
+	L_ILW_SpellBookTab:SetScript("OnEnter", function(self) 
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+		if InCombatLockdown() then
+			GameTooltip:SetText("|cFFFF5555Can't open during combat|r");
+		else
+			GameTooltip:SetText("Unlocked content");
+		end
+	end);
 	L_ILW_SpellBookTab:SetScript("OnClick", function() 
-			ToggleUnlockedPage(L_ILW_SpellBookTab:GetChecked()) 
+			if InCombatLockdown() then
+				L_ILW_SpellBookTab:SetChecked(false);
+			else
+				ToggleUnlockedPage(not ILW_UnlockContainer:IsShown()); 
+			end
 		end);
 
 	L_ILW_SpellBookTab.icon = L_ILW_SpellBookTab:CreateTexture("ILW_SpellBookTabIcon");
@@ -581,25 +565,20 @@ function ILW_ShowUnlockedContent()
 			button.Digit3:Hide();
 			button.unlockId = unlock.id;
 			
-			-- Show specific spec
-			if (unlock.spec ~= nil) then
-				local id, specName, description, icon, background, role, class = GetSpecializationInfoByID(unlock.spec);
-				button.SpellSubName:SetText(specName);
-				button.SpellSubName:Show();
-				button.SpellSubName:SetHeight(button.SpellSubName:GetStringHeight());
+			local subText = "";
+			
+			if (unlock.subText ~= nil) then
+				subText = subText .. unlock.subText;
 			end
 			
-			-- Show subtext
-			if (unlock.subText ~= nil) then
-				-- Add comma if there's already text
-				if (button.SpellSubName:GetText() ~= nil and button.SpellSubName:GetText() ~= "") then
-					button.SpellSubName:SetText(button.SpellSubName:GetText() .. ", " .. unlock.subText);
-				else
-					button.SpellSubName:SetText(unlock.subText);
-				end
-				button.SpellSubName:Show();
-				button.SpellSubName:SetHeight(button.SpellSubName:GetStringHeight());
+			if (unlock.spec ~= nil) then
+				local id, specName, description, icon, background, role, class = GetSpecializationInfoByID(unlock.spec);
+				subText = subText ..", ".. specName;
 			end
+			
+			button.SpellSubName:SetText(subText);
+			button.SpellSubName:Show();
+			button.SpellSubName:SetHeight(button.SpellSubName:GetStringHeight());
 			
 			-- Only show level for the first one
 			if (unlock.level ~= prevDisplayLevel) then
@@ -608,6 +587,12 @@ function ILW_ShowUnlockedContent()
 			
 			prevDisplayLevel = unlock.level;
 		count = count +1;
+	end
+	
+	if (#unlockedList == 0) then
+		ILW_UnlockContainer.NoNew:Show();
+	else
+		ILW_UnlockContainer.NoNew:Hide();
 	end
 	
 	ILW_UpdateNavigation();
@@ -630,9 +615,12 @@ local function GetUnlockListForLeveL(level)
 	return nil;
 end
 
-local function AddUnlockedSkill(id, level, spec, subText)
+local function AddUnlockedSkill(id, level, spec, subText, unlockType)
 	local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(id);
-	table.insert(unlockedList, {["type"] = UNLOCKTYPE_SPELL, ["level"] = level, ["id"] = id, ["icon"] = icon, ["name"] = name ,["spec"] = spec, ["subText"] = subText});
+	if subText == nil then
+		subText = "Ability";
+	end
+	table.insert(unlockedList, {["type"] = unlockType, ["level"] = level, ["id"] = id, ["icon"] = icon, ["name"] = name ,["spec"] = spec, ["subText"] = subText});
 	ILW_ShowUnlockedContent();
 end
 
@@ -665,13 +653,13 @@ local function CheckLevelUnlocks(level)
 			if v.level == level then
 				-- always show if not spec specific
 				if v.specs == nil then
-					AddUnlockedSkill(tonumber(v.id), level, nil, v.subText);
+					AddUnlockedSkill(tonumber(v.id), level, nil, v.subText, UNLOCKTYPE_SPELL);
 				
 				-- Otherwise, if you have a spec, check if it's the same as yours    GetSpecialization()
 				elseif DEBUGSPEC ~= nil then
 					for specKey, spec in ipairs(v.specs) do
 						if spec == DEBUGSPEC then
-							AddUnlockedSkill(tonumber(v.id), level, spec, v.subText);
+							AddUnlockedSkill(tonumber(v.id), level, spec, v.subText, UNLOCKTYPE_SPELL);
 						end
 					end
 				end
@@ -683,7 +671,7 @@ local function CheckLevelUnlocks(level)
 		-- Check for riding skills
 		for k, riding in ipairs(_ridingSkills) do
 			if (riding.level == level) then
-				AddUnlockedSkill(tonumber(riding.id), level, nil, riding.subText);
+				AddUnlockedSkill(tonumber(riding.id), level, nil, riding.subText, UNLOCKTYPE_RIDING);
 			end
 		end
 	end
@@ -740,10 +728,8 @@ local function CheckSpecMissedUnlocks(level, spec)
 end
 
 function ILW_ResetEverything()
-	--DEBUGLEVEL = 1;
-	unlockedList = {}
-	
-	ResetButtons()
+	unlockedList = {};
+	ILW_ShowUnlockedContent();
 end
 
 local function SpecChanged()
@@ -776,7 +762,12 @@ local function CreateDebug()
 	ILW_DebugLevelUp:SetText("Level up");
 	ILW_DebugLevelUp:SetScript("OnClick",  function() 
 		DEBUGLEVEL = DEBUGLEVEL + 1;
-		CheckLevelUnlocks(GetPlayerLevel());
+		if InCombatLockdown() then
+			_playerLeveled = true;
+		else
+			CheckLevelUnlocks(GetPlayerLevel());
+		end
+		
 	end)
 	
 	local L_ILW_DebugLevelUp = CreateFrame("Button", "ILW_DebugLevelUpTen", ILW_Debug, "UIPanelButtonTemplate");
@@ -788,7 +779,12 @@ local function CreateDebug()
 	ILW_DebugLevelUpTen:SetScript("OnClick",  function() 
 		for i = 1, 10 do
 			DEBUGLEVEL = DEBUGLEVEL + 1;
-			CheckLevelUnlocks(GetPlayerLevel());
+			
+			if InCombatLockdown() then
+				_playerLeveled = true;
+			else
+				CheckLevelUnlocks(GetPlayerLevel());
+			end
 		end
 	end)
 	
@@ -845,7 +841,7 @@ ILWhat_LoadFrame:RegisterEvent("PLAYER_LOGOUT");
 ILWhat_LoadFrame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 
 function ILWhat_LoadFrame:PLAYER_LEVEL_UP(level, hp, mp, talentPoints, strength, agility, stamina, intellect, spirit)
-	if UnitAffectingCombat("player") then
+	if InCombatLockdown() then
 		_playerLeveled = true;
 	else
 		CheckLevelUnlocks(level);
@@ -876,7 +872,9 @@ function ILWhat_LoadFrame:PLAYER_SPECIALIZATION_CHANGED(player)
 end
 
 function ILWhat_LoadFrame:PLAYER_LOGOUT(loadedAddon)
-	--if (loadedAddon ~= addonName) then return; end
+	
+	ILW_ShowTutorialUnlocks(false);
+	
 	ILW_SavedData = {};
 	ILW_SavedData.specLastLevel = _specLastLevel;
 	ILW_SavedData.unlockedList = unlockedList;
@@ -895,6 +893,7 @@ end
 
 function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	if (loadedAddon ~= addonName) then return; end
+	
 	ILWhat_LoadFrame:UnregisterEvent("ADDON_LOADED")
 	
 	for k, v in pairs(_addonData) do
@@ -917,6 +916,8 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	ILW_CreateContainer();
 	ILW_CreatePopup()
 	CreateSpellbookIcon();
+	
+	_help:Initialise(ILW_UnlockContainer, UnlockContainer_HelpPlate);
 	
 	if (_debugMode) then
 		CreateDebug();
@@ -958,7 +959,6 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 		ILW_ShowUnlockedContent();
 		ShowPopUp();
 	end
-	
 	
 end
 

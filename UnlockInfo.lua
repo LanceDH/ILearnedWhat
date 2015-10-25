@@ -1,6 +1,8 @@
 
 local addonName, _addonData = ...;
 
+local _aVar = _addonData.variables;
+
 local STRING_PASSIVE = "Passive";
 local STRING_TRAINING = "Requires training";
 local STRING_DUNGEON = "Dungeon";
@@ -87,7 +89,7 @@ table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "T
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Magisters' Terrace", ["level"] = 68, ["id"] = 249, ["icon"] = "Interface/LFGFRAME/LFGICON-MAGISTERSTERRACE"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Opening of the Dark Portal", ["level"] = 68, ["id"] = 255, ["icon"] = "Interface/LFGFRAME/LFGICON-CAVERNSOFTIME"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Arcatraz", ["level"] = 68, ["id"] = 254, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Outland Dungeons", ["level"] = 70, ["id"] = ILW_INSTANCEID_TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Outland Dungeons", ["level"] = 70, ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Outland Raids", ["level"] = 70, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKTEMPLE"});
 -- WotLK
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Utgarde Keep", ["level"] = 68, ["id"] = 285, ["icon"] = "Interface/LFGFRAME/LFGIcon-Utgarde"});
@@ -106,7 +108,7 @@ table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "T
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Forge of Souls", ["level"] = 80, ["id"] = 280, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheForgeofSouls"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Pit of Saron", ["level"] = 80, ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Reflection", ["level"] = 80, ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Northrend Dungeons", ["level"] = 80, ["id"] = ILW_INSTANCEID_TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Northrend Dungeons", ["level"] = 80, ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Northrend Raids", ["level"] = 80, ["id"] = ILW_INSTANCEID_TBC_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
 -- Cataclysm
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blackrock Caverns", ["level"] = 80, ["id"] = 66, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKCAVERNS"});
@@ -116,8 +118,8 @@ table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "T
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Lost City of the Tol'vir", ["level"] = 84, ["id"] = 69, ["icon"] = "Interface/LFGFRAME/LFGICON-LOSTCITYOFTOLVIR"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Origination", ["level"] = 84, ["id"] = 70, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFORIGINATION"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Grim Batol", ["level"] = 84, ["id"] = 71, ["icon"] = "Interface/LFGFRAME/LFGICON-GRIMBATOLRAID"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Cataclysm Dungeons", ["level"] = 85, ["id"] = ILW_INSTANCEID_CATA_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Cataclysm Raids", ["level"] = 85, ["id"] = ILW_INSTANCEID_CATA_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-FallofDeathwing"});
+table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Cataclysm Dungeons", ["level"] = 85, ["id"] = _aVar.CATA_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Cataclysm Raids", ["level"] = 85, ["id"] = _aVar.CATA_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-FallofDeathwing"});
 -- Mist of Pandaria
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Stormstout Brewery", ["level"] = 85, ["id"] = 302, ["icon"] = "Interface/LFGFRAME/LFGIcon-StormstoutBrewery"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Temple of the Jade Serpent", ["level"] = 85, ["id"] = 313, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleoftheJadeSerpent"});
@@ -125,8 +127,8 @@ table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "S
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Mogu'Shan Palace", ["level"] = 87, ["id"] = 321, ["icon"] = "Interface/LFGFRAME/LFGIcon-MogushanPalace"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Gate of the Setting Sun", ["level"] = 88, ["id"] = 303, ["icon"] = "Interface/LFGFRAME/LFGIcon-GateoftheSettingSun"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Siege of Niuzao Temple", ["level"] = 88, ["id"] = 324, ["icon"] = "Interface/LFGFRAME/LFGIcon-SiegeofNizaoTemple"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Pandaria Dungeons", ["level"] = 90, ["id"] = ILW_INSTANCEID_MOP_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Pandaria Raids", ["level"] = 90, ["id"] = ILW_INSTANCEID_MOP_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-OrgrimmarGates"});
+table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Pandaria Dungeons", ["level"] = 90, ["id"] = _aVar.MOP_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Pandaria Raids", ["level"] = 90, ["id"] = _aVar.MOP_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-OrgrimmarGates"});
 -- WoD
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Bloodmaul Slag Mines", ["level"] = 90, ["id"] = 385, ["icon"] = "Interface/LFGFRAME/LFGIcon-BloodmaulSlagMines"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Iron Docks", ["level"] = 92, ["id"] = 558, ["icon"] = "Interface/LFGFRAME/LFGIcon-IronDocks"});
@@ -136,8 +138,8 @@ table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "G
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shadowmoon Burial Grounds", ["level"] = 100, ["id"] = 537, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowmoonBurialGrounds"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Everbloom", ["level"] = 100, ["id"] = 556, ["icon"] = "Interface/LFGFRAME/LFGIcon-Everbloom"});
 table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Upper Blackrock Spire", ["level"] = 100, ["id"] = 559, ["icon"] = "Interface/LFGFRAME/LFGIcon-UpperBlackrockSpire"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Draenor Dungeons", ["level"] = 100, ["id"] = ILW_INSTANCEID_WOD_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Draenor Raids", ["level"] = 100, ["id"] = ILW_INSTANCEID_WOD_RAID, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADELRAID"});
+table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Draenor Dungeons", ["level"] = 100, ["id"] = _aVar.WOD_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Draenor Raids", ["level"] = 100, ["id"] = _aVar.WOD_RAID, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADELRAID"});
 
 --------------------------
 -- Battlegrounds
@@ -1127,7 +1129,7 @@ table.insert(monkSkills, {["id"] = 154436, ["level"] = 10, ["specs"] = {270}}); 
 table.insert(monkSkills, {["id"] = 115069, ["level"] = 10, ["specs"] = {268}}); -- Stance of the Sturdy Ox
 table.insert(monkSkills, {["id"] = 115070, ["level"] = 10, ["specs"] = {270}}); -- Stance of the Wise Serpent
 table.insert(monkSkills, {["id"] = 116645, ["level"] = 10, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Teachings of the Monastery
-table.insert(monkSkills, {["id"] = 120272, ["level"] = 10}); -- Tiger Strikes
+table.insert(monkSkills, {["id"] = 120272, ["level"] = 10, ["subText"] = STRING_PASSIVE}); -- Tiger Strikes
 table.insert(monkSkills, {["id"] = 121253, ["level"] = 11, ["specs"] = {268}}); -- Keg Smash
 table.insert(monkSkills, {["id"] = 116694, ["level"] = 12}); -- Surging Mist
 table.insert(monkSkills, {["id"] = 115546, ["level"] = 14}); -- Provoke

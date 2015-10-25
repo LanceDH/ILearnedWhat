@@ -1,150 +1,78 @@
  <Ui xmlns="http://www.blizzard.com/wow/ui/"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../../FrameXML/UI.xsd">
-
-
-	<Texture name="ILW_DigitTemplate" file="Interface\UNITPOWERBARALT\Alliance_Counter_Numbers" virtual="true" >
-		<Size x="17" y="37"/>	
-		<TexCoords left="0.135" right="0.24" top="0" bottom="0.5"/>	
-	</Texture>
-	<Texture name="ILW_DigitBGTemplate" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" virtual="true" >
-		<Size x="60" y="15"/>	
-		<TexCoords left="1" right="0.355" top="0.71" bottom="0.944"/>	
-	</Texture>
-
-	<CheckButton name="ILW_UnlockButtonTemplate" hidden="true" inherits="SecureFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot" parentKey="EmptySlot">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground" parentKey="TextBackground">
-					<size x="300" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextBackground2" inherits="Spellbook-TextBackground" parentKey="TextBackground2">
-					<size x="300" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-5" y="-5"/>
-					</Anchors>
-				</Texture>
-				
-				<Texture name="$parentDigitBG" inherits="ILW_DigitBGTemplate" parentKey="DigitBg">
-					<Anchors>
-						<Anchor point="topright" relativeTo="$parent" relativePoint="topleft" x="5"/>
-					</Anchors>
-				</Texture>
-				
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentIconTextureBg" setAllPoints="true" hidden="true" parentKey="IconTextureBg">
-					<Color r="0.40" g="0.20" b="0"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true" parentKey="IconTexture"/>
-				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="false" justifyH="LEFT" parentKey="SpellName">
-					<Size>
-						<AbsDimension x="225" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="8" y="6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubSpellName" inherits="GameFontBlackSmall" hidden="false" justifyH="LEFT" parentKey="SpellSubName">
-					<Size>
-						<AbsDimension x="225" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			
-				<Texture name="$parentDigit3" inherits="ILW_DigitTemplate" parentKey="Digit1">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentDigit2" inherits="ILW_DigitTemplate" parentKey="Digit2">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parentDigit3" relativePoint="left"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentDigit1" inherits="ILW_DigitTemplate" parentKey="Digit3">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parentDigit2" relativePoint="left"/>
-					</Anchors>
-				</Texture>
-
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentSlotFrame" inherits="Spellbook-SlotFrame" parentKey="SlotFrame">
-					<Anchors>
-						<Anchor point="CENTER" x="1.5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentUnlearnedSlotFrame" inherits="Spellbook-UnlearnedSlot" hidden="true" parentKey="UnlearnedFrame">
-					<Anchors>
-						<Anchor point="CENTER" x="1.5" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTrainSlotFrame" inherits="Spellbook-TrainSlot" hidden="true" parentKey="TrainFrame">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-35" y="35"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTrainSlotFrame" relativePoint="TOPRIGHT" x="0" y="-12"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		
-		<Scripts>
-			<OnClick>
-				ILW_Unlockbutton_OnClick(self, button);
-			</OnClick>
-			<OnEnter>
-				ILW_UnlockButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnDragStart>
-				if (self.unlockType == "spell") then
-					PickupSpell(self.unlockId);
-				end
-			</OnDragStart>
-		</Scripts>
-		
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>
 	
 
-	<Frame name="ILW_UnlockContainer" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
+	<Frame name="ILW_HelpFrame" toplevel="true" enableMouse="true" hidden="true" parent="UIParent" inherits="SecureFrameTemplate" frameStrata="MEDIUM">
 		<Size>
-			<AbsDimension x="450" y="525"/>
+			<AbsDimension x="410" y="420"/>
 		</Size>
+		
+		<Frames>
+			<Frame name="$parentBox" toplevel="true" enableMouse="true" hidden="false" inherits="HelpPlateBox" parentKey="Box">
+			</Frame>
+			
+			<Frame name="$parentGlowFrame" toplevel="true" enableMouse="true" hidden="true" inherits="HelpPlateBoxHighlight" parentKey="GlowFrame">
+			</Frame>
+			
+			<Button name="$parentButton" hidden="false" inherits="HelpPlateButton" parentKey="Button">
+				<Scripts>
+					
+					<OnLoad>
+						
+					</OnLoad>
+					<OnEnter>
+						
+					</OnEnter>
+					<OnLeave>
+						
+					</OnLeave>
+					<OnShow>
+						
+					</OnShow>
+				</Scripts>
+			</Button>
+			
+			<Frame name="$parentTooltip" toplevel="true" enableMouse="true" hidden="true" inherits="GlowBoxTemplate" parentKey="Tooltip">
+				<Size>
+					<AbsDimension x="220"/>
+				</Size>
+				
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontWhite" hidden="false" justifyH="LEFT" parentKey="Text" text="X unread unlocks!">
+							<Size>
+								<AbsDimension x="200" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Frames>
+					<Frame name="$parentArrowDown" toplevel="true" enableMouse="true" hidden="false"  parentKey="Arrow">
+						<Size x="53" y="21"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativePoint="TOP" y="-3"/>
+						</Anchors>
+						 <Layers>
+						<Layer level="ARTWORK">
+							<Texture name="$parentArrow" inherits="HelpPlateArrowUP">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+								</Texture>
+							</Layer>
+									
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		
+		<!--
 		<Layers>
 			<Layer level="Background">
 				<Texture file="Interface\TALENTFRAME\spec-paper-bg" parentKey="bg">
@@ -162,7 +90,7 @@
 					<Anchors>
 						<Anchor point="top" x="0" y="-25"/>
 					</Anchors>
-					<TexCoords left="0.371" right="0.732" top="0.46" bottom="0.541"/>
+					<TexCoords left="0.371" right="0.732" top="0.459" bottom="0.541"/>
 				</Texture>
 				<FontString name="$parentBannerText" inherits="QuestTitleFont" justifyH="CENTER" justifyV="MIDDLE" parentKey="BannerText" text="You unlocked ...">
 					<Size>
@@ -315,99 +243,6 @@
 				</Anchors>
 			</CheckButton>
 
-			<Frame name="$parentNothingNewFrame" hidden="true" parentKey="NoNew">
-				<Size>
-					<AbsDimension x="250" y="125"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parent" y="50"/>
-				</Anchors>
-			
-				<Layers>
-					<Layer level="BACKGROUND">
-						<!--
-						<Texture file="Interface\QuestionFrame\Question-Main" parentKey="BG" alpha="0.5">
-							<Size x="190"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-							<TexCoords left="0" right="0.822" top="0.305" bottom="0.617"/>
-						</Texture>
-						-->
-<!--
-						<Texture file="Interface\Store\STORE-MAIN" parentKey="BG" alphaMode="ADD" alpha="0.25">
-							<Size x="200" y="100"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-							</Anchors>
-							<TexCoords left="0.564" right="0.933" top="0.156" bottom="0"/>
-							<Color r="1" g="1" b="1"/>
-						</Texture>
-						-->
-						
-						<Texture file="Interface\Store\Store-Splash" parentKey="BG">
-							<Size x="200"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-							<TexCoords left="0" right="0.28" top="0.8" bottom="0.918"/>
-							<Color r="1" g="1" b="0.5" a="0.5"/>
-						</Texture>
-						
-					</Layer>
-					
-					<Layer level="ARTWORK">
-						<!--
-						<Texture file="Interface\Garrison\GarrisonMissionUI2" parentKey="Header">
-							<Size x="250" y="60"/>
-							<Anchors>
-								<Anchor point="TOP" y="-7"/>
-							</Anchors>
-							<TexCoords left="0.655" right="0.875" top="0.622" bottom="0.684"/>
-						</Texture>
-						-->
-						<Texture file="Interface\Garrison\GarrisonMissionUI2" parentKey="Header">
-							<Size x="250" y="60"/>
-							<Anchors>
-								<Anchor point="TOP" y="0"/>
-							</Anchors>
-							<TexCoords left="0.423" right="0.65" top="0.686" bottom="0.752"/>
-							<Color r="1" g="0.9" b="0.75"/>
-						</Texture>
-						<!--
-						<Texture file="Interface\Store\STORE-MAIN" name="$parentBanner" parentKey="banner" >
-							<Size x="275" y="60"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-7"/>
-							</Anchors>
-							<TexCoords left="0.371" right="0.732" top="0.461" bottom="0.541"/>
-						</Texture>
-						-->
-					</Layer>
-					
-					<Layer level="OVERLAY">
-						<FontString name="$parentTitle" inherits="QuestTitleFont" justifyH="CENTER" parentKey="Title" Text="... nothing new!">
-							<Size>
-								<AbsDimension x="300" y="30"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" y="-10"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentText" inherits="GameFontNormal" justifyH="CENTER" parentKey="Text" Text="As you level up you will unlock more content!">
-							<Size>
-								<AbsDimension x="175" y="45"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM"  y="-10"/>
-
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 		
 			<Frame name="$parentNavigationFrame" parentKey="Navigation">
 				<Size>
@@ -748,99 +583,13 @@
 			</OnShow>
 			<OnHide>
 				PlaySound("igSpellBookClose");
-				ILW_HelpFrame:Hide();
+				HelpPlate_Hide();
 				ILW_SpellBookTab:SetChecked(false);
 				ILW_ShowTutorialUnlocks(false);
 			</OnHide>
 		</Scripts>
-		
+		-->
 	</Frame>
 
-	<Button name="ILW_AlertPopup" toplevel="true" movable="true" enableMouse="true" inherits="SecureFrameTemplate" hidden="true" parent="UIParent" frameStrata="LOW">
-		<Size>
-			<AbsDimension x="250" y="68"/>
-		</Size>
-		<Layers>
-			<Layer level="Background">
-
-				<Texture file="Interface\ACHIEVEMENTFRAME\UI-Achievement-Alert-Background" parentKey="bg">
-					<Anchors>
-						<Anchor point="topleft"/>
-						<Anchor point="bottomright"/>
-					</Anchors>
-					<TexCoords left="0" right="0.605" top="0" bottom="0.684"/>
-				</Texture>
-			</Layer>
-			
-			<Layer level="Artwork">
-				<Texture file="Interface\ICONS\Spell_Holy_SurgeOfLight" name="$parentIcon" parentKey="icon">
-					<Size x="34" y="34"/>
-					<Anchors>
-						<Anchor point="left" x="12" y="-2"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="left" justifyV="MIDDLE" parentKey="text" text="X unread unlocks!">
-					<Size>
-						<AbsDimension x="200" y="25"/>
-					</Size>
-					<Anchors>
-						<Anchor point="left" relativeTo="$parentIcon" relativePoint="right" x="25" y="2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			
-			<Layer level="overlay">
-				<Texture file="Interface\ACHIEVEMENTFRAME\UI-Achievement-IconFrame" name="$parentIconBorder">
-					<Size x="55" y="55"/>
-					<Anchors>
-						<Anchor point="center" relativeTo="$parentIcon" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.581" top="0" bottom="0.581"/>
-				</Texture>
-			</Layer>
-			
-			<Layer level="highlight">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="50" y="-15"/>
-						<Anchor point="BOTTOMRIGHT" x="-40" y="15"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			
-		</Layers>
-		
-		<Frames >
-			<Frame name="$parentHighlight" enableMouse="false" inherits="SecureFrameTemplate" hidden="false" parentKey="highlight" frameStrata="LOW">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-15"/>
-					<Anchor point="BOTTOMRIGHT" x="-5" y="15"/>
-				</Anchors>
-				<Layers>
-					<Layer level="overlay">
-						<Texture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" hidden="false" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		
-		<Scripts>
-			<OnShow> 
-				<!--ILW_Popup_OnUpdate(self);-->
-			</OnShow>
-			<OnUpdate> 
-				<!--ILW_Popup_OnUpdate(self);-->
-			</OnUpdate>
-			<OnClick> 
-				<!--ILW_Popup_OnClick(self, button);-->
-			</OnClick>
-		</Scripts>
-		
-	</Button>
 	
  </Ui>
