@@ -62,10 +62,9 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				
+				
 				<FontString name="$parentSubSpellName" inherits="GameFontBlackSmall" hidden="false" justifyH="LEFT" parentKey="SpellSubName">
-					<Size>
-						<AbsDimension x="225" y="0"/>
-					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
 							<Offset>
@@ -74,7 +73,32 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-			
+				
+				<!--
+				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="NewText" text=" New! ">
+					
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parentSubSpellName" inherits="GameFontBlackSmall" hidden="false" justifyH="LEFT" parentKey="SpellSubName">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentNewText" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			-->
 				<Texture name="$parentDigit3" inherits="ILW_DigitTemplate" parentKey="Digit1">
 					<Anchors>
 						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
@@ -108,6 +132,26 @@
 						<Anchor point="TOPLEFT" x="-35" y="35"/>
 					</Anchors>
 				</Texture>
+				
+				<Texture name="$parentNewTextBG" file="Interface\COMMON\NameShadow" hidden="false" parentKey="NewTextBG">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.05" right="0.95" top="1" bottom="0"/>
+				</Texture>
+				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="NewText" text=" New! ">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
@@ -745,6 +789,7 @@
 			</OnMouseWheel>
 			<OnShow>
 				ILW_SpellBookTab:SetChecked(true);
+				ILW_ShowUnlockedContent();
 			</OnShow>
 			<OnHide>
 				PlaySound("igSpellBookClose");

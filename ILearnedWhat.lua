@@ -299,6 +299,9 @@ function ILW_OptionsButton_OnClick()
 end
 
 function ILW_UnlockButton_OnEnter(self, motion)
+	self.NewText:SetText("");
+	self.NewTextBG:Hide();
+	self.data.read = true;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (self.unlockType == UNLOCKTYPE_SPELL) then
 		GameTooltip:SetSpellByID(self.unlockId);
@@ -383,6 +386,24 @@ function ILW_UpdateNavigation()
 	--ILW_ShowUnlockedContent()
 end
 
+local function CreateUnlockAnimation(self)
+	self.animation = self:CreateAnimationGroup();
+	self.animation.translate = self.animation:CreateAnimation("Translation");
+	self.animation.translate:SetSmoothing("IN");
+	self.animation.alpha = self.animation:CreateAnimation("Alpha");
+	self.animation.alpha:SetChange(-1);
+	self.animation.alpha:SetSmoothing("IN");
+	
+end
+
+local function PlayUnlockAnination(self)
+	self.animation:SetScript("OnFinished", function() self.data.new = false; end);
+	self.animation.translate:SetOffset(-50, 0);
+	self.animation.translate:SetDuration(0.5);
+	self.animation.alpha:SetDuration(0.5);
+	self.animation:Play(true);
+end
+
 function ILW_CreateContainer()
 	ILW_UnlockContainer:SetPoint("center", UIParent, "center", 0, 0);
 	
@@ -400,6 +421,13 @@ function ILW_CreateContainer()
 		local button = _G["ILW_UnlockContainerUnlock"..i];
 		button:RegisterForDrag("LeftButton");
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		button.read = false;
+		CreateUnlockAnimation(button);
+		button:SetScript("OnShow", function(self) 
+			if (button.new) then
+				PlayUnlockAnination(self);
+			end
+			end);
 	end
 	
 	SetPortraitToTexture(ILW_UnlockContainerPortrait, "Interface\\ICONS\\Spell_Holy_SurgeOfLight");
@@ -531,12 +559,20 @@ local function ResetButtons()
 		button.SpellSubName:SetText("");
 		button.SpellSubName:Hide()
 		button.unlockId = nil;
+		button.read = false;
+		button.new = true;
+		button.animation:Stop();
+		button.NewText:SetText("");
+		button.NewTextBG:Hide();
 	end
 	
 	ILW_UpdateNavigation();
 end
 
 function ILW_ShowUnlockedContent()
+	
+	-- Only update when the main window is open
+	if (not ILW_UnlockContainer:IsShown()) then return; end
 	
 	ResetButtons();
 	
@@ -554,7 +590,17 @@ function ILW_ShowUnlockedContent()
 			local iconTexture = _G[name.."IconTexture"];
 			iconTexture:Show();
 			iconTexture:SetTexture(unlock.icon);
+			button.data = unlock;
+			-- check if unlock has been read before.
+			button.read = unlock.read;
+			
+			button.new = (unlock.new == nil and true or unlock.new );
+			--print(name, unlock.new, (unlock.new == nil),button.new)
 			button:Show();
+			if (not button.read) then
+				button.NewText:SetText(" New! ");
+				button.NewTextBG:Show();
+			end
 			button.SpellName:SetText(unlock.name);
 			button.SpellName:Show();
 			button.SpellName:SetHeight(button.SpellName:GetStringHeight());
@@ -586,6 +632,10 @@ function ILW_ShowUnlockedContent()
 			end
 			
 			prevDisplayLevel = unlock.level;
+
+			-- set unlock as read
+			unlock.new = false;
+			
 		count = count +1;
 	end
 	
@@ -744,9 +794,15 @@ local function SpecChanged()
 		CheckSpecMissedUnlocks(i, spec);
 	end
 	
+	table.sort(unlockedList, function(a, b) return a.level < b.level end)
+	
 	_specLastLevel[""..spec] = level;
 	
-	ShowPopUp();
+	if (not ILW_UnlockContainer:IsShown()) then
+		ShowPopUp();
+	end
+	
+	ILW_ShowUnlockedContent();
 	
 end
 
@@ -820,7 +876,6 @@ local function CreateDebug()
 		button:Show();
 		button:SetText(i);
 		button:SetScript("OnClick",  function() 
-			ILW_ResetEverything();
 			DEBUGSPEC = _classSpecs[i];
 			SpecChanged();
 			--CheckLevelUnlocks(GetPlayerLevel());
@@ -959,6 +1014,8 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 		ILW_ShowUnlockedContent();
 		ShowPopUp();
 	end
+	
+	ILW_ShowUnlockedContent();
 	
 end
 

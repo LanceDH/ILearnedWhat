@@ -569,92 +569,92 @@ table.insert(dkSpecs, 251); -- Frost
 table.insert(dkSpecs, 252); -- Unholy
 
 local dkSkills = {};
-table.insert(dkSpecs, {["id"] = 161608, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(dkSpecs, {["id"] = 81136, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Crimson Scourge
-table.insert(dkSpecs, {["id"] = 51160, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Ebon Plaguebringer
-table.insert(dkSpecs, {["id"] = 56835, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Reaping
-table.insert(dkSpecs, {["id"] = 158298, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(dkSpecs, {["id"] = 59057, ["level"] = 10, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Rime
-table.insert(dkSpecs, {["id"] = 49509, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Scent of Blood
-table.insert(dkSpecs, {["id"] = 86524, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSpecs, {["id"] = 54637, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Blood of the North
-table.insert(dkSpecs, {["id"] = 50034, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Blood Rites
-table.insert(dkSpecs, {["id"] = 49143, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Frost Strike
-table.insert(dkSpecs, {["id"] = 49184, ["level"] = 55, ["specs"] = {251}}); -- Howling Blast
-table.insert(dkSpecs, {["id"] = 50887, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Icy Talons
-table.insert(dkSpecs, {["id"] = 50371, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Improved Blood Presence
-table.insert(dkSpecs, {["id"] = 86113, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSpecs, {["id"] = 86536, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSpecs, {["id"] = 86537, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSpecs, {["id"] = 91107, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Unholy Might
-table.insert(dkSpecs, {["id"] = 50029, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Veteran of the Third War
-table.insert(dkSpecs, {["id"] = 50842, ["level"] = 55}); -- Blood Boil
-table.insert(dkSpecs, {["id"] = 55078, ["level"] = 55}); -- Blood Plague
-table.insert(dkSpecs, {["id"] = 47541, ["level"] = 55}); -- Death Coil
-table.insert(dkSpecs, {["id"] = 50977, ["level"] = 55}); -- Death Gate
-table.insert(dkSpecs, {["id"] = 49576, ["level"] = 55}); -- Death Grip
-table.insert(dkSpecs, {["id"] = 55095, ["level"] = 55}); -- Frost Fever
-table.insert(dkSpecs, {["id"] = 48266, ["level"] = 55}); -- Frost Presence
-table.insert(dkSpecs, {["id"] = 45477, ["level"] = 55}); -- Icy Touch
-table.insert(dkSpecs, {["id"] = 45462, ["level"] = 55}); -- Plague Strike
-table.insert(dkSpecs, {["id"] = 53343, ["level"] = 55}); -- Rune of Razorice
-table.insert(dkSpecs, {["id"] = 53428, ["level"] = 55}); -- Runeforging
-table.insert(dkSpecs, {["id"] = 46584, ["level"] = 56, ["specs"] = {252}}); -- Raise Dead
-table.insert(dkSpecs, {["id"] = 49998, ["level"] = 56}); -- Death Strike
-table.insert(dkSpecs, {["id"] = 48263, ["level"] = 57}); -- Blood Presence
-table.insert(dkSpecs, {["id"] = 47528, ["level"] = 57}); -- Mind Freeze
-table.insert(dkSpecs, {["id"] = 54447, ["level"] = 57}); -- Rune of Spellbreaking
-table.insert(dkSpecs, {["id"] = 53342, ["level"] = 57}); -- Rune of Spellshattering
-table.insert(dkSpecs, {["id"] = 56222, ["level"] = 58, ["specs"] = {250}}); -- Dark Command
-table.insert(dkSpecs, {["id"] = 49020, ["level"] = 58, ["specs"] = {251}}); -- Obliterate
-table.insert(dkSpecs, {["id"] = 55090, ["level"] = 58, ["specs"] = {252}}); -- Scourge Strike
-table.insert(dkSpecs, {["id"] = 45524, ["level"] = 58}); -- Chains of Ice
-table.insert(dkSpecs, {["id"] = 47476, ["level"] = 58}); -- Strangulate
-table.insert(dkSpecs, {["id"] = 49572, ["level"] = 60, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Shadow Infusion
-table.insert(dkSpecs, {["id"] = 55610, ["level"] = 60, ["specs"] = {251, 252}, ["subText"] = STRING_PASSIVE}); -- Unholy Aura
-table.insert(dkSpecs, {["id"] = 178819, ["level"] = 60, ["subText"] = STRING_PASSIVE}); -- Dark Succor
-table.insert(dkSpecs, {["id"] = 43265, ["level"] = 60}); -- Death and Decay
-table.insert(dkSpecs, {["id"] = 53331, ["level"] = 60}); -- Rune of Lichbane
-table.insert(dkSpecs, {["id"] = 51986, ["level"] = 61, ["subText"] = STRING_PASSIVE}); -- On a Pale Horse
-table.insert(dkSpecs, {["id"] = 85948, ["level"] = 62, ["specs"] = {252}}); -- Festering Strike
-table.insert(dkSpecs, {["id"] = 48792, ["level"] = 62}); -- Icebound Fortitude
-table.insert(dkSpecs, {["id"] = 51128, ["level"] = 63, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Killing Machine
-table.insert(dkSpecs, {["id"] = 48982, ["level"] = 64, ["specs"] = {250}}); -- Rune Tap
-table.insert(dkSpecs, {["id"] = 49530, ["level"] = 64, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Sudden Doom
-table.insert(dkSpecs, {["id"] = 48265, ["level"] = 64}); -- Unholy Presence
-table.insert(dkSpecs, {["id"] = 50385, ["level"] = 65, ["specs"] = {251}}); -- Improved Frost Presence
-table.insert(dkSpecs, {["id"] = 57330, ["level"] = 65}); -- Horn of Winter
-table.insert(dkSpecs, {["id"] = 3714, ["level"] = 66}); -- Path of Frost
-table.insert(dkSpecs, {["id"] = 51271, ["level"] = 68, ["specs"] = {251}}); -- Pillar of Frost
-table.insert(dkSpecs, {["id"] = 48707, ["level"] = 68}); -- Anti
-table.insert(dkSpecs, {["id"] = 111673, ["level"] = 69}); -- Control Undead
-table.insert(dkSpecs, {["id"] = 63560, ["level"] = 70, ["specs"] = {252}}); -- Dark Transformation
-table.insert(dkSpecs, {["id"] = 81164, ["level"] = 70, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Will of the Necropolis
-table.insert(dkSpecs, {["id"] = 53344, ["level"] = 70}); -- Rune of the Fallen Crusader
-table.insert(dkSpecs, {["id"] = 81127, ["level"] = 72, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Sanguine Fortitude
-table.insert(dkSpecs, {["id"] = 61999, ["level"] = 72}); -- Raise Ally
-table.insert(dkSpecs, {["id"] = 62158, ["level"] = 72}); -- Rune of the Stoneskin Gargoyle
-table.insert(dkSpecs, {["id"] = 49028, ["level"] = 74, ["specs"] = {250}}); -- Dancing Rune Weapon
-table.insert(dkSpecs, {["id"] = 81333, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Might of the Frozen Wastes
-table.insert(dkSpecs, {["id"] = 49206, ["level"] = 74, ["specs"] = {252}}); -- Summon Gargoyle
-table.insert(dkSpecs, {["id"] = 66192, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Threat of Thassarian
-table.insert(dkSpecs, {["id"] = 50392, ["level"] = 75, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Improved Unholy Presence
-table.insert(dkSpecs, {["id"] = 161797, ["level"] = 76, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Riposte
-table.insert(dkSpecs, {["id"] = 55233, ["level"] = 76, ["specs"] = {250}}); -- Vampiric Blood
-table.insert(dkSpecs, {["id"] = 47568, ["level"] = 76}); -- Empower Rune Weapon
-table.insert(dkSpecs, {["id"] = 49222, ["level"] = 78, ["specs"] = {250}}); -- Bone Shield
-table.insert(dkSpecs, {["id"] = 77513, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Mastery: Blood Shield
-table.insert(dkSpecs, {["id"] = 77515, ["level"] = 80, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Mastery: Dreadblade
-table.insert(dkSpecs, {["id"] = 77514, ["level"] = 80, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Mastery: Frozen Heart
-table.insert(dkSpecs, {["id"] = 155522, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Power of the Grave
-table.insert(dkSpecs, {["id"] = 42650, ["level"] = 80}); -- Army of the Dead
-table.insert(dkSpecs, {["id"] = 77575, ["level"] = 81}); -- Outbreak
-table.insert(dkSpecs, {["id"] = 77606, ["level"] = 85}); -- Dark Simulacrum
-table.insert(dkSpecs, {["id"] = 114866, ["level"] = 87, ["specs"] = {250}}); -- Soul Reaper
-table.insert(dkSpecs, {["id"] = 130735, ["level"] = 87, ["specs"] = {251}}); -- Soul Reaper
-table.insert(dkSpecs, {["id"] = 130736, ["level"] = 87}); -- Soul Reaper
-table.insert(dkSpecs, {["id"] = 165395, ["level"] = 90, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Necrosis
-table.insert(dkSpecs, {["id"] = 165394, ["level"] = 90, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Runic Strikes
+table.insert(dkSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
+table.insert(dkSkills, {["id"] = 81136, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Crimson Scourge
+table.insert(dkSkills, {["id"] = 51160, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Ebon Plaguebringer
+table.insert(dkSkills, {["id"] = 56835, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Reaping
+table.insert(dkSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Resolve
+table.insert(dkSkills, {["id"] = 59057, ["level"] = 10, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Rime
+table.insert(dkSkills, {["id"] = 49509, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Scent of Blood
+table.insert(dkSkills, {["id"] = 86524, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
+table.insert(dkSkills, {["id"] = 54637, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Blood of the North
+table.insert(dkSkills, {["id"] = 50034, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Blood Rites
+table.insert(dkSkills, {["id"] = 49143, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Frost Strike
+table.insert(dkSkills, {["id"] = 49184, ["level"] = 55, ["specs"] = {251}}); -- Howling Blast
+table.insert(dkSkills, {["id"] = 50887, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Icy Talons
+table.insert(dkSkills, {["id"] = 50371, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Improved Blood Presence
+table.insert(dkSkills, {["id"] = 86113, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
+table.insert(dkSkills, {["id"] = 86536, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
+table.insert(dkSkills, {["id"] = 86537, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
+table.insert(dkSkills, {["id"] = 91107, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Unholy Might
+table.insert(dkSkills, {["id"] = 50029, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Veteran of the Third War
+table.insert(dkSkills, {["id"] = 50842, ["level"] = 55}); -- Blood Boil
+table.insert(dkSkills, {["id"] = 55078, ["level"] = 55}); -- Blood Plague
+table.insert(dkSkills, {["id"] = 47541, ["level"] = 55}); -- Death Coil
+table.insert(dkSkills, {["id"] = 50977, ["level"] = 55}); -- Death Gate
+table.insert(dkSkills, {["id"] = 49576, ["level"] = 55}); -- Death Grip
+table.insert(dkSkills, {["id"] = 55095, ["level"] = 55}); -- Frost Fever
+table.insert(dkSkills, {["id"] = 48266, ["level"] = 55}); -- Frost Presence
+table.insert(dkSkills, {["id"] = 45477, ["level"] = 55}); -- Icy Touch
+table.insert(dkSkills, {["id"] = 45462, ["level"] = 55}); -- Plague Strike
+table.insert(dkSkills, {["id"] = 53343, ["level"] = 55}); -- Rune of Razorice
+table.insert(dkSkills, {["id"] = 53428, ["level"] = 55}); -- Runeforging
+table.insert(dkSkills, {["id"] = 46584, ["level"] = 56, ["specs"] = {252}}); -- Raise Dead
+table.insert(dkSkills, {["id"] = 49998, ["level"] = 56}); -- Death Strike
+table.insert(dkSkills, {["id"] = 48263, ["level"] = 57}); -- Blood Presence
+table.insert(dkSkills, {["id"] = 47528, ["level"] = 57}); -- Mind Freeze
+table.insert(dkSkills, {["id"] = 54447, ["level"] = 57}); -- Rune of Spellbreaking
+table.insert(dkSkills, {["id"] = 53342, ["level"] = 57}); -- Rune of Spellshattering
+table.insert(dkSkills, {["id"] = 56222, ["level"] = 58, ["specs"] = {250}}); -- Dark Command
+table.insert(dkSkills, {["id"] = 49020, ["level"] = 58, ["specs"] = {251}}); -- Obliterate
+table.insert(dkSkills, {["id"] = 55090, ["level"] = 58, ["specs"] = {252}}); -- Scourge Strike
+table.insert(dkSkills, {["id"] = 45524, ["level"] = 58}); -- Chains of Ice
+table.insert(dkSkills, {["id"] = 47476, ["level"] = 58}); -- Strangulate
+table.insert(dkSkills, {["id"] = 49572, ["level"] = 60, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Shadow Infusion
+table.insert(dkSkills, {["id"] = 55610, ["level"] = 60, ["specs"] = {251, 252}, ["subText"] = STRING_PASSIVE}); -- Unholy Aura
+table.insert(dkSkills, {["id"] = 178819, ["level"] = 60, ["subText"] = STRING_PASSIVE}); -- Dark Succor
+table.insert(dkSkills, {["id"] = 43265, ["level"] = 60}); -- Death and Decay
+table.insert(dkSkills, {["id"] = 53331, ["level"] = 60}); -- Rune of Lichbane
+table.insert(dkSkills, {["id"] = 51986, ["level"] = 61, ["subText"] = STRING_PASSIVE}); -- On a Pale Horse
+table.insert(dkSkills, {["id"] = 85948, ["level"] = 62, ["specs"] = {252}}); -- Festering Strike
+table.insert(dkSkills, {["id"] = 48792, ["level"] = 62}); -- Icebound Fortitude
+table.insert(dkSkills, {["id"] = 51128, ["level"] = 63, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Killing Machine
+table.insert(dkSkills, {["id"] = 48982, ["level"] = 64, ["specs"] = {250}}); -- Rune Tap
+table.insert(dkSkills, {["id"] = 49530, ["level"] = 64, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Sudden Doom
+table.insert(dkSkills, {["id"] = 48265, ["level"] = 64}); -- Unholy Presence
+table.insert(dkSkills, {["id"] = 50385, ["level"] = 65, ["specs"] = {251}}); -- Improved Frost Presence
+table.insert(dkSkills, {["id"] = 57330, ["level"] = 65}); -- Horn of Winter
+table.insert(dkSkills, {["id"] = 3714, ["level"] = 66}); -- Path of Frost
+table.insert(dkSkills, {["id"] = 51271, ["level"] = 68, ["specs"] = {251}}); -- Pillar of Frost
+table.insert(dkSkills, {["id"] = 48707, ["level"] = 68}); -- Anti
+table.insert(dkSkills, {["id"] = 111673, ["level"] = 69}); -- Control Undead
+table.insert(dkSkills, {["id"] = 63560, ["level"] = 70, ["specs"] = {252}}); -- Dark Transformation
+table.insert(dkSkills, {["id"] = 81164, ["level"] = 70, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Will of the Necropolis
+table.insert(dkSkills, {["id"] = 53344, ["level"] = 70}); -- Rune of the Fallen Crusader
+table.insert(dkSkills, {["id"] = 81127, ["level"] = 72, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Sanguine Fortitude
+table.insert(dkSkills, {["id"] = 61999, ["level"] = 72}); -- Raise Ally
+table.insert(dkSkills, {["id"] = 62158, ["level"] = 72}); -- Rune of the Stoneskin Gargoyle
+table.insert(dkSkills, {["id"] = 49028, ["level"] = 74, ["specs"] = {250}}); -- Dancing Rune Weapon
+table.insert(dkSkills, {["id"] = 81333, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Might of the Frozen Wastes
+table.insert(dkSkills, {["id"] = 49206, ["level"] = 74, ["specs"] = {252}}); -- Summon Gargoyle
+table.insert(dkSkills, {["id"] = 66192, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Threat of Thassarian
+table.insert(dkSkills, {["id"] = 50392, ["level"] = 75, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Improved Unholy Presence
+table.insert(dkSkills, {["id"] = 161797, ["level"] = 76, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Riposte
+table.insert(dkSkills, {["id"] = 55233, ["level"] = 76, ["specs"] = {250}}); -- Vampiric Blood
+table.insert(dkSkills, {["id"] = 47568, ["level"] = 76}); -- Empower Rune Weapon
+table.insert(dkSkills, {["id"] = 49222, ["level"] = 78, ["specs"] = {250}}); -- Bone Shield
+table.insert(dkSkills, {["id"] = 77513, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Mastery: Blood Shield
+table.insert(dkSkills, {["id"] = 77515, ["level"] = 80, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Mastery: Dreadblade
+table.insert(dkSkills, {["id"] = 77514, ["level"] = 80, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Mastery: Frozen Heart
+table.insert(dkSkills, {["id"] = 155522, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Power of the Grave
+table.insert(dkSkills, {["id"] = 42650, ["level"] = 80}); -- Army of the Dead
+table.insert(dkSkills, {["id"] = 77575, ["level"] = 81}); -- Outbreak
+table.insert(dkSkills, {["id"] = 77606, ["level"] = 85}); -- Dark Simulacrum
+table.insert(dkSkills, {["id"] = 114866, ["level"] = 87, ["specs"] = {250}}); -- Soul Reaper
+table.insert(dkSkills, {["id"] = 130735, ["level"] = 87, ["specs"] = {251}}); -- Soul Reaper
+table.insert(dkSkills, {["id"] = 130736, ["level"] = 87}); -- Soul Reaper
+table.insert(dkSkills, {["id"] = 165395, ["level"] = 90, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Necrosis
+table.insert(dkSkills, {["id"] = 165394, ["level"] = 90, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Runic Strikes
 
 _addonData.DEATHKNIGHT = {};
 _addonData.DEATHKNIGHT.Skills = dkSkills;
@@ -754,77 +754,77 @@ table.insert(priestSpecs, 257); -- Holy
 table.insert(priestSpecs, 258); -- Shadow
 
 local priestSkills = {};
-table.insert(priestSpecs, {["id"] = 589, ["level"] = 3}); -- Shadow Word: Pain
-table.insert(priestSpecs, {["id"] = 81782, ["level"] = 5}); -- Power Word: Barrier
-table.insert(priestSpecs, {["id"] = 17, ["level"] = 5}); -- Power Word: Shield
-table.insert(priestSpecs, {["id"] = 2061, ["level"] = 7}); -- Flash Heal
-table.insert(priestSpecs, {["id"] = 52798, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Borrowed Time
-table.insert(priestSpecs, {["id"] = 47517, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Grace
-table.insert(priestSpecs, {["id"] = 88625, ["level"] = 10, ["specs"] = {257}}); -- Holy Word: Chastise
-table.insert(priestSpecs, {["id"] = 95860, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(priestSpecs, {["id"] = 95861, ["level"] = 10, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(priestSpecs, {["id"] = 15407, ["level"] = 10, ["specs"] = {258}}); -- Mind Flay
-table.insert(priestSpecs, {["id"] = 47540, ["level"] = 10, ["specs"] = {256}}); -- Penance
-table.insert(priestSpecs, {["id"] = 47536, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Rapture
-table.insert(priestSpecs, {["id"] = 87336, ["level"] = 10, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Spiritual Healing
-table.insert(priestSpecs, {["id"] = 14914, ["level"] = 18, ["specs"] = {256, 257}}); -- Holy Fire
-table.insert(priestSpecs, {["id"] = 2006, ["level"] = 18}); -- Resurrection
-table.insert(priestSpecs, {["id"] = 132157, ["level"] = 20, ["specs"] = {256}}); -- Holy Nova
-table.insert(priestSpecs, {["id"] = 88684, ["level"] = 20}); -- Holy Word: Serenity
-table.insert(priestSpecs, {["id"] = 2944, ["level"] = 21, ["specs"] = {258}}); -- Devouring Plague
-table.insert(priestSpecs, {["id"] = 8092, ["level"] = 21, ["specs"] = {258}}); -- Mind Blast
-table.insert(priestSpecs, {["id"] = 95740, ["level"] = 21, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadow Orbs
-table.insert(priestSpecs, {["id"] = 527, ["level"] = 22, ["specs"] = {256, 257}}); -- Purify
-table.insert(priestSpecs, {["id"] = 21562, ["level"] = 22}); -- Power Word: Fortitude
-table.insert(priestSpecs, {["id"] = 47515, ["level"] = 24, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Divine Aegis
-table.insert(priestSpecs, {["id"] = 15473, ["level"] = 24, ["specs"] = {258}}); -- Shadowform
-table.insert(priestSpecs, {["id"] = 586, ["level"] = 24}); -- Fade
-table.insert(priestSpecs, {["id"] = 49868, ["level"] = 26, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mind Quickening
-table.insert(priestSpecs, {["id"] = 139, ["level"] = 26, ["specs"] = {257}}); -- Renew
-table.insert(priestSpecs, {["id"] = 528, ["level"] = 26}); -- Dispel Magic
-table.insert(priestSpecs, {["id"] = 34914, ["level"] = 28, ["specs"] = {258}}); -- Vampiric Touch
-table.insert(priestSpecs, {["id"] = 48045, ["level"] = 28}); -- Mind Sear
-table.insert(priestSpecs, {["id"] = 45243, ["level"] = 30, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Focused Will
-table.insert(priestSpecs, {["id"] = 20711, ["level"] = 30, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Spirit of Redemption
-table.insert(priestSpecs, {["id"] = 9484, ["level"] = 32}); -- Shackle Undead
-table.insert(priestSpecs, {["id"] = 2060, ["level"] = 34, ["specs"] = {256, 257}}); -- Heal
-table.insert(priestSpecs, {["id"] = 63733, ["level"] = 34, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Serendipity
-table.insert(priestSpecs, {["id"] = 1706, ["level"] = 34}); -- Levitate
-table.insert(priestSpecs, {["id"] = 126135, ["level"] = 36, ["specs"] = {257}}); -- Lightwell
-table.insert(priestSpecs, {["id"] = 81749, ["level"] = 38, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Atonement
-table.insert(priestSpecs, {["id"] = 78203, ["level"] = 42, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadowy Apparitions
-table.insert(priestSpecs, {["id"] = 2096, ["level"] = 42}); -- Mind Vision
-table.insert(priestSpecs, {["id"] = 34433, ["level"] = 42}); -- Shadowfiend
-table.insert(priestSpecs, {["id"] = 81662, ["level"] = 44, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Evangelism
-table.insert(priestSpecs, {["id"] = 73510, ["level"] = 44, ["specs"] = {258}}); -- Mind Spike
-table.insert(priestSpecs, {["id"] = 596, ["level"] = 46, ["specs"] = {256, 257}}); -- Prayer of Healing
-table.insert(priestSpecs, {["id"] = 32379, ["level"] = 46, ["specs"] = {258}}); -- Shadow Word: Death
-table.insert(priestSpecs, {["id"] = 32546, ["level"] = 48, ["specs"] = {257}}); -- Binding Heal
-table.insert(priestSpecs, {["id"] = 89745, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Archangel
-table.insert(priestSpecs, {["id"] = 81700, ["level"] = 50, ["specs"] = {256}}); -- Archangel
-table.insert(priestSpecs, {["id"] = 34861, ["level"] = 50, ["specs"] = {257}}); -- Circle of Healing
-table.insert(priestSpecs, {["id"] = 15487, ["level"] = 52, ["specs"] = {256, 258}}); -- Silence
-table.insert(priestSpecs, {["id"] = 6346, ["level"] = 54}); -- Fear Ward
-table.insert(priestSpecs, {["id"] = 81209, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Chastise
-table.insert(priestSpecs, {["id"] = 81206, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Sanctuary
-table.insert(priestSpecs, {["id"] = 81208, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Serenity
-table.insert(priestSpecs, {["id"] = 33206, ["level"] = 58, ["specs"] = {256}}); -- Pain Suppression
-table.insert(priestSpecs, {["id"] = 47585, ["level"] = 60, ["specs"] = {258}}); -- Dispersion
-table.insert(priestSpecs, {["id"] = 95649, ["level"] = 64, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Rapid Renewal
-table.insert(priestSpecs, {["id"] = 33076, ["level"] = 68}); -- Prayer of Mending
-table.insert(priestSpecs, {["id"] = 47788, ["level"] = 70, ["specs"] = {257}}); -- Guardian Spirit
-table.insert(priestSpecs, {["id"] = 62618, ["level"] = 70, ["specs"] = {256}}); -- Power Word: Barrier
-table.insert(priestSpecs, {["id"] = 32375, ["level"] = 72}); -- Mass Dispel
-table.insert(priestSpecs, {["id"] = 64044, ["level"] = 74, ["specs"] = {258}}); -- Psychic Horror
-table.insert(priestSpecs, {["id"] = 64843, ["level"] = 78, ["specs"] = {257}}); -- Divine Hymn
-table.insert(priestSpecs, {["id"] = 15286, ["level"] = 78, ["specs"] = {258}}); -- Vampiric Embrace
-table.insert(priestSpecs, {["id"] = 77485, ["level"] = 80, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Mastery: Echo of Light
-table.insert(priestSpecs, {["id"] = 77486, ["level"] = 80, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastery: Mental Anguish
-table.insert(priestSpecs, {["id"] = 77484, ["level"] = 80, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Mastery: Shield Discipline
-table.insert(priestSpecs, {["id"] = 73325, ["level"] = 84}); -- Leap of Faith
-table.insert(priestSpecs, {["id"] = 165362, ["level"] = 90, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Divine Providence
-table.insert(priestSpecs, {["id"] = 165376, ["level"] = 90, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Enlightenment
-table.insert(priestSpecs, {["id"] = 165370, ["level"] = 90, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastermind
+table.insert(priestSkills, {["id"] = 589, ["level"] = 3}); -- Shadow Word: Pain
+table.insert(priestSkills, {["id"] = 81782, ["level"] = 5}); -- Power Word: Barrier
+table.insert(priestSkills, {["id"] = 17, ["level"] = 5}); -- Power Word: Shield
+table.insert(priestSkills, {["id"] = 2061, ["level"] = 7}); -- Flash Heal
+table.insert(priestSkills, {["id"] = 52798, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Borrowed Time
+table.insert(priestSkills, {["id"] = 47517, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Grace
+table.insert(priestSkills, {["id"] = 88625, ["level"] = 10, ["specs"] = {257}}); -- Holy Word: Chastise
+table.insert(priestSkills, {["id"] = 95860, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Meditation
+table.insert(priestSkills, {["id"] = 95861, ["level"] = 10, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Meditation
+table.insert(priestSkills, {["id"] = 15407, ["level"] = 10, ["specs"] = {258}}); -- Mind Flay
+table.insert(priestSkills, {["id"] = 47540, ["level"] = 10, ["specs"] = {256}}); -- Penance
+table.insert(priestSkills, {["id"] = 47536, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Rapture
+table.insert(priestSkills, {["id"] = 87336, ["level"] = 10, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Spiritual Healing
+table.insert(priestSkills, {["id"] = 14914, ["level"] = 18, ["specs"] = {256, 257}}); -- Holy Fire
+table.insert(priestSkills, {["id"] = 2006, ["level"] = 18}); -- Resurrection
+table.insert(priestSkills, {["id"] = 132157, ["level"] = 20, ["specs"] = {256}}); -- Holy Nova
+table.insert(priestSkills, {["id"] = 88684, ["level"] = 20}); -- Holy Word: Serenity
+table.insert(priestSkills, {["id"] = 2944, ["level"] = 21, ["specs"] = {258}}); -- Devouring Plague
+table.insert(priestSkills, {["id"] = 8092, ["level"] = 21, ["specs"] = {258}}); -- Mind Blast
+table.insert(priestSkills, {["id"] = 95740, ["level"] = 21, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadow Orbs
+table.insert(priestSkills, {["id"] = 527, ["level"] = 22, ["specs"] = {256, 257}}); -- Purify
+table.insert(priestSkills, {["id"] = 21562, ["level"] = 22}); -- Power Word: Fortitude
+table.insert(priestSkills, {["id"] = 47515, ["level"] = 24, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Divine Aegis
+table.insert(priestSkills, {["id"] = 15473, ["level"] = 24, ["specs"] = {258}}); -- Shadowform
+table.insert(priestSkills, {["id"] = 586, ["level"] = 24}); -- Fade
+table.insert(priestSkills, {["id"] = 49868, ["level"] = 26, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mind Quickening
+table.insert(priestSkills, {["id"] = 139, ["level"] = 26, ["specs"] = {257}}); -- Renew
+table.insert(priestSkills, {["id"] = 528, ["level"] = 26}); -- Dispel Magic
+table.insert(priestSkills, {["id"] = 34914, ["level"] = 28, ["specs"] = {258}}); -- Vampiric Touch
+table.insert(priestSkills, {["id"] = 48045, ["level"] = 28}); -- Mind Sear
+table.insert(priestSkills, {["id"] = 45243, ["level"] = 30, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Focused Will
+table.insert(priestSkills, {["id"] = 20711, ["level"] = 30, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Spirit of Redemption
+table.insert(priestSkills, {["id"] = 9484, ["level"] = 32}); -- Shackle Undead
+table.insert(priestSkills, {["id"] = 2060, ["level"] = 34, ["specs"] = {256, 257}}); -- Heal
+table.insert(priestSkills, {["id"] = 63733, ["level"] = 34, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Serendipity
+table.insert(priestSkills, {["id"] = 1706, ["level"] = 34}); -- Levitate
+table.insert(priestSkills, {["id"] = 126135, ["level"] = 36, ["specs"] = {257}}); -- Lightwell
+table.insert(priestSkills, {["id"] = 81749, ["level"] = 38, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Atonement
+table.insert(priestSkills, {["id"] = 78203, ["level"] = 42, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadowy Apparitions
+table.insert(priestSkills, {["id"] = 2096, ["level"] = 42}); -- Mind Vision
+table.insert(priestSkills, {["id"] = 34433, ["level"] = 42}); -- Shadowfiend
+table.insert(priestSkills, {["id"] = 81662, ["level"] = 44, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Evangelism
+table.insert(priestSkills, {["id"] = 73510, ["level"] = 44, ["specs"] = {258}}); -- Mind Spike
+table.insert(priestSkills, {["id"] = 596, ["level"] = 46, ["specs"] = {256, 257}}); -- Prayer of Healing
+table.insert(priestSkills, {["id"] = 32379, ["level"] = 46, ["specs"] = {258}}); -- Shadow Word: Death
+table.insert(priestSkills, {["id"] = 32546, ["level"] = 48, ["specs"] = {257}}); -- Binding Heal
+table.insert(priestSkills, {["id"] = 89745, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Archangel
+table.insert(priestSkills, {["id"] = 81700, ["level"] = 50, ["specs"] = {256}}); -- Archangel
+table.insert(priestSkills, {["id"] = 34861, ["level"] = 50, ["specs"] = {257}}); -- Circle of Healing
+table.insert(priestSkills, {["id"] = 15487, ["level"] = 52, ["specs"] = {256, 258}}); -- Silence
+table.insert(priestSkills, {["id"] = 6346, ["level"] = 54}); -- Fear Ward
+table.insert(priestSkills, {["id"] = 81209, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Chastise
+table.insert(priestSkills, {["id"] = 81206, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Sanctuary
+table.insert(priestSkills, {["id"] = 81208, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Serenity
+table.insert(priestSkills, {["id"] = 33206, ["level"] = 58, ["specs"] = {256}}); -- Pain Suppression
+table.insert(priestSkills, {["id"] = 47585, ["level"] = 60, ["specs"] = {258}}); -- Dispersion
+table.insert(priestSkills, {["id"] = 95649, ["level"] = 64, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Rapid Renewal
+table.insert(priestSkills, {["id"] = 33076, ["level"] = 68}); -- Prayer of Mending
+table.insert(priestSkills, {["id"] = 47788, ["level"] = 70, ["specs"] = {257}}); -- Guardian Spirit
+table.insert(priestSkills, {["id"] = 62618, ["level"] = 70, ["specs"] = {256}}); -- Power Word: Barrier
+table.insert(priestSkills, {["id"] = 32375, ["level"] = 72}); -- Mass Dispel
+table.insert(priestSkills, {["id"] = 64044, ["level"] = 74, ["specs"] = {258}}); -- Psychic Horror
+table.insert(priestSkills, {["id"] = 64843, ["level"] = 78, ["specs"] = {257}}); -- Divine Hymn
+table.insert(priestSkills, {["id"] = 15286, ["level"] = 78, ["specs"] = {258}}); -- Vampiric Embrace
+table.insert(priestSkills, {["id"] = 77485, ["level"] = 80, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Mastery: Echo of Light
+table.insert(priestSkills, {["id"] = 77486, ["level"] = 80, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastery: Mental Anguish
+table.insert(priestSkills, {["id"] = 77484, ["level"] = 80, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Mastery: Shield Discipline
+table.insert(priestSkills, {["id"] = 73325, ["level"] = 84}); -- Leap of Faith
+table.insert(priestSkills, {["id"] = 165362, ["level"] = 90, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Divine Providence
+table.insert(priestSkills, {["id"] = 165376, ["level"] = 90, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Enlightenment
+table.insert(priestSkills, {["id"] = 165370, ["level"] = 90, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastermind
 
 _addonData.PRIEST = {};
 _addonData.PRIEST.Skills = priestSkills;
@@ -840,75 +840,75 @@ table.insert(rogueSpecs, 260); -- Combat
 table.insert(rogueSpecs, 261); -- Subtlety
 
 local rogueSkills = {};
-table.insert(rogueSpecs, {["id"] = 2098, ["level"] = 3}); -- Eviscerate
-table.insert(rogueSpecs, {["id"] = 1784, ["level"] = 5}); -- Stealth
-table.insert(rogueSpecs, {["id"] = 8676, ["level"] = 6}); -- Ambush
-table.insert(rogueSpecs, {["id"] = 5277, ["level"] = 8}); -- Evasion
-table.insert(rogueSpecs, {["id"] = 84601, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Assassin's Resolve
-table.insert(rogueSpecs, {["id"] = 13877, ["level"] = 10, ["specs"] = {260}}); -- Blade Flurry
-table.insert(rogueSpecs, {["id"] = 79152, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Energetic Recovery
-table.insert(rogueSpecs, {["id"] = 91023, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Find Weakness
-table.insert(rogueSpecs, {["id"] = 16511, ["level"] = 10, ["specs"] = {261}}); -- Hemorrhage
-table.insert(rogueSpecs, {["id"] = 14117, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Improved Poisons
-table.insert(rogueSpecs, {["id"] = 31223, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Master of Subtlety
-table.insert(rogueSpecs, {["id"] = 1329, ["level"] = 10, ["specs"] = {259}}); -- Mutilate
-table.insert(rogueSpecs, {["id"] = 31220, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sinister Calling
-table.insert(rogueSpecs, {["id"] = 61329, ["level"] = 10, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Vitality
-table.insert(rogueSpecs, {["id"] = 2823, ["level"] = 10}); -- Deadly Poison
-table.insert(rogueSpecs, {["id"] = 6770, ["level"] = 12}); -- Sap
-table.insert(rogueSpecs, {["id"] = 5171, ["level"] = 14}); -- Slice and Dice
-table.insert(rogueSpecs, {["id"] = 921, ["level"] = 15}); -- Pick Pocket
-table.insert(rogueSpecs, {["id"] = 73651, ["level"] = 16}); -- Recuperate
-table.insert(rogueSpecs, {["id"] = 1766, ["level"] = 18}); -- Kick
-table.insert(rogueSpecs, {["id"] = 51667, ["level"] = 20, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Cut to the Chase
-table.insert(rogueSpecs, {["id"] = 32645, ["level"] = 20, ["specs"] = {259}}); -- Envenom
-table.insert(rogueSpecs, {["id"] = 84617, ["level"] = 20, ["specs"] = {260}}); -- Revealing Strike
-table.insert(rogueSpecs, {["id"] = 3408, ["level"] = 20}); -- Crippling Poison
-table.insert(rogueSpecs, {["id"] = 1776, ["level"] = 22}); -- Gouge
-table.insert(rogueSpecs, {["id"] = 1804, ["level"] = 24}); -- Pick Lock
-table.insert(rogueSpecs, {["id"] = 2983, ["level"] = 26}); -- Sprint
-table.insert(rogueSpecs, {["id"] = 1725, ["level"] = 28}); -- Distract
-table.insert(rogueSpecs, {["id"] = 35551, ["level"] = 30, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Combat Potency
-table.insert(rogueSpecs, {["id"] = 14183, ["level"] = 30, ["specs"] = {261}}); -- Premeditation
-table.insert(rogueSpecs, {["id"] = 14190, ["level"] = 30, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Seal Fate
-table.insert(rogueSpecs, {["id"] = 1833, ["level"] = 30}); -- Cheap Shot
-table.insert(rogueSpecs, {["id"] = 113742, ["level"] = 30, ["subText"] = STRING_PASSIVE}); -- Swiftblade
-table.insert(rogueSpecs, {["id"] = 8679, ["level"] = 30}); -- Wound Poison
-table.insert(rogueSpecs, {["id"] = 14161, ["level"] = 32, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Ruthlessness
-table.insert(rogueSpecs, {["id"] = 1856, ["level"] = 34}); -- Vanish
-table.insert(rogueSpecs, {["id"] = 2094, ["level"] = 38}); -- Blind
-table.insert(rogueSpecs, {["id"] = 13750, ["level"] = 40, ["specs"] = {260}}); -- Adrenaline Rush
-table.insert(rogueSpecs, {["id"] = 53, ["level"] = 40, ["specs"] = {261}}); -- Backstab
-table.insert(rogueSpecs, {["id"] = 121152, ["level"] = 40, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Blindside
-table.insert(rogueSpecs, {["id"] = 111240, ["level"] = 40, ["specs"] = {259}}); -- Dispatch
-table.insert(rogueSpecs, {["id"] = 408, ["level"] = 40}); -- Kidney Shot
-table.insert(rogueSpecs, {["id"] = 2836, ["level"] = 42}); -- Detect Traps
-table.insert(rogueSpecs, {["id"] = 1966, ["level"] = 44}); -- Feint
-table.insert(rogueSpecs, {["id"] = 1943, ["level"] = 46, ["specs"] = {259, 261}}); -- Rupture
-table.insert(rogueSpecs, {["id"] = 79134, ["level"] = 46, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Venomous Wounds
-table.insert(rogueSpecs, {["id"] = 703, ["level"] = 48}); -- Garrote
-table.insert(rogueSpecs, {["id"] = 1860, ["level"] = 48, ["subText"] = STRING_PASSIVE}); -- Safe Fall
-table.insert(rogueSpecs, {["id"] = 51701, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Honor Among Thieves
-table.insert(rogueSpecs, {["id"] = 86092, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(rogueSpecs, {["id"] = 58423, ["level"] = 54, ["specs"] = {259, 261}, ["subText"] = STRING_PASSIVE}); -- Relentless Strikes
-table.insert(rogueSpecs, {["id"] = 31224, ["level"] = 58}); -- Cloak of Shadows
-table.insert(rogueSpecs, {["id"] = 84654, ["level"] = 60, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Bandit
-table.insert(rogueSpecs, {["id"] = 79147, ["level"] = 60, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sanguinary Vein
-table.insert(rogueSpecs, {["id"] = 31209, ["level"] = 62, ["subText"] = STRING_PASSIVE}); -- Fleet Footed
-table.insert(rogueSpecs, {["id"] = 51723, ["level"] = 66, ["specs"] = {259, 261}}); -- Fan of Knives
-table.insert(rogueSpecs, {["id"] = 14185, ["level"] = 68}); -- Preparation
-table.insert(rogueSpecs, {["id"] = 5938, ["level"] = 74}); -- Shiv
-table.insert(rogueSpecs, {["id"] = 114018, ["level"] = 76}); -- Shroud of Concealment
-table.insert(rogueSpecs, {["id"] = 57934, ["level"] = 78}); -- Tricks of the Trade
-table.insert(rogueSpecs, {["id"] = 51690, ["level"] = 80, ["specs"] = {260}}); -- Killing Spree
-table.insert(rogueSpecs, {["id"] = 76808, ["level"] = 80, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Mastery: Executioner
-table.insert(rogueSpecs, {["id"] = 76806, ["level"] = 80, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Mastery: Main Gauche
-table.insert(rogueSpecs, {["id"] = 76803, ["level"] = 80, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Mastery: Potent Poisons
-table.insert(rogueSpecs, {["id"] = 51713, ["level"] = 80, ["specs"] = {261}}); -- Shadow Dance
-table.insert(rogueSpecs, {["id"] = 79140, ["level"] = 80, ["specs"] = {259}}); -- Vendetta
-table.insert(rogueSpecs, {["id"] = 121411, ["level"] = 83}); -- Crimson Tempest
-table.insert(rogueSpecs, {["id"] = 76577, ["level"] = 85}); -- Smoke Bomb
-table.insert(rogueSpecs, {["id"] = 165390, ["level"] = 90, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Master Poisoner
+table.insert(rogueSkills, {["id"] = 2098, ["level"] = 3}); -- Eviscerate
+table.insert(rogueSkills, {["id"] = 1784, ["level"] = 5}); -- Stealth
+table.insert(rogueSkills, {["id"] = 8676, ["level"] = 6}); -- Ambush
+table.insert(rogueSkills, {["id"] = 5277, ["level"] = 8}); -- Evasion
+table.insert(rogueSkills, {["id"] = 84601, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Assassin's Resolve
+table.insert(rogueSkills, {["id"] = 13877, ["level"] = 10, ["specs"] = {260}}); -- Blade Flurry
+table.insert(rogueSkills, {["id"] = 79152, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Energetic Recovery
+table.insert(rogueSkills, {["id"] = 91023, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Find Weakness
+table.insert(rogueSkills, {["id"] = 16511, ["level"] = 10, ["specs"] = {261}}); -- Hemorrhage
+table.insert(rogueSkills, {["id"] = 14117, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Improved Poisons
+table.insert(rogueSkills, {["id"] = 31223, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Master of Subtlety
+table.insert(rogueSkills, {["id"] = 1329, ["level"] = 10, ["specs"] = {259}}); -- Mutilate
+table.insert(rogueSkills, {["id"] = 31220, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sinister Calling
+table.insert(rogueSkills, {["id"] = 61329, ["level"] = 10, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Vitality
+table.insert(rogueSkills, {["id"] = 2823, ["level"] = 10}); -- Deadly Poison
+table.insert(rogueSkills, {["id"] = 6770, ["level"] = 12}); -- Sap
+table.insert(rogueSkills, {["id"] = 5171, ["level"] = 14}); -- Slice and Dice
+table.insert(rogueSkills, {["id"] = 921, ["level"] = 15}); -- Pick Pocket
+table.insert(rogueSkills, {["id"] = 73651, ["level"] = 16}); -- Recuperate
+table.insert(rogueSkills, {["id"] = 1766, ["level"] = 18}); -- Kick
+table.insert(rogueSkills, {["id"] = 51667, ["level"] = 20, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Cut to the Chase
+table.insert(rogueSkills, {["id"] = 32645, ["level"] = 20, ["specs"] = {259}}); -- Envenom
+table.insert(rogueSkills, {["id"] = 84617, ["level"] = 20, ["specs"] = {260}}); -- Revealing Strike
+table.insert(rogueSkills, {["id"] = 3408, ["level"] = 20}); -- Crippling Poison
+table.insert(rogueSkills, {["id"] = 1776, ["level"] = 22}); -- Gouge
+table.insert(rogueSkills, {["id"] = 1804, ["level"] = 24}); -- Pick Lock
+table.insert(rogueSkills, {["id"] = 2983, ["level"] = 26}); -- Sprint
+table.insert(rogueSkills, {["id"] = 1725, ["level"] = 28}); -- Distract
+table.insert(rogueSkills, {["id"] = 35551, ["level"] = 30, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Combat Potency
+table.insert(rogueSkills, {["id"] = 14183, ["level"] = 30, ["specs"] = {261}}); -- Premeditation
+table.insert(rogueSkills, {["id"] = 14190, ["level"] = 30, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Seal Fate
+table.insert(rogueSkills, {["id"] = 1833, ["level"] = 30}); -- Cheap Shot
+table.insert(rogueSkills, {["id"] = 113742, ["level"] = 30, ["subText"] = STRING_PASSIVE}); -- Swiftblade
+table.insert(rogueSkills, {["id"] = 8679, ["level"] = 30}); -- Wound Poison
+table.insert(rogueSkills, {["id"] = 14161, ["level"] = 32, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Ruthlessness
+table.insert(rogueSkills, {["id"] = 1856, ["level"] = 34}); -- Vanish
+table.insert(rogueSkills, {["id"] = 2094, ["level"] = 38}); -- Blind
+table.insert(rogueSkills, {["id"] = 13750, ["level"] = 40, ["specs"] = {260}}); -- Adrenaline Rush
+table.insert(rogueSkills, {["id"] = 53, ["level"] = 40, ["specs"] = {261}}); -- Backstab
+table.insert(rogueSkills, {["id"] = 121152, ["level"] = 40, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Blindside
+table.insert(rogueSkills, {["id"] = 111240, ["level"] = 40, ["specs"] = {259}}); -- Dispatch
+table.insert(rogueSkills, {["id"] = 408, ["level"] = 40}); -- Kidney Shot
+table.insert(rogueSkills, {["id"] = 2836, ["level"] = 42}); -- Detect Traps
+table.insert(rogueSkills, {["id"] = 1966, ["level"] = 44}); -- Feint
+table.insert(rogueSkills, {["id"] = 1943, ["level"] = 46, ["specs"] = {259, 261}}); -- Rupture
+table.insert(rogueSkills, {["id"] = 79134, ["level"] = 46, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Venomous Wounds
+table.insert(rogueSkills, {["id"] = 703, ["level"] = 48}); -- Garrote
+table.insert(rogueSkills, {["id"] = 1860, ["level"] = 48, ["subText"] = STRING_PASSIVE}); -- Safe Fall
+table.insert(rogueSkills, {["id"] = 51701, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Honor Among Thieves
+table.insert(rogueSkills, {["id"] = 86092, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
+table.insert(rogueSkills, {["id"] = 58423, ["level"] = 54, ["specs"] = {259, 261}, ["subText"] = STRING_PASSIVE}); -- Relentless Strikes
+table.insert(rogueSkills, {["id"] = 31224, ["level"] = 58}); -- Cloak of Shadows
+table.insert(rogueSkills, {["id"] = 84654, ["level"] = 60, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Bandit
+table.insert(rogueSkills, {["id"] = 79147, ["level"] = 60, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sanguinary Vein
+table.insert(rogueSkills, {["id"] = 31209, ["level"] = 62, ["subText"] = STRING_PASSIVE}); -- Fleet Footed
+table.insert(rogueSkills, {["id"] = 51723, ["level"] = 66, ["specs"] = {259, 261}}); -- Fan of Knives
+table.insert(rogueSkills, {["id"] = 14185, ["level"] = 68}); -- Preparation
+table.insert(rogueSkills, {["id"] = 5938, ["level"] = 74}); -- Shiv
+table.insert(rogueSkills, {["id"] = 114018, ["level"] = 76}); -- Shroud of Concealment
+table.insert(rogueSkills, {["id"] = 57934, ["level"] = 78}); -- Tricks of the Trade
+table.insert(rogueSkills, {["id"] = 51690, ["level"] = 80, ["specs"] = {260}}); -- Killing Spree
+table.insert(rogueSkills, {["id"] = 76808, ["level"] = 80, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Mastery: Executioner
+table.insert(rogueSkills, {["id"] = 76806, ["level"] = 80, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Mastery: Main Gauche
+table.insert(rogueSkills, {["id"] = 76803, ["level"] = 80, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Mastery: Potent Poisons
+table.insert(rogueSkills, {["id"] = 51713, ["level"] = 80, ["specs"] = {261}}); -- Shadow Dance
+table.insert(rogueSkills, {["id"] = 79140, ["level"] = 80, ["specs"] = {259}}); -- Vendetta
+table.insert(rogueSkills, {["id"] = 121411, ["level"] = 83}); -- Crimson Tempest
+table.insert(rogueSkills, {["id"] = 76577, ["level"] = 85}); -- Smoke Bomb
+table.insert(rogueSkills, {["id"] = 165390, ["level"] = 90, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Master Poisoner
 
 _addonData.ROGUE = {};
 _addonData.ROGUE.Skills = rogueSkills;
