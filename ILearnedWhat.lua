@@ -5,9 +5,6 @@
 
 local addonName, _addonData = ...;
 local _unlockScroller = nil;
---local versionNr = GetAddOnMetadata(addonName, "Version")
-
---local _PlayerName = UnitName("player")
 
 local unlockedList = {};
 local _classSkills = {};
@@ -50,75 +47,19 @@ _aVar.MOP_RAID = -8;
 _aVar.WOD_HEROIC = -9;
 _aVar.WOD_RAID = -10;
 local HELP_INFO = "As you level up you will unlock new content such as new abilities, talent points and dungeons.\n\nLeft clicking the unlocks will open related windows and remove them from the list.\n\nLeft clicking or dragging abilities allows you to move them to your action bars.\n\nRight clicking the unlocks will remove them from the list."
+local ERROR_OPEN_IN_COMBAT = "|cFFFFD100ILWhat:|r |cFFFF5555Can't open that during combat. It will open once you leave combat.|r";
+local TOOLTIP_TALENT = "Left click to pick your new talent.";
+local TOOLTIP_INSTANCE = "Left click to open the encounter\n journal for this instance.";
+local TOOLTIP_GLYPH = "Left click to pick your new glyphs.";
+local TOOLTIP_PVP = "Left click to open the\n battleground window.";
+local TOOLTIP_COMBAT = "|cFFFF5555Can't open during combat|r";
+local TOOLTIP_SPELLBOOK_ICON = "Unlocked content";
 
 local UnlockContainer_HelpPlate = {
 	FramePos = { x = 5,	y = -25 },
 	FrameSize = { width = 440, height = 495	},
 	[1] = { ButtonPos = { x = 200,	y = -95}, HighLightBox = { x = 20, y = -85, width = 405, height = 420 }, ToolTipDir = "DOWN", ToolTipText = HELP_INFO }
 }
-
---[[ How to tain the SpellBook 101
-local function OpenSpellBookAtSpell(searchName)
-	local tabNr = 1;
-	local maxTabs = 2;
-	local buttonNr = 1;
-	local buttonPerPage = 12;
-	local spellName = "";
-	local firsTimeInTab = false;
-	
-	SpellBookSkillLineTab_OnClick(_G["SpellBookSkillLineTab"..tabNr]);
-	while (tabNr <= maxTabs) do
-	
-		-- go to the first page 
-		if (not firsTimeInTab) then
-			while (SpellBookPrevPageButton:IsEnabled()) do
-				SpellBookPrevPageButton_OnClick();
-			end
-			firsTimeInTab = true;
-		end
-	
-		-- if target slot has a spell in it
-		if _G["SpellButton"..buttonNr.."SpellName"] ~= nil and _G["SpellButton"..buttonNr.."SpellName"]:IsShown() then
-			-- if the current tab still has unchecked spells
-			if (buttonNr <= buttonPerPage) then
-				
-				spellName = _G["SpellButton"..buttonNr.."SpellName"]:GetText();
-				
-				if (spellName == searchName) then
-					-- Found the spell, end the world
-					return true, _G["SpellButton"..buttonNr];
-				end
-				
-				buttonNr = buttonNr + 2;
-
-				-- reached limit on uneven, go even
-				-- Needed because slotNr goes L->R U->D while spells go U->D L->R
-				if (buttonNr > 12 and buttonNr %2 == 1) then
-					buttonNr = 2;
-				end
-			end
-		else -- else check for next page
-			
-			-- has next page, flip page
-			if (SpellBookNextPageButton:IsEnabled() ) then
-				
-				SpellBookNextPageButton_OnClick();
-				buttonNr = 1;
-			else -- else next tab
-				
-				buttonNr = 1;
-				tabNr = tabNr + 1;
-				SpellBookSkillLineTab_OnClick(_G["SpellBookSkillLineTab"..tabNr]);
-				firsTimeInTab = false;
-			end			
-		end	
-	end
-	
-	return false;
-	
-end
-
-]]--
 
 function ILW_ShowTutorialUnlocks(show)
 	if (show and #unlockedList == 0) then
@@ -229,7 +170,7 @@ local function ShowUnlockContainer()
 	
 	if InCombatLockdown() then 
 		_openedDuringCombat = true;
-		print("|cFFFFD100ILWhat:|r |cFFFF5555Can't open that during combat. It will open once you leave combat.|r");
+		print(ERROR_OPEN_IN_COMBAT);
 		return;
 	else
 		ILW_AlertPopup:Hide();
@@ -306,34 +247,14 @@ function ILW_UnlockButton_OnEnter(self, motion)
 	if (self.unlockType == UNLOCKTYPE_SPELL) then
 		GameTooltip:SetSpellByID(self.unlockId);
 	elseif (self.unlockType == UNLOCKTYPE_TALENT) then
-		GameTooltip:SetText("Left click to pick your new talent.");
+		GameTooltip:SetText(TOOLTIP_TALENT);
 	elseif (self.unlockType == UNLOCKTYPE_DUNGEON) then
-		GameTooltip:SetText("Left click to open the encounter\n journal for this instance.");
+		GameTooltip:SetText(TOOLTIP_INSTANCE);
 	elseif (self.unlockType == UNLOCKTYPE_GLYPH) then
-		GameTooltip:SetText("Left click to pick your new glyphs.");
+		GameTooltip:SetText(TOOLTIP_GLYPH);
 	elseif (self.unlockType == UNLOCKTYPE_PVP) then
-		GameTooltip:SetText("Left click to open the\n battleground window.");
+		GameTooltip:SetText(TOOLTIP_PVP);
 	end
-end
-
-local function GetPlayerLevel()
-	if _debugMode then
-		return DEBUGLEVEL;
-	end
-	
-	return UnitLevel("player");
-end
-
-local function GetPlayerSpec()
-	if _debugMode then
-		return DEBUGSPEC;
-	end
-	
-	if (GetSpecialization() ~= nil) then
-		return GetSpecializationInfo(GetSpecialization());
-	end
-	
-	return nil;
 end
 
 function ILW_PrevPageButton_OnClick()
@@ -358,6 +279,26 @@ function UnlockContainer_OnMouseWheel(self, delta)
 	else
 		ILW_NextPageButton_OnClick();
 	end
+end
+
+local function GetPlayerLevel()
+	if _debugMode then
+		return DEBUGLEVEL;
+	end
+	
+	return UnitLevel("player");
+end
+
+local function GetPlayerSpec()
+	if _debugMode then
+		return DEBUGSPEC;
+	end
+	
+	if (GetSpecialization() ~= nil) then
+		return GetSpecializationInfo(GetSpecialization());
+	end
+	
+	return nil;
 end
 
 function ILW_UpdateNavigation()
@@ -503,9 +444,9 @@ local function CreateSpellbookIcon()
 	L_ILW_SpellBookTab:SetScript("OnEnter", function(self) 
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 		if InCombatLockdown() then
-			GameTooltip:SetText("|cFFFF5555Can't open during combat|r");
+			GameTooltip:SetText(TOOLTIP_COMBAT);
 		else
-			GameTooltip:SetText("Unlocked content");
+			GameTooltip:SetText(TOOLTIP_SPELLBOOK_ICON);
 		end
 	end);
 	L_ILW_SpellBookTab:SetScript("OnClick", function() 
@@ -667,6 +608,10 @@ end
 
 local function AddUnlockedSkill(id, level, spec, subText, unlockType)
 	local name, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(id);
+
+	if unlockType == nil then
+		unlockType = UNLOCKTYPE_SPELL;
+	end
 	if subText == nil then
 		subText = "Ability";
 	end
@@ -770,7 +715,7 @@ local function CheckSpecMissedUnlocks(level, spec)
 		if v.level == level and v.specs ~= nil then
 			for specKey, skillSpec in ipairs(v.specs) do
 				if skillSpec == spec then
-					AddUnlockedSkill(tonumber(v.id), level, spec, v.subText);
+					AddUnlockedSkill(tonumber(v.id), level, spec, v.subText, UNLOCKTYPE_SPELL);
 				end
 			end
 		end

@@ -73,32 +73,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				
-				<!--
-				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="NewText" text=" New! ">
-					
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				
-				<FontString name="$parentSubSpellName" inherits="GameFontBlackSmall" hidden="false" justifyH="LEFT" parentKey="SpellSubName">
-					<Size>
-						<AbsDimension x="150" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentNewText" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			-->
+
 				<Texture name="$parentDigit3" inherits="ILW_DigitTemplate" parentKey="Digit1">
 					<Anchors>
 						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
@@ -369,26 +344,6 @@
 			
 				<Layers>
 					<Layer level="BACKGROUND">
-						<!--
-						<Texture file="Interface\QuestionFrame\Question-Main" parentKey="BG" alpha="0.5">
-							<Size x="190"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-							<TexCoords left="0" right="0.822" top="0.305" bottom="0.617"/>
-						</Texture>
-						-->
-<!--
-						<Texture file="Interface\Store\STORE-MAIN" parentKey="BG" alphaMode="ADD" alpha="0.25">
-							<Size x="200" y="100"/>
-							<Anchors>
-								<Anchor point="TOP" y="-30"/>
-							</Anchors>
-							<TexCoords left="0.564" right="0.933" top="0.156" bottom="0"/>
-							<Color r="1" g="1" b="1"/>
-						</Texture>
-						-->
 						
 						<Texture file="Interface\Store\Store-Splash" parentKey="BG">
 							<Size x="200"/>
@@ -403,15 +358,6 @@
 					</Layer>
 					
 					<Layer level="ARTWORK">
-						<!--
-						<Texture file="Interface\Garrison\GarrisonMissionUI2" parentKey="Header">
-							<Size x="250" y="60"/>
-							<Anchors>
-								<Anchor point="TOP" y="-7"/>
-							</Anchors>
-							<TexCoords left="0.655" right="0.875" top="0.622" bottom="0.684"/>
-						</Texture>
-						-->
 						<Texture file="Interface\Garrison\GarrisonMissionUI2" parentKey="Header">
 							<Size x="250" y="60"/>
 							<Anchors>
@@ -420,15 +366,7 @@
 							<TexCoords left="0.423" right="0.65" top="0.686" bottom="0.752"/>
 							<Color r="1" g="0.9" b="0.75"/>
 						</Texture>
-						<!--
-						<Texture file="Interface\Store\STORE-MAIN" name="$parentBanner" parentKey="banner" >
-							<Size x="275" y="60"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-7"/>
-							</Anchors>
-							<TexCoords left="0.371" right="0.732" top="0.461" bottom="0.541"/>
-						</Texture>
-						-->
+
 					</Layer>
 					
 					<Layer level="OVERLAY">
