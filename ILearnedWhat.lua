@@ -356,6 +356,8 @@ function ILW_CreateContainer()
 	ILW_UnlockContainer:RegisterForDrag("LeftButton");
 	ILW_UnlockContainer:SetScript("OnDragStart", ILW_UnlockContainer.StartMoving );
 	ILW_UnlockContainer:SetScript("OnDragStop", ILW_UnlockContainer.StopMovingOrSizing);
+	table.insert(UISpecialFrames, "ILW_UnlockContainer")
+	
 	ILW_UnlockContainer.CurrentPage = 1;
 	
 	for i=1, 6 do
