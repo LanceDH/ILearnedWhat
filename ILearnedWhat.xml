@@ -733,7 +733,7 @@
 				PlaySound("igSpellBookClose");
 				ILW_HelpFrame:Hide();
 				ILW_SpellBookTab:SetChecked(false);
-				ILW_ShowTutorialUnlocks(false);
+				ILW_ShowHelpUnlocks(false);
 			</OnHide>
 		</Scripts>
 		
@@ -811,18 +811,6 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		
-		<Scripts>
-			<OnShow> 
-				<!--ILW_Popup_OnUpdate(self);-->
-			</OnShow>
-			<OnUpdate> 
-				<!--ILW_Popup_OnUpdate(self);-->
-			</OnUpdate>
-			<OnClick> 
-				<!--ILW_Popup_OnClick(self, button);-->
-			</OnClick>
-		</Scripts>
 		
 	</Button>
 	

@@ -56,7 +56,6 @@ function _help:Initialise(parent, data)
 	ILW_HelpFrame.Button:ClearAllPoints();
 	ILW_HelpFrame.Button:SetPoint("TOPLEFT", parent, "TOPLEFT", subData.ButtonPos.x, subData.ButtonPos.y);
 	ILW_HelpFrame.Button:SetSize(HELP_BUTTON_NORMAL_SIZE, HELP_BUTTON_NORMAL_SIZE);
-	--ILW_HelpFrame.Button:SetScript("OnShow", function(self) Button_Onload(self) end);
 	ILW_HelpFrame.Button:SetScript("OnShow", function(self) ShowButtonAnimation(self) end);
 	ILW_HelpFrame.Button:SetScript("OnEnter", ShowTooltip);
 	ILW_HelpFrame.Button:SetScript("OnLeave", HideTooltip);
@@ -70,9 +69,7 @@ function _help:Initialise(parent, data)
 end
 
 function _help:ShowTutorial()
-
 	ILW_HelpFrame:Show();
-
 end
 
 function _help:HideTutorial()
