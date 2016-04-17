@@ -2,7 +2,14 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../../FrameXML/UI.xsd">
 
-
+	<!-- Don't touch, this order is important -->
+	<Script file="Libs\LibStub\LibStub.lua"/>
+	<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	<Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
+	<Include file="libs\AceAddon-3.0\AceAddon-3.0.xml"/>
+	<Include file="libs\AceDB-3.0\AceDB-3.0.xml"/>
+	 
 	<Texture name="ILW_DigitTemplate" file="Interface\UNITPOWERBARALT\Alliance_Counter_Numbers" virtual="true" >
 		<Size x="17" y="37"/>	
 		<TexCoords left="0.135" right="0.24" top="0" bottom="0.5"/>	
@@ -89,6 +96,13 @@
 						<Anchor point="right" relativeTo="$parentDigit2" relativePoint="left"/>
 					</Anchors>
 				</Texture>
+				
+				<FontString name="$parentLevel" inherits="PVPInfoTextFont" hidden="false" justifyV="MIDDLE" justifyH="RIGHT" parentKey="Level" text="100">
+					<Size x="100" y="40"/>
+					<Anchors>
+						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
+					</Anchors>
+				</FontString>
 
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -213,11 +227,7 @@
 				</Size>
 				<HitRectInsets left="5" top="5" right="5" bottom="5"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent">
-						<Offset>
-							<AbsDimension x="-25" y="-50"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" x="-25" y="-55"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -234,45 +244,44 @@
 				<NormalTexture file="Interface\Buttons\CancelButton-Up"/>
 				<PushedTexture file="Interface\Buttons\CancelButton-Down"/>
 				<DisabledTexture file="Interface\Buttons\CancelButton-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="6"/>
+					</Anchors>
+				</HighlightTexture>
 			</Button>
 			
-			<Button name="$parentOptionsButton" parentKey="OptionsButton" >
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
-				<HitRectInsets left="2" top="2" right="2" bottom="2"/>
+			<Button name="$parentOptionsButton" inherits="UIMenuButtonStretchTemplate" text="">
+				<Size x="35" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent">
-						<Offset>
-							<AbsDimension x="-30" y="-35"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-23" y="-35"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="gear" file="Interface\Worldmap\Gear_64Grey">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="LEFT" x="5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+							<Size x="10" y="12"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture file="Interface\BUTTONS\UI-Common-MouseHilight" alphaMode="ADD"/>
 				<Scripts>
-					<OnClick>
-						ILW_OptionsButton_OnClick();
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -3);
-						GameTooltip:SetText("Toggle options.");
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalTexture file="Interface\Worldmap\Gear_64">
-					<Color r="0.5" g="0.5" b="0.5" a="1"/>
-					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Worldmap\Gear_64">
-					<Color r="0.5" g="0.5" b="0.5" a="1"/>
-					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-				</PushedTexture>
-				<DisabledTexture file="Interface\Worldmap\Gear_64Grey"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-				
+					<OnClick> 
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, ILW_UnlockContainerOptionsDropDown, "ILW_UnlockContainerOptionsButton", -40, 0);
+					</OnClick>	
+				</Scripts>						
 			</Button>
+			<Frame name="$parentOptionsDropDown" inherits="UIDropDownMenuTemplate" />
 		
 			<CheckButton name="ILW_UnlockContainerUnlock1" inherits="ILW_UnlockButtonTemplate" >
 				<Anchors>
@@ -366,7 +375,6 @@
 							<TexCoords left="0.423" right="0.65" top="0.686" bottom="0.752"/>
 							<Color r="1" g="0.9" b="0.75"/>
 						</Texture>
-
 					</Layer>
 					
 					<Layer level="OVERLAY">
@@ -466,259 +474,6 @@
 				</Frames>
 			</Frame>
 			
-			<Frame name="ILW_UnlockContainerOptions" hidden="true" enableMouse="true" inherits="UIPanelDialogTemplate" frameStrata="HIGH">
-				<Size>
-					<AbsDimension x="325" y="240"/>
-				</Size>
-				
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parent" />
-				</Anchors>
-				
-				<Layers>
-					<Layer level="overlay">
-						<FontString name="$parentTitleText" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" text="Options">
-							<Size>
-								<AbsDimension x="200" y="20"/>
-							</Size>
-							<Anchors>
-								<Anchor point="top" relativeTo="$parent" y="-5"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				
-				<Frames>
-					<CheckButton name="$parentCBPopup" inherits="UICheckButtonTemplate" parentKey="CBShowPopup" checked="true">
-						<Anchors>
-							<Anchor point="topleft" x="25" y="-40"/>
-						</Anchors>
-						<Layers>
-							<Layer level="overlay">
-								<FontString name="$parentTitleText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Enable pop-up">
-									<Size>
-										<AbsDimension x="150" y="20"/>
-									</Size>
-									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText("Enable to make the popup window\n to show up every time you have\n new unread unlocks.");
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</CheckButton>
-					
-					<Frame name="$parentTrackContainer" hidden="false" inherits="InsetFrameTemplate" parentKey="Trackers" frameStrata="HIGH">
-						<Size>
-						</Size>
-						<Anchors>
-							<Anchor point="topleft" relativeTo="$parentCBPopup" relativePoint="bottomleft" x="0" y="-5"/>
-							<Anchor point="bottomright" relativeTo="$parent" relativePoint="bottomright" x="-25" y="25"/>
-						</Anchors>
-						
-						<Layers>
-							<Layer level="overlay">
-								<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" text="Choose which unlock types you want to track while leveling.">
-									<Size>
-										<AbsDimension y="30"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parent" x="10" y="-8"/>
-										<Anchor point="TOPRIGHT" relativeTo="$parent" x="-10" y="-8"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						
-						<Frames>
-							<CheckButton name="$parentCBSpell" inherits="UICheckButtonTemplate" parentKey="Spells" checked="true">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentText" relativePoint="BOTTOMLEFT" y="-5"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Spells">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("Spells, abilities and passives.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							
-							<CheckButton name="$parentCBRiding" inherits="UICheckButtonTemplate" parentKey="Riding" checked="true">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentCBSpell" relativePoint="RIGHT" x="90"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Riding Skills">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("Learnable riding skills.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							
-							<CheckButton name="$parentCBTalent" inherits="UICheckButtonTemplate" parentKey="Talents" checked="true">
-								<Anchors>
-									<Anchor point="topleft" relativeTo="$parentCBSpell" y="-30"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Talents">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("New talent points.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							
-							<CheckButton name="$parentCBGlyph" inherits="UICheckButtonTemplate" parentKey="Glyphs" checked="true">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentCBTalent" relativePoint="RIGHT" x="90"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Glyphs">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("New glyph slots.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							
-							<CheckButton name="$parentCBDungeon" inherits="UICheckButtonTemplate" parentKey="Dungeons" checked="true">
-								<Anchors>
-									<Anchor point="topleft" relativeTo="$parentCBTalent" y="-30"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Dungeons">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("Dungeons you can queue for.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							
-							<CheckButton name="$parentCBPvP" inherits="UICheckButtonTemplate" parentKey="PvP" checked="true">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parentCBDungeon" relativePoint="RIGHT" x="90"/>
-								</Anchors>
-								<Layers>
-									<Layer level="overlay">
-										<FontString name="$parentText" inherits="GameFontWhite" justifyH="LEFT" justifyV="MIDDLE" text="Battlegrounds">
-											<Size>
-												<AbsDimension x="90" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText("Battlegrounds you can queue for.");
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-						</Frames>
-						
-					</Frame>
-
-				</Frames>
-				
-				<Scripts>
-					<OnShow>
-						ILW_OptionsFrame_EnableBack(false);
-					</OnShow>
-					<OnHide>
-						ILW_OptionsFrame_EnableBack(true);
-					</OnHide>
-					
-				</Scripts>
-				
-			</Frame>
-			
 		</Frames>
 		
 		<Scripts>
@@ -726,8 +481,10 @@
 				UnlockContainer_OnMouseWheel(self, delta);
 			</OnMouseWheel>
 			<OnShow>
+				ILW_AlertPopup:Hide();
 				ILW_SpellBookTab:SetChecked(true);
 				ILW_ShowUnlockedContent();
+				PlaySound("igSpellBookOpen");
 			</OnShow>
 			<OnHide>
 				PlaySound("igSpellBookClose");
@@ -735,6 +492,9 @@
 				ILW_SpellBookTab:SetChecked(false);
 				ILW_ShowHelpUnlocks(false);
 			</OnHide>
+			<OnLoad>
+				UIPanelWindows["ILW_UnlockContainer"] = { area = "left", pushable = 4 }
+			</OnLoad>
 		</Scripts>
 		
 	</Frame>
