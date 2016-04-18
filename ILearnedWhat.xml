@@ -10,13 +10,10 @@
 	<Include file="libs\AceAddon-3.0\AceAddon-3.0.xml"/>
 	<Include file="libs\AceDB-3.0\AceDB-3.0.xml"/>
 	 
-	<Texture name="ILW_DigitTemplate" file="Interface\UNITPOWERBARALT\Alliance_Counter_Numbers" virtual="true" >
-		<Size x="17" y="37"/>	
-		<TexCoords left="0.135" right="0.24" top="0" bottom="0.5"/>	
-	</Texture>
-	<Texture name="ILW_DigitBGTemplate" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" virtual="true" >
-		<Size x="60" y="15"/>	
-		<TexCoords left="1" right="0.355" top="0.71" bottom="0.944"/>	
+	<Texture name="ILW_DigitBGTemplate" file="Interface\LFGFRAME\UI-LFG-FILIGREE" virtual="true" >
+		<Size x="80" y="30"/>	
+		<TexCoords left="0.021484375" right="0.35" top="0.59375" bottom="1"/>	
+		<Color r="1" g="0.82" b="0" a="0.85"/>
 	</Texture>
 
 	<CheckButton name="ILW_UnlockButtonTemplate" hidden="true" inherits="SecureFrameTemplate" virtual="true">
@@ -45,7 +42,7 @@
 				
 				<Texture name="$parentDigitBG" inherits="ILW_DigitBGTemplate" parentKey="DigitBg">
 					<Anchors>
-						<Anchor point="topright" relativeTo="$parent" relativePoint="topleft" x="5"/>
+						<Anchor point="topright" relativeTo="$parent" relativePoint="topleft" x="5" y="4"/>
 					</Anchors>
 				</Texture>
 				
@@ -80,28 +77,13 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-
-				<Texture name="$parentDigit3" inherits="ILW_DigitTemplate" parentKey="Digit1">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentDigit2" inherits="ILW_DigitTemplate" parentKey="Digit2">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parentDigit3" relativePoint="left"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentDigit1" inherits="ILW_DigitTemplate" parentKey="Digit3">
-					<Anchors>
-						<Anchor point="right" relativeTo="$parentDigit2" relativePoint="left"/>
-					</Anchors>
-				</Texture>
 				
-				<FontString name="$parentLevel" inherits="PVPInfoTextFont" hidden="false" justifyV="MIDDLE" justifyH="RIGHT" parentKey="Level" text="100">
-					<Size x="100" y="40"/>
+				<FontString name="$parentLevel" inherits="GameFontNormalShadowHuge2" hidden="false" justifyV="MIDDLE" justifyH="CENTER" parentKey="Level" text="123">
+					<Size x="55" y="37"/>
 					<Anchors>
-						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-20" y="-3"/>
+						<Anchor point="right" relativeTo="$parent" relativePoint="left" x="-10" y="-3"/>
 					</Anchors>
+					<Color r="0.95" g="0.78" b="0"/>
 				</FontString>
 
 			</Layer>

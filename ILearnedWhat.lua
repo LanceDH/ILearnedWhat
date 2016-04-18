@@ -35,7 +35,7 @@ local _defaults = {
 			["Spells"] = true,
 			["Talents"] = true,
 			["Dungeons"] = true,
-			["Riding skills"] = true,
+			["Riding"] = true,
 			["Glyphs"] = true,
 			["Battlegrounds"] = true,
 		}
@@ -46,9 +46,16 @@ local _defaults = {
 	}
 }
 
-local _unlockedList = {};
+local _trackers = {
+		["Spells"] = true,
+		["Talents"] = true,
+		["Dungeons"] = true,
+		["Riding"] = true,
+		["Glyphs"] = true,
+		["Battlegrounds"] = true,
+	}
+
 local _classSkills = {};
-local _talentLevels = {};
 local _ridingSkills = {};
 local _glyphLevels = {};
 local _specLastLevel = {};
@@ -162,7 +169,7 @@ function ILW_Unlockbutton_OnClick(self, button)
 	-- Open glyphs
 	elseif (self.unlockType == UNLOCKTYPE_GLYPH) then
 		if (PlayerTalentFrame == nil or not PlayerTalentFrame:IsShown()) then
-			ToggleGlyphFrame()
+			ToggleGlyphFrame();
 		end
 	-- Open encounter journal if instance
 	elseif (self.unlockType == UNLOCKTYPE_DUNGEON ) then
@@ -228,6 +235,7 @@ end
 
 function ILW_ClearButton_OnClick()
 	ILW_ClearUnlockList();
+	ILW_UpdateNavigation();
 end
 
 function ILW_UnlockButton_OnEnter(self, motion)
@@ -293,6 +301,8 @@ function ILW_UpdateNavigation()
 
 	if (totalPages > 0 and ILW_UnlockContainer.CurrentPage > totalPages) then
 		ILW_UnlockContainer.CurrentPage = totalPages;
+	elseif (totalPages == 0) then
+		ILW_UnlockContainer.CurrentPage = 1;
 	end
 
 	ILW_UnlockContainer.Navigation.Text:SetText("Page ".. ILW_UnlockContainer.CurrentPage);
@@ -400,7 +410,7 @@ function ILWAddon:InitFilter(dd, level)
 
 		
 		info.notCheckable = false;
-		for k, v in pairs(ILWAddon.db.global.trackers) do
+		for k, v in pairs(_trackers) do
 			info.text = k;
 			info.func = function(_, _, _, value)
 								ILWAddon.db.global.trackers[k] = value;
@@ -533,26 +543,6 @@ local function CreateSpellbookIcon()
 	
 end
 
-local function DisplayUnlockLevel(button, level)
-	
-	level = tonumber(level);
-	local digits = {button.Digit3, button.Digit2, button.Digit1};
-	local digitCount = 3;
-	local singleDigit = 0;
-	button.DigitBg:Show();
-	
-	-- show the correct texture for every digit in the number
-	while level > 0 and digitCount > 1 do
-		singleDigit = level%10;
-		local x = singleDigit%8;
-		local y = floor(singleDigit/8);
-		digits[digitCount]:Show();
-		digits[digitCount]:SetTexCoord((x*0.125)+0.01, ((x+1) * 0.125)-0.01, y*0.5, (y+1)*0.5);
-		level = math.floor(level/10);
-		digitCount = digitCount - 1;
-	end
-end
-
 local function ResetButtons()
 	for i=1, 6 do
 		local button = _G["ILW_UnlockContainerUnlock"..i];
@@ -573,6 +563,8 @@ local function ResetButtons()
 		button.animation:Stop();
 		button.NewText:SetText("");
 		button.NewTextBG:Hide();
+		button.Level:Hide();
+		button.DigitBg:Hide();
 	end
 	
 	ILW_UpdateNavigation();
@@ -614,10 +606,6 @@ function ILW_ShowUnlockedContent()
 			button.SpellName:Show();
 			button.SpellName:SetHeight(button.SpellName:GetStringHeight());
 			button.unlockType = unlock.type;
-			button.DigitBg:Hide();
-			button.Digit1:Hide();
-			button.Digit2:Hide();
-			button.Digit3:Hide();
 			button.unlockId = unlock.id;
 			
 			local subText = "";
@@ -637,7 +625,9 @@ function ILW_ShowUnlockedContent()
 			
 			-- Only show level for the first one
 			if (unlock.level ~= prevDisplayLevel) then
-				--DisplayUnlockLevel(button, unlock.level);
+				button.DigitBg:Show();
+				button.Level:Show();
+				button.Level:SetText(unlock.level);
 			end
 			
 			prevDisplayLevel = unlock.level;
@@ -691,7 +681,7 @@ local function CheckLevelUnlocks(level)
 	local trackOptions = ILWAddon.db.global.trackers
 	local spec = GetPlayerSpec();
 	if (spec ~= nil) then
-		_specLastLevel[""..spec] = level;
+		ILWAddon.db.char.specLastLevel[spec] = level;
 	end
 	
 	if trackOptions.Spells then
@@ -750,7 +740,7 @@ local function CheckLevelUnlocks(level)
 		end
 	end
 	
-	if trackOptions.PvP then
+	if trackOptions.Battlegrounds then
 		-- Check for PvP
 		for k, instance in ipairs(_PvPLevels) do
 			if (instance.level == level) then
@@ -816,6 +806,11 @@ end
 function ILWAddon:OnEnable()
 	if (not ILWAddon.db.global.spellbook) then
 		ILW_SpellBookTab:Hide();
+	end
+	
+	local spec = GetPlayerSpec();
+	if (spec ~= nil) then
+		self.db.char.specLastLevel[spec] = GetPlayerLevel();
 	end
 end
 
@@ -887,18 +882,6 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	
 	_help:Initialise(ILW_UnlockContainer, _helpPlate);
 
-	-- load the levels, otherwise check level and spec
-	if (ILW_SavedData ~= nil and ILW_SavedData.specLastLevel ~= nil) then
-		for k, v in pairs(ILW_SavedData.specLastLevel) do
-			_specLastLevel[""..k] = v;
-		end
-	else
-		local spec = GetPlayerSpec();
-		if (spec ~= nil) then
-			_specLastLevel[""..spec] = GetPlayerLevel();
-		end
-	end
-	
 	ILW_ShowUnlockedContent();
 	
 end
@@ -908,15 +891,13 @@ end
 ----------------------------------------
 
 SLASH_ILEARNEDWHAT1 = '/ilwhat';
+SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
+SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
-	-- if (ILW_UnlockContainer:IsShown()) then
-		-- HideUIPanel(ILW_UnlockContainer);
-	-- else
-		-- ShowUnlockContainer();
-	-- end
-	
-	for i=1, 20 do
-		CheckLevelUnlocks(i);
+	if (ILW_UnlockContainer:IsShown()) then
+		HideUIPanel(ILW_UnlockContainer);
+	else
+		ShowUnlockContainer();
 	end
 end
 SlashCmdList["ILEARNEDWHAT"] = slashcmd

@@ -289,7 +289,6 @@ table.insert(paladinSkills, {["id"] = 105361, ["level"] = 3}); -- Seal of Comman
 table.insert(paladinSkills, {["id"] = 20271, ["level"] = 5}); -- Judgment
 table.insert(paladinSkills, {["id"] = 853, ["level"] = 7}); -- Hammer of Justice
 table.insert(paladinSkills, {["id"] = 85673, ["level"] = 9}); -- Word of Glory
-table.insert(paladinSkills, {["id"] = 136494, ["level"] = 9}); -- Word of Glory
 table.insert(paladinSkills, {["id"] = 31935, ["level"] = 10, ["specs"] = {66}}); -- Avenger
 table.insert(paladinSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
 table.insert(paladinSkills, {["id"] = 53592, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Guarded by the Light
