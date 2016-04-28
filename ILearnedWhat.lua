@@ -113,6 +113,7 @@ local _helpPlate = {
 
 function ILW_ShowHelpUnlocks(show)
 	local unlocklist = ILWAddon.db.char.unlockedList;
+	
 	-- when showing help, if there's no unlocks, show dummy unlocks
 	if (show and #unlocklist == 0) then
 		table.insert(unlocklist, {["type"] = UNLOCKTYPE_TUTORIAL, ["level"] = 3, ["icon"] = "Interface/ICONS/spell_fire_fireball02", ["name"] = "Example Ability", ["subText"] = "Ability"});
@@ -123,7 +124,7 @@ function ILW_ShowHelpUnlocks(show)
 	end
 	
 	-- when hiding help, remove dummy unlocks
-	if not show then
+	if (not show and unlocklist) then
 		for i=#unlocklist, 1, -1 do
 			if (unlocklist[i]["type"] == UNLOCKTYPE_TUTORIAL) then
 				table.remove(unlocklist, i);
@@ -883,7 +884,6 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	_help:Initialise(ILW_UnlockContainer, _helpPlate);
 
 	ILW_ShowUnlockedContent();
-	
 end
 
 ----------------------------------------
