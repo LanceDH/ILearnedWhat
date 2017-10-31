@@ -1,167 +1,229 @@
 
 local addonName, _addonData = ...;
+local _L = _addonData.L;
 
 local _aVar = _addonData.variables;
+local playerClass = select(2, UnitClass("player"));
+local playerFaction = GetPlayerFactionGroup();
 
-local STRING_PASSIVE = "Passive";
-local STRING_TRAINING = "Requires training";
-local STRING_DUNGEON = "Dungeon";
-local STRING_DUNGEON_HEROIC = "Heroic Dungeon";
-local STRING_RAID = "Raid";
-local STRING_BATTLEGROUND = "PvP Battleground";
-local STRING_WORLDPVP = "World PvP";
+_addonData.variables = {}
+local _aVar = _addonData.variables;
+_aVar.CLASSIC_RAID = 0;
+_aVar.TBC_HEROIC = -1;
+_aVar.TBC_RAID = -2;
+_aVar.WOTLK_HEROIC = -3;
+_aVar.WOTLK_RAID = -4;
+_aVar.CATA_HEROIC = -5;
+_aVar.CATA_RAID = -6;
+_aVar.MOP_HEROIC = -7;
+_aVar.MOP_RAID = -8;
+_aVar.WOD_HEROIC = -9;
+_aVar.WOD_RAID = -10;
+_aVar.LEGION_HEROIC = -11;
+_aVar.LEGION_RAID = -12;
 
+local function AddUnlock(list, level, unlock)
+	if not list[level] then list[level] = {} end;
+	table.insert(list[level], unlock);
+end
+
+--------------------------
+-- UI
+--------------------------
+
+_addonData.UI = {};
+	AddUnlock(_addonData.UI, 10, {["name"] = _L["UI_TALENTS"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				if (PlayerTalentFrame == nil) then
+					LoadAddOn("Blizzard_TalentUI");
+				end
+				ShowUIPanel(PlayerTalentFrame); 
+			end});
+	AddUnlock(_addonData.UI, 10, {["name"] = _L["UI_GROUP_FINDER"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				ShowUIPanel(PVEFrame); 
+				GroupFinderFrame_ShowGroupFrame(_G["LFGListPVEStub"]);
+			end});
+	AddUnlock(_addonData.UI, 11, {["name"] = _L["UI_GUIDE"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				if (EncounterJournal == nil) then
+					LoadAddOn("Blizzard_EncounterJournal");
+				end
+				ShowUIPanel(EncounterJournal);
+			end});
+	AddUnlock(_addonData.UI, 15, {["name"] = _L["UI_EQUIPMENT"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				ShowUIPanel(CharacterFrame); 
+				PaperDollFrame_SetSidebar(nil, 3);
+			end});
 --------------------------
 -- Talent Points
 --------------------------
 
-_addonData.Talents = {15, 30, 45, 60, 75, 90, 100};
+_addonData.Talents = { }; 
+local talentLevels = {15, 30, 45, 60, 75, 90, 100};
+if (playerClass == "DEATHKNIGHT") then
+	talentLevels = {56, 57, 58, 60, 75, 90, 100};
+elseif (playerClass == "DEMONHUNTER") then
+	talentLevels = {99, 100, 102, 104, 106, 108, 110};
+end
 
---------------------------
--- Talent Points
---------------------------
-
-_addonData.Glyphs = {25, 50, 75};
+for k, level in ipairs(talentLevels) do
+	_addonData.Talents[level] = true;
+end
 
 --------------------------
 -- Riding
 --------------------------
 
-_addonData.Riding = {};
-table.insert(_addonData.Riding, {["id"] = 33388, ["level"] = 20, ["subText"] = STRING_TRAINING}); -- Apprentice Riding
-table.insert(_addonData.Riding, {["id"] = 33391, ["level"] = 40, ["subText"] = STRING_TRAINING}); -- Journeyman Riding
-table.insert(_addonData.Riding, {["id"] = 34090, ["level"] = 60, ["subText"] = STRING_TRAINING}); -- Expert Riding
-table.insert(_addonData.Riding, {["id"] = 34091, ["level"] = 70, ["subText"] = STRING_TRAINING}); -- Artisan Riding
-table.insert(_addonData.Riding, {["id"] = 90265, ["level"] = 80, ["subText"] = STRING_TRAINING}); -- Master Riding
-table.insert(_addonData.Riding, {["id"] = 90267, ["level"] = 60, ["subText"] = STRING_TRAINING}); -- Flight Master's License
-table.insert(_addonData.Riding, {["id"] = 54197, ["level"] = 68, ["subText"] = STRING_TRAINING}); -- Cold Weather Flying
-table.insert(_addonData.Riding, {["id"] = 115913, ["level"] = 85, ["subText"] = STRING_TRAINING}); -- Wisdom of the Four Winds
-table.insert(_addonData.Riding, {["id"] = 191645, ["level"] = 90, ["subText"] = STRING_TRAINING}); -- Draenor Pathfinder
+_addonData.Riding = { };
+	AddUnlock(_addonData.Riding, 20, {["id"] = 33388});
+	AddUnlock(_addonData.Riding, 40, {["id"] = 33391});
+	AddUnlock(_addonData.Riding, 60, {["id"] = 34090});
+	AddUnlock(_addonData.Riding, 60, {["id"] = 90267});
+	AddUnlock(_addonData.Riding, 70, {["id"] = 34091});
+	AddUnlock(_addonData.Riding, 80, {["id"] = 90265});
+	AddUnlock(_addonData.Riding, 68, {["id"] = 54197});
+	AddUnlock(_addonData.Riding, 85, {["id"] = 115913});
+	AddUnlock(_addonData.Riding, 90, {["id"] = 191645});
 
 --------------------------
 -- Instances
 --------------------------
 
-_addonData.Instances = {};
-
+-- /run print(GetMouseFocus().instanceID) 
+_addonData.Instances = { };
 -- Vanilla
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Ragefire Chasm", ["level"] = 15, ["id"] = 226, ["icon"] = "Interface/LFGFRAME/LFGICON-RAGEFIRECHASM"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Deadmines", ["level"] = 15, ["id"] = 63, ["icon"] = "Interface/LFGFRAME/LFGICON-DEADMINES"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Wailing Caverns", ["level"] = 15, ["id"] = 240, ["icon"] = "Interface/LFGFRAME/LFGICON-WAILINGCAVERNS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shadowfang Keep", ["level"] = 16, ["id"] = 64, ["icon"] = "Interface/LFGFRAME/LFGICON-SHADOWFANGKEEP"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blackfathom Deeps", ["level"] = 20, ["id"] = 227, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKFATHOMDEEPS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Stormwind Stockade", ["level"] = 20, ["id"] = 238, ["icon"] = "Interface/LFGFRAME/LFGICON-STORMWINDSTOCKADES"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Gnomeregan", ["level"] = 24, ["id"] = 231, ["icon"] = "Interface/LFGFRAME/LFGICON-GNOMEREGAN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Scarlet Halls", ["level"] = 26, ["id"] = 311, ["icon"] = "Interface/LFGFRAME/LFGICON-SCARLETMONASTERY"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Scarlet Monastery", ["level"] = 28, ["id"] = 316, ["icon"] = "Interface/LFGFRAME/LFGICON-SCARLETMONASTERY"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Maraudon: The Wicked Grotto", ["id"] = 232, ["level"] = 30, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Razorfen Kraul", ["level"] = 30, ["id"] = 234, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENKRAUL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Maraudon: Foulspore Cavern", ["level"] = 32, ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Maraudon: Earth Song Falls", ["level"] = 34, ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Uldaman", ["level"] = 35, ["id"] = 239, ["icon"] = "Interface/LFGFRAME/LFGICON-ULDAMAN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Dire Maul: Warpwood Quarter", ["level"] = 36, ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Scholomance", ["level"] = 38, ["id"] = 246, ["icon"] = "Interface/LFGFRAME/LFGICON-SCHOLOMANCE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Dire Maul: Capital Gardens", ["level"] = 39, ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Razorfen Downs", ["level"] = 40, ["id"] = 233, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENDOWNS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Dire Maul: Gordok Commons", ["level"] = 42, ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Stratholme: Main Gate", ["level"] = 42, ["id"] = 236, ["icon"] = "Interface/LFGFRAME/LFGICON-STRATHOLME"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Zul'Farrak", ["id"] = 241, ["level"] = 44, ["icon"] = "Interface/LFGFRAME/LFGICON-ZULFARAK"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Stratholme: Service Entrance", ["id"] = 236, ["level"] = 46, ["icon"] = "Interface/LFGFRAME/LFGICON-STRATHOLME"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blackrock Depths: Detention Block", ["level"] = 47, ["id"] = 228, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKDEPTHS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Sunken Temple", ["level"] = 50, ["id"] = 237, ["icon"] = "Interface/LFGFRAME/LFGICON-SUNKENTEMPLE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blackrock Depths: Upper City", ["level"] = 51, ["id"] = 228, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKDEPTHS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Lower Blackrock Spire", ["level"] = 55, ["id"] = 229, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKSPIRE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Classic Raids", ["level"] = 60, ["icon"] = "Interface/LFGFRAME/LFGICON-MOLTENCORE"});
+	AddUnlock(_addonData.Instances, 15, {["subText"] = _L["DUNGEON"], ["id"] = 226, ["icon"] = "Interface/LFGFRAME/LFGICON-RAGEFIRECHASM"});
+	AddUnlock(_addonData.Instances, 15, {["subText"] = _L["DUNGEON"], ["id"] = 63, ["icon"] = "Interface/LFGFRAME/LFGICON-DEADMINES"});
+	AddUnlock(_addonData.Instances, 15, {["subText"] = _L["DUNGEON"], ["id"] = 240, ["icon"] = "Interface/LFGFRAME/LFGICON-WAILINGCAVERNS"});
+	AddUnlock(_addonData.Instances, 16, {["subText"] = _L["DUNGEON"], ["id"] = 64, ["icon"] = "Interface/LFGFRAME/LFGICON-SHADOWFANGKEEP"});
+	AddUnlock(_addonData.Instances, 20, {["subText"] = _L["DUNGEON"], ["id"] = 227, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKFATHOMDEEPS"});
+	AddUnlock(_addonData.Instances, 20, {["subText"] = _L["DUNGEON"], ["id"] = 238, ["icon"] = "Interface/LFGFRAME/LFGICON-STORMWINDSTOCKADES"});
+	AddUnlock(_addonData.Instances, 24, {["subText"] = _L["DUNGEON"], ["id"] = 231, ["icon"] = "Interface/LFGFRAME/LFGICON-GNOMEREGAN"});
+	AddUnlock(_addonData.Instances, 26, {["subText"] = _L["DUNGEON"], ["id"] = 311, ["icon"] = "Interface/LFGFRAME/LFGICON-SCARLETMONASTERY"});
+	AddUnlock(_addonData.Instances, 28, {["subText"] = _L["DUNGEON"], ["id"] = 316, ["icon"] = "Interface/LFGFRAME/LFGICON-SCARLETMONASTERY"});
+	AddUnlock(_addonData.Instances, 30, {["subText"] = _L["DUNGEON"], ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
+	AddUnlock(_addonData.Instances, 30, {["subText"] = _L["DUNGEON"], ["id"] = 234, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENKRAUL"});
+	AddUnlock(_addonData.Instances, 32, {["subText"] = _L["DUNGEON"], ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
+	AddUnlock(_addonData.Instances, 34, {["subText"] = _L["DUNGEON"], ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
+	AddUnlock(_addonData.Instances, 35, {["subText"] = _L["DUNGEON"], ["id"] = 239, ["icon"] = "Interface/LFGFRAME/LFGICON-ULDAMAN"});
+	AddUnlock(_addonData.Instances, 36, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
+	AddUnlock(_addonData.Instances, 38, {["subText"] = _L["DUNGEON"], ["id"] = 246, ["icon"] = "Interface/LFGFRAME/LFGICON-SCHOLOMANCE"});
+	AddUnlock(_addonData.Instances, 39, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
+	AddUnlock(_addonData.Instances, 40, {["subText"] = _L["DUNGEON"], ["id"] = 233, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENDOWNS"});
+	AddUnlock(_addonData.Instances, 42, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
+	AddUnlock(_addonData.Instances, 42, {["subText"] = _L["DUNGEON"], ["id"] = 236, ["icon"] = "Interface/LFGFRAME/LFGICON-STRATHOLME"});
+	AddUnlock(_addonData.Instances, 44, {["subText"] = _L["DUNGEON"], ["id"] = 241, ["icon"] = "Interface/LFGFRAME/LFGICON-ZULFARAK"});
+	AddUnlock(_addonData.Instances, 46, {["subText"] = _L["DUNGEON"], ["id"] = 236, ["icon"] = "Interface/LFGFRAME/LFGICON-STRATHOLME"});
+	AddUnlock(_addonData.Instances, 47, {["subText"] = _L["DUNGEON"], ["id"] = 228, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKDEPTHS"});
+	AddUnlock(_addonData.Instances, 50, {["subText"] = _L["DUNGEON"], ["id"] = 237, ["icon"] = "Interface/LFGFRAME/LFGICON-SUNKENTEMPLE"});
+	AddUnlock(_addonData.Instances, 51, {["subText"] = _L["DUNGEON"], ["id"] = 228, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKDEPTHS"});
+	AddUnlock(_addonData.Instances, 55, {["subText"] = _L["DUNGEON"], ["id"] = 229, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKSPIRE"});
+	AddUnlock(_addonData.Instances, 60, {["subText"] = _L["RAID"], ["name"] = _L["RAIDS_CLASSIC"], ["id"] = _aVar.CLASSIC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGICON-MOLTENCORE"});
 -- TBC
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Hellfire Ramparts", ["level"] = 58, ["id"] = 248, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blood Furnace", ["level"] = 59, ["id"] = 256, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Slave Pens", ["level"] = 60, ["id"] = 260, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Underbog", ["level"] = 61, ["id"] = 262, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Mana-Tombs", ["level"] = 62, ["id"] = 250, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Auchenai Crypts", ["level"] = 63, ["id"] = 247, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Escape From Durnholde", ["level"] = 64, ["id"] = 251, ["icon"] = "Interface/LFGFRAME/LFGICON-CAVERNSOFTIME"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Sethekk Halls", ["level"] = 65, ["id"] = 252, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Mechanar", ["level"] = 67, ["id"] = 258, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shadow Labyrinth", ["level"] = 67, ["id"] = 253, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shattered Halls", ["level"] = 67, ["id"] = 259, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Botanica", ["level"] = 67, ["id"] = 257, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Steamvault", ["level"] = 67, ["id"] = 261, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Magisters' Terrace", ["level"] = 68, ["id"] = 249, ["icon"] = "Interface/LFGFRAME/LFGICON-MAGISTERSTERRACE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Opening of the Dark Portal", ["level"] = 68, ["id"] = 255, ["icon"] = "Interface/LFGFRAME/LFGICON-CAVERNSOFTIME"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Arcatraz", ["level"] = 68, ["id"] = 254, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Outland Dungeons", ["level"] = 70, ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Outland Raids", ["level"] = 70, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKTEMPLE"});
+	AddUnlock(_addonData.Instances, 58, {["subText"] = _L["DUNGEON"], ["id"] = 248, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
+	AddUnlock(_addonData.Instances, 59, {["subText"] = _L["DUNGEON"], ["id"] = 256, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
+	AddUnlock(_addonData.Instances, 60, {["subText"] = _L["DUNGEON"], ["id"] = 260, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
+	AddUnlock(_addonData.Instances, 61, {["subText"] = _L["DUNGEON"], ["id"] = 262, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
+	AddUnlock(_addonData.Instances, 62, {["subText"] = _L["DUNGEON"], ["id"] = 250, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
+	AddUnlock(_addonData.Instances, 63, {["subText"] = _L["DUNGEON"], ["id"] = 247, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
+	AddUnlock(_addonData.Instances, 64, {["subText"] = _L["DUNGEON"], ["id"] = 251, ["icon"] = "Interface/LFGFRAME/LFGICON-CAVERNSOFTIME"});
+	AddUnlock(_addonData.Instances, 65, {["subText"] = _L["DUNGEON"], ["id"] = 252, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
+	AddUnlock(_addonData.Instances, 67, {["subText"] = _L["DUNGEON"], ["id"] = 258, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
+	AddUnlock(_addonData.Instances, 67, {["subText"] = _L["DUNGEON"], ["id"] = 253, ["icon"] = "Interface/LFGFRAME/LFGICON-AUCHINDOUN"});
+	AddUnlock(_addonData.Instances, 67, {["subText"] = _L["DUNGEON"], ["id"] = 259, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADEL"});
+	AddUnlock(_addonData.Instances, 67, {["subText"] = _L["DUNGEON"], ["id"] = 257, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
+	AddUnlock(_addonData.Instances, 67, {["subText"] = _L["DUNGEON"], ["id"] = 261, ["icon"] = "Interface/LFGFRAME/LFGICON-COILFANG"});
+	AddUnlock(_addonData.Instances, 68, {["subText"] = _L["DUNGEON"], ["id"] = 249, ["icon"] = "Interface/LFGFRAME/LFGICON-MAGISTERSTERRACE"});
+	AddUnlock(_addonData.Instances, 68, {["subText"] = _L["DUNGEON"], ["id"] = 255, ["icon"] = "Interface/LFGFRAME/LFGICON-CAVERNSOFTIME"});
+	AddUnlock(_addonData.Instances, 68, {["subText"] = _L["DUNGEON"], ["id"] = 254, ["icon"] = "Interface/LFGFRAME/LFGICON-TEMPESTKEEP"});
+	AddUnlock(_addonData.Instances, 70, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_OUTLAND"], ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 70, {["subText"] = _L["RAID"], ["name"] = _L["RAID_OUTLAND"], ["id"] = _aVar.TBC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKTEMPLE"});
 -- WotLK
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Utgarde Keep", ["level"] = 68, ["id"] = 285, ["icon"] = "Interface/LFGFRAME/LFGIcon-Utgarde"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Nexus", ["level"] = 69, ["id"] = 281, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheNexus"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Azjol-Nerub", ["level"] = 70, ["id"] = 272, ["icon"] = "Interface/LFGFRAME/LFGIcon-AzjolNerub"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Ahn'Kahet: The Old Kingdom", ["level"] = 71, ["id"] = 271, ["icon"] = "Interface/LFGFRAME/LFGIcon-Ahnkalet"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Drak'Tharon Keep", ["level"] = 72, ["id"] = 273, ["icon"] = "Interface/LFGFRAME/LFGIcon-DrakTharon"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Violet Hold", ["level"] = 73, ["id"] = 283, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheVioletHold"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Gundrak", ["level"] = 74, ["id"] = 274, ["icon"] = "Interface/LFGFRAME/LFGIcon-Gundrak"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Stone", ["level"] = 75, ["id"] = 277, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofStone"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Lightning", ["level"] = 77, ["id"] = 275, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFLIGHTNING"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Oculus", ["level"] = 77, ["id"] = 282, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheOculus"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Utgarde Pinnacle", ["level"] = 77, ["id"] = 286, ["icon"] = "Interface/LFGFRAME/LFGIcon-UtgardePinnacle"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Culling of Stratholme", ["level"] = 78, ["id"] = 279, ["icon"] = "Interface/LFGFRAME/LFGIcon-OldStratholme"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Trial of the Champion", ["level"] = 78, ["id"] = 284, ["icon"] = "Interface/LFGFRAME/LFGIcon-ArgentDungeon"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Forge of Souls", ["level"] = 80, ["id"] = 280, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheForgeofSouls"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Pit of Saron", ["level"] = 80, ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Reflection", ["level"] = 80, ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Northrend Dungeons", ["level"] = 80, ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Northrend Raids", ["level"] = 80, ["id"] = ILW_INSTANCEID_TBC_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
+	AddUnlock(_addonData.Instances, 68, {["subText"] = _L["DUNGEON"], ["id"] = 285, ["icon"] = "Interface/LFGFRAME/LFGIcon-Utgarde"});
+	AddUnlock(_addonData.Instances, 69, {["subText"] = _L["DUNGEON"], ["id"] = 281, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheNexus"});
+	AddUnlock(_addonData.Instances, 70, {["subText"] = _L["DUNGEON"], ["id"] = 272, ["icon"] = "Interface/LFGFRAME/LFGIcon-AzjolNerub"});
+	AddUnlock(_addonData.Instances, 71, {["subText"] = _L["DUNGEON"], ["id"] = 271, ["icon"] = "Interface/LFGFRAME/LFGIcon-Ahnkalet"});
+	AddUnlock(_addonData.Instances, 72, {["subText"] = _L["DUNGEON"], ["id"] = 273, ["icon"] = "Interface/LFGFRAME/LFGIcon-DrakTharon"});
+	AddUnlock(_addonData.Instances, 73, {["subText"] = _L["DUNGEON"], ["id"] = 283, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheVioletHold"});
+	AddUnlock(_addonData.Instances, 74, {["subText"] = _L["DUNGEON"], ["id"] = 274, ["icon"] = "Interface/LFGFRAME/LFGIcon-Gundrak"});
+	AddUnlock(_addonData.Instances, 75, {["subText"] = _L["DUNGEON"], ["id"] = 277, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofStone"});
+	AddUnlock(_addonData.Instances, 77, {["subText"] = _L["DUNGEON"], ["id"] = 275, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFLIGHTNING"});
+	AddUnlock(_addonData.Instances, 77, {["subText"] = _L["DUNGEON"], ["id"] = 282, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheOculus"});
+	AddUnlock(_addonData.Instances, 77, {["subText"] = _L["DUNGEON"], ["id"] = 286, ["icon"] = "Interface/LFGFRAME/LFGIcon-UtgardePinnacle"});
+	AddUnlock(_addonData.Instances, 78, {["subText"] = _L["DUNGEON"], ["id"] = 279, ["icon"] = "Interface/LFGFRAME/LFGIcon-OldStratholme"});
+	AddUnlock(_addonData.Instances, 78, {["subText"] = _L["DUNGEON"], ["id"] = 284, ["icon"] = "Interface/LFGFRAME/LFGIcon-ArgentDungeon"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON"], ["id"] = 280, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheForgeofSouls"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON"], ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON"], ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_NORTHREND"], ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["RAID"], ["name"] = _L["RAID_NORTHRED"], ["id"] = _aVar.TBC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
 -- Cataclysm
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Blackrock Caverns", ["level"] = 80, ["id"] = 66, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKCAVERNS"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Throne of the Tides", ["level"] = 80, ["id"] = 65, ["icon"] = "Interface/LFGFRAME/LFGICON-THRONEOFTHETIDES"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Stonecore", ["level"] = 81, ["id"] = 67, ["icon"] = "Interface/LFGFRAME/LFGICON-THESTONECORE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Vortex Pinnacle", ["level"] = 81, ["id"] = 68, ["icon"] = "Interface/LFGFRAME/LFGICON-THEVORTEXPINNACLE"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Lost City of the Tol'vir", ["level"] = 84, ["id"] = 69, ["icon"] = "Interface/LFGFRAME/LFGICON-LOSTCITYOFTOLVIR"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Halls of Origination", ["level"] = 84, ["id"] = 70, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFORIGINATION"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Grim Batol", ["level"] = 84, ["id"] = 71, ["icon"] = "Interface/LFGFRAME/LFGICON-GRIMBATOLRAID"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Cataclysm Dungeons", ["level"] = 85, ["id"] = _aVar.CATA_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Cataclysm Raids", ["level"] = 85, ["id"] = _aVar.CATA_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-FallofDeathwing"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON"], ["id"] = 66, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKCAVERNS"});
+	AddUnlock(_addonData.Instances, 80, {["subText"] = _L["DUNGEON"], ["id"] = 65, ["icon"] = "Interface/LFGFRAME/LFGICON-THRONEOFTHETIDES"});
+	AddUnlock(_addonData.Instances, 81, {["subText"] = _L["DUNGEON"], ["id"] = 67, ["icon"] = "Interface/LFGFRAME/LFGICON-THESTONECORE"});
+	AddUnlock(_addonData.Instances, 81, {["subText"] = _L["DUNGEON"], ["id"] = 68, ["icon"] = "Interface/LFGFRAME/LFGICON-THEVORTEXPINNACLE"});
+	AddUnlock(_addonData.Instances, 84, {["subText"] = _L["DUNGEON"], ["id"] = 69, ["icon"] = "Interface/LFGFRAME/LFGICON-LOSTCITYOFTOLVIR"});
+	AddUnlock(_addonData.Instances, 84, {["subText"] = _L["DUNGEON"], ["id"] = 70, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFORIGINATION"});
+	AddUnlock(_addonData.Instances, 84, {["subText"] = _L["DUNGEON"], ["id"] = 71, ["icon"] = "Interface/LFGFRAME/LFGICON-GRIMBATOLRAID"});
+	AddUnlock(_addonData.Instances, 85, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_CATACLYSM"], ["id"] = _aVar.CATA_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 85, {["subText"] = _L["RAID"], ["name"] = _L["RAID_CATACLYSM"], ["id"] = _aVar.CATA_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-FallofDeathwing"});
 -- Mist of Pandaria
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Stormstout Brewery", ["level"] = 85, ["id"] = 302, ["icon"] = "Interface/LFGFRAME/LFGIcon-StormstoutBrewery"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Temple of the Jade Serpent", ["level"] = 85, ["id"] = 313, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleoftheJadeSerpent"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shado-Pan Monastery", ["level"] = 87, ["id"] = 312, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowpanMonastery"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Mogu'Shan Palace", ["level"] = 87, ["id"] = 321, ["icon"] = "Interface/LFGFRAME/LFGIcon-MogushanPalace"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Gate of the Setting Sun", ["level"] = 88, ["id"] = 303, ["icon"] = "Interface/LFGFRAME/LFGIcon-GateoftheSettingSun"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Siege of Niuzao Temple", ["level"] = 88, ["id"] = 324, ["icon"] = "Interface/LFGFRAME/LFGIcon-SiegeofNizaoTemple"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Pandaria Dungeons", ["level"] = 90, ["id"] = _aVar.MOP_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Pandaria Raids", ["level"] = 90, ["id"] = _aVar.MOP_RAID, ["icon"] = "Interface/LFGFRAME/LFGIcon-OrgrimmarGates"});
+	AddUnlock(_addonData.Instances, 85, {["subText"] = _L["DUNGEON"], ["id"] = 302, ["icon"] = "Interface/LFGFRAME/LFGIcon-StormstoutBrewery"});
+	AddUnlock(_addonData.Instances, 85, {["subText"] = _L["DUNGEON"], ["id"] = 313, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleoftheJadeSerpent"});
+	AddUnlock(_addonData.Instances, 87, {["subText"] = _L["DUNGEON"], ["id"] = 312, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowpanMonastery"});
+	AddUnlock(_addonData.Instances, 87, {["subText"] = _L["DUNGEON"], ["id"] = 321, ["icon"] = "Interface/LFGFRAME/LFGIcon-MogushanPalace"});
+	AddUnlock(_addonData.Instances, 88, {["subText"] = _L["DUNGEON"], ["id"] = 303, ["icon"] = "Interface/LFGFRAME/LFGIcon-GateoftheSettingSun"});
+	AddUnlock(_addonData.Instances, 88, {["subText"] = _L["DUNGEON"], ["id"] = 324, ["icon"] = "Interface/LFGFRAME/LFGIcon-SiegeofNizaoTemple"});
+	AddUnlock(_addonData.Instances, 90, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_PANDARIA"], ["id"] = _aVar.MOP_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 90, {["subText"] = _L["RAID"], ["name"] = _L["RAID_PANDARIA"], ["id"] = _aVar.MOP_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-OrgrimmarGates"});
 -- WoD
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Bloodmaul Slag Mines", ["level"] = 90, ["id"] = 385, ["icon"] = "Interface/LFGFRAME/LFGIcon-BloodmaulSlagMines"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Iron Docks", ["level"] = 92, ["id"] = 558, ["icon"] = "Interface/LFGFRAME/LFGIcon-IronDocks"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Auchindoun", ["level"] = 94, ["id"] = 547, ["icon"] = "Interface/LFGFRAME/LFGIcon-AuchindounWOD"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Skyreach", ["level"] = 97, ["id"] = 476, ["icon"] = "Interface/LFGFRAME/LFGIcon-Skyreach"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Grimrail Depot", ["level"] = 100, ["id"] = 536, ["icon"] = "Interface/LFGFRAME/LFGIcon-GrimrailDepot"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Shadowmoon Burial Grounds", ["level"] = 100, ["id"] = 537, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowmoonBurialGrounds"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "The Everbloom", ["level"] = 100, ["id"] = 556, ["icon"] = "Interface/LFGFRAME/LFGIcon-Everbloom"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON, ["name"] = "Upper Blackrock Spire", ["level"] = 100, ["id"] = 559, ["icon"] = "Interface/LFGFRAME/LFGIcon-UpperBlackrockSpire"});
-table.insert(_addonData.Instances , {["subText"] = STRING_DUNGEON_HEROIC, ["name"] = "Heroic: Draenor Dungeons", ["level"] = 100, ["id"] = _aVar.WOD_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-table.insert(_addonData.Instances , {["subText"] = STRING_RAID, ["name"] = "Draenor Raids", ["level"] = 100, ["id"] = _aVar.WOD_RAID, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADELRAID"});
+	AddUnlock(_addonData.Instances, 90, {["subText"] = _L["DUNGEON"], ["id"] = 385, ["icon"] = "Interface/LFGFRAME/LFGIcon-BloodmaulSlagMines"});
+	AddUnlock(_addonData.Instances, 92, {["subText"] = _L["DUNGEON"], ["id"] = 558, ["icon"] = "Interface/LFGFRAME/LFGIcon-IronDocks"});
+	AddUnlock(_addonData.Instances, 94, {["subText"] = _L["DUNGEON"], ["id"] = 547, ["icon"] = "Interface/LFGFRAME/LFGIcon-AuchindounWOD"});
+	AddUnlock(_addonData.Instances, 97, {["subText"] = _L["DUNGEON"], ["id"] = 476, ["icon"] = "Interface/LFGFRAME/LFGIcon-Skyreach"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 536, ["icon"] = "Interface/LFGFRAME/LFGIcon-GrimrailDepot"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 537, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowmoonBurialGrounds"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 556, ["icon"] = "Interface/LFGFRAME/LFGIcon-Everbloom"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 559, ["icon"] = "Interface/LFGFRAME/LFGIcon-UpperBlackrockSpire"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_DRAENOR"], ["id"] = _aVar.WOD_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["RAID"], ["name"] = _L["RAID_DRAENOR"], ["id"] = _aVar.WOD_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGICON-HELLFIRECITADELRAID"});
+-- Legion
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 762, ["icon"] = "Interface/LFGFRAME/LFGIcon-DarkheartThicket"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 716, ["icon"] = "Interface/LFGFRAME/LFGIcon-EyeofAzshara"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 721, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofValor"});
+	AddUnlock(_addonData.Instances, 100, {["subText"] = _L["DUNGEON"], ["id"] = 767, ["icon"] = "Interface/LFGFRAME/LFGIcon-NeltharionsLair"});
+	AddUnlock(_addonData.Instances, 105, {["subText"] = _L["DUNGEON"], ["id"] = 777, ["icon"] = "Interface/LFGFRAME/LFGIcon-AssaultonVioletHold"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON"], ["id"] = 740, ["icon"] = "Interface/LFGFRAME/LFGIcon-BlackRookHold"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON"], ["id"] = 800, ["icon"] = "Interface/LFGFRAME/LFGIcon-CourtofStars"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON"], ["id"] = 727, ["icon"] = "Interface/LFGFRAME/LFGIcon-MawofSouls"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON"], ["id"] = 726, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheArcway"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON"], ["id"] = 707, ["icon"] = "Interface/LFGFRAME/LFGIcon-VaultoftheWardens"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_LEGION"], ["id"] = _aVar.LEGION_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["DUNGEON_MYTHIC"], ["name"] = _L["MYTHIC_LEGION"], ["id"] = _aVar.LEGION_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGIcon-OnyxiaEncounter"});
+	AddUnlock(_addonData.Instances, 110, {["subText"] = _L["RAID"], ["name"] =  _L["RAID_LEGION"], ["id"] = _aVar.LEGION_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheEmeraldNightmare-RiftofAln"});
 
+
+	
 --------------------------
 -- Battlegrounds
 --------------------------
 
-_addonData.Pvp = {};
+_addonData.Pvp = { };
+	AddUnlock(_addonData.Pvp, 10, {["subText"] = _L["BATTLEGROUND"], ["id"] = 1, ["icon"] = "Interface/ICONS/achievement_bg_winwsg"});
+	AddUnlock(_addonData.Pvp, 10, {["subText"] = _L["BATTLEGROUND"], ["id"] = 2, ["icon"] = "Interface/ICONS/achievement_bg_takexflags_ab"});
+	AddUnlock(_addonData.Pvp, 35, {["subText"] = _L["BATTLEGROUND"], ["id"] = 3, ["icon"] = "Interface/ICONS/Achievement_Zone_Netherstorm_01"});
+	AddUnlock(_addonData.Pvp, 45, {["subText"] = _L["BATTLEGROUND"], ["id"] = 4, ["icon"] = "Interface/ICONS/achievement_bg_defendxtowers_av"});
+	AddUnlock(_addonData.Pvp, 65, {["subText"] = _L["BATTLEGROUND"], ["id"] = 10, ["icon"] = "Interface/LFGFRAME/LFGICON-STRANDOFTHEANCIENTS"});
+	AddUnlock(_addonData.Pvp, 75, {["subText"] = _L["BATTLEGROUND"], ["id"] = 5, ["icon"] = "Interface/LFGFRAME/LFGICON-THEBATTLEFORGILNEAS"});
+	AddUnlock(_addonData.Pvp, 75, {["subText"] = _L["BATTLEGROUND"], ["id"] = 6, ["icon"] = "Interface/LFGFRAME/LFGIcon-TwinPeaksBG"});
+	AddUnlock(_addonData.Pvp, 75, {["subText"] = _L["BATTLEGROUND"], ["id"] = 11, ["icon"] = "Interface/LFGFRAME/LFGIcon-IsleOfConquest"});
+	AddUnlock(_addonData.Pvp, 75, {["subText"] = _L["WORLD_PVP"], ["id"] = 1, ["icon"] = "Interface/ICONS/INV_EssenceOfWintergrasp"});
+	AddUnlock(_addonData.Pvp, 85, {["subText"] = _L["WORLD_PVP"], ["id"] = 2, ["icon"] = "Interface/ICONS/Achievement_Zone_TolBarad"});
+	AddUnlock(_addonData.Pvp, 90, {["subText"] = _L["BATTLEGROUND"], ["id"] = 9, ["icon"] = "Interface/LFGFRAME/LFGIcon-DeepwindGorge"});
+	AddUnlock(_addonData.Pvp, 90, {["subText"] = _L["BATTLEGROUND"], ["id"] = 7, ["icon"] = "Interface/LFGFRAME/LFGIcon-SilvershardMines"});
+	AddUnlock(_addonData.Pvp, 90, {["subText"] = _L["BATTLEGROUND"], ["id"] = 8, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleofKotmogu"});
+	AddUnlock(_addonData.Pvp, 100, {["subText"] = _L["WORLD_PVP"], ["id"] = 3, ["icon"] = "Interface/ICONS/Achievement_Zone_Ashran"});
 
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Warsong Gulch", ["level"] = 10, ["icon"] = "Interface/ICONS/achievement_bg_winwsg"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Arathi Basin", ["level"] = 10, ["icon"] = "Interface/ICONS/achievement_bg_takexflags_ab"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Eye of the Storm", ["level"] = 35, ["icon"] = "Interface/ICONS/Achievement_Zone_Netherstorm_01"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Alterac Valley", ["level"] = 45, ["icon"] = "Interface/ICONS/achievement_bg_defendxtowers_av"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Strand of the Ancients", ["level"] = 65, ["icon"] = "Interface/LFGFRAME/LFGICON-STRANDOFTHEANCIENTS"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Battle for Gilneas", ["level"] = 75, ["icon"] = "Interface/LFGFRAME/LFGICON-THEBATTLEFORGILNEAS"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Twin Peaks", ["level"] = 75, ["icon"] = "Interface/LFGFRAME/LFGIcon-TwinPeaksBG"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Isle of Conquest", ["level"] = 75, ["icon"] = "Interface/LFGFRAME/LFGIcon-IsleOfConquest"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_WORLDPVP, ["name"] = "Wintergrasp", ["level"] = 75, ["icon"] = "Interface/ICONS/INV_EssenceOfWintergrasp"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_WORLDPVP, ["name"] = "Tol Barad", ["level"] = 85, ["icon"] = "Interface/ICONS/Achievement_Zone_TolBarad"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Deepwind Gorge", ["level"] = 90, ["icon"] = "Interface/LFGFRAME/LFGIcon-DeepwindGorge"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Silvershard Mines", ["level"] = 90, ["icon"] = "Interface/LFGFRAME/LFGIcon-SilvershardMines"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_BATTLEGROUND, ["name"] = "Temple of Kotmogu", ["level"] = 90, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleofKotmogu"});
-table.insert(_addonData.Pvp , {["subText"] = STRING_WORLDPVP, ["name"] = "Ashran", ["level"] = 100, ["icon"] = "Interface/ICONS/Achievement_Zone_Ashran"});
 
+	
 --------------------------
 -- Spells
 --------------------------
@@ -170,1027 +232,963 @@ table.insert(_addonData.Pvp , {["subText"] = STRING_WORLDPVP, ["name"] = "Ashran
 -- MAGE
 --
 
-local mageSpecs = {};
-table.insert(mageSpecs, 62); -- Arcana
-table.insert(mageSpecs, 63); -- Fire
-table.insert(mageSpecs, 64); -- Frost
+if (playerClass == "MAGE")	then
+local mageSpecs = {
+	62 -- Arcana
+	,63 -- Fire
+	,64 -- Frost
+};
 
-local mageSkills = {};
-table.insert(mageSkills, {["id"] = 122, ["level"] = 3}); -- Frost Nova
-table.insert(mageSkills, {["id"] = 2136, ["level"] = 5}); -- Fire Blast
-table.insert(mageSkills, {["id"] = 1953, ["level"] = 7}); -- Blink
-table.insert(mageSkills, {["id"] = 2139, ["level"] = 8}); -- Counterspell
-table.insert(mageSkills, {["id"] = 30451, ["level"] = 10, ["specs"] = {62}}); -- Arcane Blast
-table.insert(mageSkills, {["id"] = 114664, ["level"] = 10, ["specs"] = {62}, ["subText"] = STRING_PASSIVE}); -- Arcane Charge
-table.insert(mageSkills, {["id"] = 11366, ["level"] = 10, ["specs"] = {63}}); -- Pyroblast
-table.insert(mageSkills, {["id"] = 31687, ["level"] = 10, ["specs"] = {64}}); -- Summon Water Elemental
-table.insert(mageSkills, {["id"] = 44425, ["level"] = 12, ["specs"] = {62}}); -- Arcane Barrage
-table.insert(mageSkills, {["id"] = 133, ["level"] = 12, ["specs"] = {63}}); -- Fireball
-table.insert(mageSkills, {["id"] = 116, ["level"] = 12, ["specs"] = {64}}); -- Frostbolt
-table.insert(mageSkills, {["id"] = 118, ["level"] = 14}); -- Polymorph
-table.insert(mageSkills, {["id"] = 45438, ["level"] = 15}); -- Ice Block
-table.insert(mageSkills, {["id"] = 12982, ["level"] = 16, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Shatter
-table.insert(mageSkills, {["id"] = 3565, ["level"] = 17}); -- Teleport: Darnassus
-table.insert(mageSkills, {["id"] = 32271, ["level"] = 17}); -- Teleport: Exodar
-table.insert(mageSkills, {["id"] = 3562, ["level"] = 17}); -- Teleport: Ironforge
-table.insert(mageSkills, {["id"] = 3567, ["level"] = 17}); -- Teleport: Orgrimmar
-table.insert(mageSkills, {["id"] = 32272, ["level"] = 17}); -- Teleport: Silvermoon
-table.insert(mageSkills, {["id"] = 3561, ["level"] = 17}); -- Teleport: Stormwind
-table.insert(mageSkills, {["id"] = 49359, ["level"] = 17}); -- Teleport: Theramore
-table.insert(mageSkills, {["id"] = 3566, ["level"] = 17}); -- Teleport: Thunder Bluff
-table.insert(mageSkills, {["id"] = 3563, ["level"] = 17}); -- Teleport: Undercity
-table.insert(mageSkills, {["id"] = 1449, ["level"] = 18, ["specs"] = {62}}); -- Arcane Explosion
-table.insert(mageSkills, {["id"] = 30455, ["level"] = 22, ["specs"] = {64}}); -- Ice Lance
-table.insert(mageSkills, {["id"] = 12043, ["level"] = 22, ["specs"] = {62}}); -- Presence of Mind
-table.insert(mageSkills, {["id"] = 2948, ["level"] = 22, ["specs"] = {63}}); -- Scorch
-table.insert(mageSkills, {["id"] = 5143, ["level"] = 24, ["specs"] = {62}}); -- Arcane Missiles
-table.insert(mageSkills, {["id"] = 112965, ["level"] = 24, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Fingers of Frost
-table.insert(mageSkills, {["id"] = 108853, ["level"] = 24, ["specs"] = {63}}); -- Inferno Blast
-table.insert(mageSkills, {["id"] = 120, ["level"] = 28}); -- Cone of Cold
-table.insert(mageSkills, {["id"] = 475, ["level"] = 29}); -- Remove Curse
-table.insert(mageSkills, {["id"] = 130, ["level"] = 32}); -- Slow Fall
-table.insert(mageSkills, {["id"] = 30482, ["level"] = 34, ["specs"] = {63}, ["subText"] = STRING_PASSIVE}); -- Molten Armor
-table.insert(mageSkills, {["id"] = 117216, ["level"] = 36, ["specs"] = {63}, ["subText"] = STRING_PASSIVE}); -- Critical Mass
-table.insert(mageSkills, {["id"] = 12472, ["level"] = 36, ["specs"] = {64}}); -- Icy Veins
-table.insert(mageSkills, {["id"] = 31589, ["level"] = 36, ["specs"] = {62}}); -- Slow
-table.insert(mageSkills, {["id"] = 42955, ["level"] = 38}); -- Conjure Refreshment
-table.insert(mageSkills, {["id"] = 12051, ["level"] = 40, ["specs"] = {62}}); -- Evocation
-table.insert(mageSkills, {["id"] = 11419, ["level"] = 42}); -- Portal: Darnassus
-table.insert(mageSkills, {["id"] = 32266, ["level"] = 42}); -- Portal: Exodar
-table.insert(mageSkills, {["id"] = 11416, ["level"] = 42}); -- Portal: Ironforge
-table.insert(mageSkills, {["id"] = 11417, ["level"] = 42}); -- Portal: Orgrimmar
-table.insert(mageSkills, {["id"] = 32267, ["level"] = 42}); -- Portal: Silvermoon
-table.insert(mageSkills, {["id"] = 10059, ["level"] = 42}); -- Portal: Stormwind
-table.insert(mageSkills, {["id"] = 49360, ["level"] = 42}); -- Portal: Theramore
-table.insert(mageSkills, {["id"] = 11420, ["level"] = 42}); -- Portal: Thunder Bluff
-table.insert(mageSkills, {["id"] = 11418, ["level"] = 42}); -- Portal: Undercity
-table.insert(mageSkills, {["id"] = 2120, ["level"] = 44, ["specs"] = {63}}); -- Flamestrike
-table.insert(mageSkills, {["id"] = 89744, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Wizardry
-table.insert(mageSkills, {["id"] = 10, ["level"] = 52, ["specs"] = {64}}); -- Blizzard
-table.insert(mageSkills, {["id"] = 49361, ["level"] = 52}); -- Portal: Stonard
-table.insert(mageSkills, {["id"] = 49358, ["level"] = 52}); -- Teleport: Stonard
-table.insert(mageSkills, {["id"] = 7302, ["level"] = 54, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Frost Armor
-table.insert(mageSkills, {["id"] = 66, ["level"] = 56}); -- Invisibility
-table.insert(mageSkills, {["id"] = 1459, ["level"] = 58}); -- Arcane Brilliance
-table.insert(mageSkills, {["id"] = 12042, ["level"] = 62, ["specs"] = {62}}); -- Arcane Power
-table.insert(mageSkills, {["id"] = 31661, ["level"] = 62, ["specs"] = {63}}); -- Dragon
-table.insert(mageSkills, {["id"] = 84714, ["level"] = 62, ["specs"] = {64}}); -- Frozen Orb
-table.insert(mageSkills, {["id"] = 33690, ["level"] = 62}); -- Teleport: Shattrath
-table.insert(mageSkills, {["id"] = 35715, ["level"] = 62}); -- Teleport: Shattrath
-table.insert(mageSkills, {["id"] = 30449, ["level"] = 64}); -- Spellsteal
-table.insert(mageSkills, {["id"] = 44572, ["level"] = 66, ["specs"] = {64}}); -- Deep Freeze
-table.insert(mageSkills, {["id"] = 33691, ["level"] = 66}); -- Portal: Shattrath
-table.insert(mageSkills, {["id"] = 35717, ["level"] = 66}); -- Portal: Shattrath
-table.insert(mageSkills, {["id"] = 120145, ["level"] = 71}); -- Ancient Teleport: Dalaran
-table.insert(mageSkills, {["id"] = 53140, ["level"] = 71}); -- Teleport: Dalaran
-table.insert(mageSkills, {["id"] = 43987, ["level"] = 72}); -- Conjure Refreshment Table
-table.insert(mageSkills, {["id"] = 120146, ["level"] = 74}); -- Ancient Portal: Dalaran
-table.insert(mageSkills, {["id"] = 117957, ["level"] = 74, ["subText"] = STRING_PASSIVE}); -- Nether Attunement
-table.insert(mageSkills, {["id"] = 53142, ["level"] = 74}); -- Portal: Dalaran
-table.insert(mageSkills, {["id"] = 44549, ["level"] = 77, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Brain Freeze
-table.insert(mageSkills, {["id"] = 11129, ["level"] = 80, ["specs"] = {63}}); -- Combustion
-table.insert(mageSkills, {["id"] = 6117, ["level"] = 80, ["specs"] = {62}, ["subText"] = STRING_PASSIVE}); -- Mage Armor
-table.insert(mageSkills, {["id"] = 76613, ["level"] = 80, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Mastery: Icicles
-table.insert(mageSkills, {["id"] = 12846, ["level"] = 80, ["specs"] = {63}, ["subText"] = STRING_PASSIVE}); -- Mastery: Ignite
-table.insert(mageSkills, {["id"] = 76547, ["level"] = 80, ["specs"] = {62}, ["subText"] = STRING_PASSIVE}); -- Mastery: Mana Adept
-table.insert(mageSkills, {["id"] = 61316, ["level"] = 80}); -- Dalaran Brilliance
-table.insert(mageSkills, {["id"] = 80353, ["level"] = 84}); -- Time Warp
-table.insert(mageSkills, {["id"] = 88345, ["level"] = 85}); -- Portal: Tol Barad
-table.insert(mageSkills, {["id"] = 88346, ["level"] = 85}); -- Portal: Tol Barad
-table.insert(mageSkills, {["id"] = 88342, ["level"] = 85}); -- Teleport: Tol Barad
-table.insert(mageSkills, {["id"] = 88344, ["level"] = 85}); -- Teleport: Tol Barad
-table.insert(mageSkills, {["id"] = 165359, ["level"] = 90, ["specs"] = {62}, ["subText"] = STRING_PASSIVE}); -- Arcane Mind
-table.insert(mageSkills, {["id"] = 165360, ["level"] = 90, ["specs"] = {64}, ["subText"] = STRING_PASSIVE}); -- Ice Shards
-table.insert(mageSkills, {["id"] = 165357, ["level"] = 90, ["specs"] = {63}, ["subText"] = STRING_PASSIVE}); -- Incineration
-table.insert(mageSkills, {["id"] = 132620, ["level"] = 90}); -- Portal: Vale of Eternal Blossoms
-table.insert(mageSkills, {["id"] = 132626, ["level"] = 90}); -- Portal: Vale of Eternal Blossoms
-table.insert(mageSkills, {["id"] = 132621, ["level"] = 90}); -- Teleport: Vale of Eternal Blossoms
-table.insert(mageSkills, {["id"] = 132627, ["level"] = 90}); -- Teleport: Vale of Eternal Blossoms
-table.insert(mageSkills, {["id"] = 176246, ["level"] = 92}); -- Portal: Stormshield
-table.insert(mageSkills, {["id"] = 176244, ["level"] = 92}); -- Portal: Warspear
-table.insert(mageSkills, {["id"] = 176248, ["level"] = 92}); -- Teleport: Stormshield
-table.insert(mageSkills, {["id"] = 176242, ["level"] = 92}); -- Teleport: Warspear
+local mageSkills = { };
+	AddUnlock(mageSkills, 3, {["id"] = 108853}); -- Fire Blast
+	AddUnlock(mageSkills, 5, {["id"] = 122}); -- Frost Nova
+	AddUnlock(mageSkills, 8, {["id"] = 118}); -- Polymorph
+	AddUnlock(mageSkills, 10, {["id"] = 30455, ["specs"] = {64}}); -- Ice Lance
+	AddUnlock(mageSkills, 10, {["id"] = 44425, ["specs"] = {62}}); -- Arcane Barrage
+	AddUnlock(mageSkills, 10, {["id"] = 30451, ["specs"] = {62}}); -- Arcane Blast
+	AddUnlock(mageSkills, 10, {["id"] = 117216, ["specs"] = {63}}); -- Crititcal Mass
+	AddUnlock(mageSkills, 10, {["id"] = 133, ["specs"] = {63}}); -- Fireball
+	AddUnlock(mageSkills, 12, {["id"] = 11366, ["specs"] = {63}}); -- Pyroblast
+	AddUnlock(mageSkills, 12, {["id"] = 31687, ["specs"] = {64}}); -- Summon Water Elemental
+	AddUnlock(mageSkills, 12, {["id"] = 5143, ["specs"] = {62}}); -- Arcane Missiles
+	AddUnlock(mageSkills, 14, {["id"] = 231568, ["specs"] = {63}}); -- Fire Blast 2
+	AddUnlock(mageSkills, 14, {["id"] = 195283, ["specs"] = {63}}); -- Hot Streak
+	AddUnlock(mageSkills, 14, {["id"] = 12982, ["specs"] = {64}}); -- Shatter
+	AddUnlock(mageSkills, 16, {["id"] = 1953}); -- Blink
+	AddUnlock(mageSkills, 18, {["id"] = 1449, ["specs"] = {62}}); -- Arcane Explosion
+	AddUnlock(mageSkills, 18, {["id"] = 190356, ["specs"] = {64}}); -- Blizzard
+	AddUnlock(mageSkills, 18, {["id"] = 2948, ["specs"] = {63}}); -- Scorch
+	AddUnlock(mageSkills, 20, {["id"] = 12051, ["specs"] = {62}}); -- Evocation
+	AddUnlock(mageSkills, 20, {["id"] = 2120, ["specs"] = {63}}); -- Flamestrike
+	AddUnlock(mageSkills, 20, {["id"] = 44614, ["specs"] = {64}}); -- Flurry
+	AddUnlock(mageSkills, 22, {["id"] = 2139}); -- Counterspell
+	AddUnlock(mageSkills, 24, {["id"] = 112965, ["specs"] = {64}}); -- Fingers of Frost
+	AddUnlock(mageSkills, 26, {["id"] = 235313, ["specs"] = {63}}); -- Blazing Barrier
+	AddUnlock(mageSkills, 26, {["id"] = 11426, ["specs"] = {64}}); -- Ice Barrier
+	AddUnlock(mageSkills, 26, {["id"] = 235450, ["specs"] = {62}}); -- Prismatic Barrier
+	AddUnlock(mageSkills, 28, {["id"] = 190447, ["specs"] = {64}}); -- Brain Freeze
+	AddUnlock(mageSkills, 32, {["id"] = 31661, ["specs"] = {63}}); -- Dragon's Breath
+	AddUnlock(mageSkills, 32, {["id"] = 31589, ["specs"] = {62}}); -- Slow
+	AddUnlock(mageSkills, 34, {["id"] = 231564, ["specs"] = {62}}); -- Arcane Barrage 2
+	AddUnlock(mageSkills, 34, {["id"] = 120, ["specs"] = {64}}); -- Cone of Cold
+	AddUnlock(mageSkills, 35, {["id"] = 157642, ["specs"] = {63}}); -- Enhanced Pyrotechnics
+	AddUnlock(mageSkills, 36, {["id"] = 231582, ["specs"] = {64}}); -- Shatter 2
+	AddUnlock(mageSkills, 38, {["id"] = 130}); -- Slow Fall
+	AddUnlock(mageSkills, 40, {["id"] = 12042, ["specs"] = {62}}); -- Arcane Power
+	AddUnlock(mageSkills, 40, {["id"] = 190319, ["specs"] = {63}}); -- Combustion
+	AddUnlock(mageSkills, 40, {["id"] = 12472, ["specs"] = {64}}); -- Icy Veins
+	AddUnlock(mageSkills, 42, {["id"] = 66, ["specs"] = {63, 64, 62}}); -- Invisibility
+	AddUnlock(mageSkills, 48, {["id"] = 231584, ["specs"] = {64}}); -- Brain Freeze 2
+	AddUnlock(mageSkills, 42, {["id"] = 195676, ["specs"] = {62}}); -- Displacement
+	AddUnlock(mageSkills, 48, {["id"] = 231567, ["specs"] = {63}}); -- Fire Blast 3
+	AddUnlock(mageSkills, 50, {["id"] = 45438}); -- Ice Block
+	AddUnlock(mageSkills, 52, {["id"] = 49361}); -- Portal: Stonard
+	AddUnlock(mageSkills, 52, {["id"] = 49358}); -- Teleport: Stonard
+	AddUnlock(mageSkills, 52, {["id"] = 86949, ["specs"] = {63}}); -- Cauterize
+	AddUnlock(mageSkills, 52, {["id"] = 235219, ["specs"] = {64}}); -- Cold Snap
+	AddUnlock(mageSkills, 54, {["id"] = 205025, ["specs"] = {62}}); -- Presence of Mind
+	AddUnlock(mageSkills, 56, {["id"] = 231565, ["specs"] = {62}}); -- Evocation 2
+	AddUnlock(mageSkills, 57, {["id"] = 84714, ["specs"] = {64}}); -- Frozen Orb
+	AddUnlock(mageSkills, 63, {["id"] = 236662, ["specs"] = {64}}); -- Blizzard 2
+	AddUnlock(mageSkills, 65, {["id"] = 231630, ["specs"] = {63}}); -- Crititcal Mass 2
+	AddUnlock(mageSkills, 65, {["id"] = 110959, ["specs"] = {62}}); -- Greater Invisibility
+	AddUnlock(mageSkills, 70, {["id"] = 30449}); -- Spellsteal
+	AddUnlock(mageSkills, 71, {["id"] = 120145,}); -- Ancient Teleport: Dalaran
+	AddUnlock(mageSkills, 71, {["id"] = 224869}); -- Teleport: Dalaran - Broken Isles
+	AddUnlock(mageSkills, 71, {["id"] = 53140}); -- Teleport: Dalaran - Northrend
+	AddUnlock(mageSkills, 74, {["id"] = 120146}); -- Ancient Portal: Dalaran
+	AddUnlock(mageSkills, 74, {["id"] = 224871}); -- Ancient Portal: Dalaran - Broken Isles
+	AddUnlock(mageSkills, 74, {["id"] = 53142}); -- Portal: Dalaran - Northrend
+	AddUnlock(mageSkills, 78, {["id"] = 76613, ["specs"] = {64}}); -- Mastery: Icicles
+	AddUnlock(mageSkills, 78, {["id"] = 12846, ["specs"] = {63}}); -- Mastery: Ignite
+	AddUnlock(mageSkills, 78, {["id"] = 190740, ["specs"] = {62}}); -- Mastery: Savant
+	AddUnlock(mageSkills, 80, {["id"] = 80353}); -- Time Warp
 
-_addonData.MAGE = {};
-_addonData.MAGE.Skills = mageSkills;
-_addonData.MAGE.Specs = mageSpecs;
+if (playerFaction == "Alliance") then
+	AddUnlock(mageSkills, 17, {["id"] = 3565});
+	AddUnlock(mageSkills, 17, {["id"] = 32271});
+	AddUnlock(mageSkills, 17, {["id"] = 3562});
+	AddUnlock(mageSkills, 17, {["id"] = 3561});
+	AddUnlock(mageSkills, 17, {["id"] = 49359});
+	AddUnlock(mageSkills, 42, {["id"] = 11419}); -- Portal: Darnassus
+	AddUnlock(mageSkills, 42, {["id"] = 32266}); -- Portal: Exodar
+	AddUnlock(mageSkills, 42, {["id"] = 11416}); -- Portal: Ironforge
+	AddUnlock(mageSkills, 42, {["id"] = 10059}); -- Portal: Stormwind
+	AddUnlock(mageSkills, 42, {["id"] = 49360}); -- Portal: Theramore
+	AddUnlock(mageSkills, 62, {["id"] = 33690}); -- Teleport: Shattrath
+	AddUnlock(mageSkills, 66, {["id"] = 33691}); -- Portal: Shattrath
+	AddUnlock(mageSkills, 85, {["id"] = 88342}); -- Teleport: Tol Barad
+	AddUnlock(mageSkills, 85, {["id"] = 88345}); -- Portal: Tol Barad
+	AddUnlock(mageSkills, 90, {["id"] = 132621}); -- Teleport: Vale of Eternal Blossoms
+	AddUnlock(mageSkills, 90, {["id"] = 132620}); -- Portal: Vale of Eternal Blossoms
+	AddUnlock(mageSkills, 92, {["id"] = 176248}); -- Teleport: Stormshield
+	AddUnlock(mageSkills, 92, {["id"] = 176246}); -- Portal: Stormshield
+else
+	AddUnlock(mageSkills, 17,{["id"] = 32272}); 
+	AddUnlock(mageSkills, 17,{["id"] = 3567});
+	AddUnlock(mageSkills, 17,{["id"] = 3566});
+	AddUnlock(mageSkills, 17,{["id"] = 3563});
+	AddUnlock(mageSkills, 42,{["id"] = 11417}); -- Portal: Orgrimmar
+	AddUnlock(mageSkills, 42,{["id"] = 32267}); -- Portal: Silvermoon
+	AddUnlock(mageSkills, 42,{["id"] = 11420}); -- Portal: Thunder Bluff
+	AddUnlock(mageSkills, 42,{["id"] = 11418}); -- Portal: Undercity
+	AddUnlock(mageSkills, 62,{["id"] = 35715}); -- Teleport: Shattrath
+	AddUnlock(mageSkills, 66,{["id"] = 35717}); -- Portal: Shattrath
+	AddUnlock(mageSkills, 85,{["id"] = 88344}); -- Teleport: Tol Barad
+	AddUnlock(mageSkills, 85,{["id"] = 88346}); -- Portal: Tol Barad
+	AddUnlock(mageSkills, 90,{["id"] = 132627}); -- Teleport: Vale of Eternal Blossoms
+	AddUnlock(mageSkills, 90,{["id"] = 132626}); -- Portal: Vale of Eternal Blossoms
+	AddUnlock(mageSkills, 92,{["id"] = 176242}); -- Teleport: Warspear
+	AddUnlock(mageSkills, 92,{["id"] = 176244}); -- Portal: Warspear
+end                             
+
+_addonData.Skills = mageSkills;
+_addonData.Specs = mageSpecs;
+
+end
 
 --
 -- PALADIN
 --
 
-local paladinSpecs = {};
-table.insert(paladinSpecs, 65); -- Holy
-table.insert(paladinSpecs, 66); -- Protection
-table.insert(paladinSpecs, 70); -- Retribution
+if (playerClass == "PALADIN")	then
+local paladinSpecs = {
+	65 -- Holy
+	,66 -- Protection
+	,70 -- Retribution
+};
 
-local paladinSkills = {};
-table.insert(paladinSkills, {["id"] = 105361, ["level"] = 3}); -- Seal of Command
-table.insert(paladinSkills, {["id"] = 20271, ["level"] = 5}); -- Judgment
-table.insert(paladinSkills, {["id"] = 853, ["level"] = 7}); -- Hammer of Justice
-table.insert(paladinSkills, {["id"] = 85673, ["level"] = 9}); -- Word of Glory
-table.insert(paladinSkills, {["id"] = 31935, ["level"] = 10, ["specs"] = {66}}); -- Avenger
-table.insert(paladinSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(paladinSkills, {["id"] = 53592, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Guarded by the Light
-table.insert(paladinSkills, {["id"] = 112859, ["level"] = 10, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Holy Insight
-table.insert(paladinSkills, {["id"] = 20473, ["level"] = 10, ["specs"] = {65}}); -- Holy Shock
-table.insert(paladinSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(paladinSkills, {["id"] = 105805, ["level"] = 10, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Sanctuary
-table.insert(paladinSkills, {["id"] = 53503, ["level"] = 10, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Sword of Light
-table.insert(paladinSkills, {["id"] = 85256, ["level"] = 10, ["specs"] = {70}}); -- Templar
-table.insert(paladinSkills, {["id"] = 25780, ["level"] = 12}); -- Righteous Fury
-table.insert(paladinSkills, {["id"] = 7328, ["level"] = 13}); -- Redemption
-table.insert(paladinSkills, {["id"] = 19750, ["level"] = 14, ["specs"] = {65, 66, 70}}); -- Flash of Light
-table.insert(paladinSkills, {["id"] = 62124, ["level"] = 15}); -- Reckoning
-table.insert(paladinSkills, {["id"] = 633, ["level"] = 16}); -- Lay on Hands
-table.insert(paladinSkills, {["id"] = 642, ["level"] = 18}); -- Divine Shield
-table.insert(paladinSkills, {["id"] = 2812, ["level"] = 20, ["specs"] = {65}}); -- Denounce
-table.insert(paladinSkills, {["id"] = 53595, ["level"] = 20, ["specs"] = {66, 70}}); -- Hammer of the Righteous
-table.insert(paladinSkills, {["id"] = 119072, ["level"] = 20, ["specs"] = {66}}); -- Holy Wrath
-table.insert(paladinSkills, {["id"] = 53551, ["level"] = 20, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Sacred Cleansing
-table.insert(paladinSkills, {["id"] = 4987, ["level"] = 20}); -- Cleanse
-table.insert(paladinSkills, {["id"] = 66907, ["level"] = 20}); -- Argent Warhorse
-table.insert(paladinSkills, {["id"] = 31801, ["level"] = 24, ["specs"] = {70}}); -- Seal of Truth
-table.insert(paladinSkills, {["id"] = 498, ["level"] = 26}); -- Divine Protection
-table.insert(paladinSkills, {["id"] = 82327, ["level"] = 28, ["specs"] = {65}}); -- Holy Radiance
-table.insert(paladinSkills, {["id"] = 105424, ["level"] = 28, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Judgments of the Wise
-table.insert(paladinSkills, {["id"] = 20217, ["level"] = 30}); -- Blessing of Kings
-table.insert(paladinSkills, {["id"] = 20165, ["level"] = 32}); -- Seal of Insight
-table.insert(paladinSkills, {["id"] = 26573, ["level"] = 34, ["specs"] = {66}}); -- Consecration
-table.insert(paladinSkills, {["id"] = 53385, ["level"] = 34, ["specs"] = {70}}); -- Divine Storm
-table.insert(paladinSkills, {["id"] = 31868, ["level"] = 34, ["specs"] = {65, 70}, ["subText"] = STRING_PASSIVE}); -- Supplication
-table.insert(paladinSkills, {["id"] = 96231, ["level"] = 36}); -- Rebuke
-table.insert(paladinSkills, {["id"] = 24275, ["level"] = 38}); -- Hammer of Wrath
-table.insert(paladinSkills, {["id"] = 53563, ["level"] = 39, ["specs"] = {65}}); -- Beacon of Light
-table.insert(paladinSkills, {["id"] = 53600, ["level"] = 40, ["specs"] = {66}}); -- Shield of the Righteous
-table.insert(paladinSkills, {["id"] = 66906, ["level"] = 40}); -- Argent Charger
-table.insert(paladinSkills, {["id"] = 20154, ["level"] = 42, ["specs"] = {66, 70}}); -- Seal of Righteousness
-table.insert(paladinSkills, {["id"] = 32223, ["level"] = 44, ["subText"] = STRING_PASSIVE}); -- Heart of the Crusader
-table.insert(paladinSkills, {["id"] = 879, ["level"] = 46, ["specs"] = {70}}); -- Exorcism
-table.insert(paladinSkills, {["id"] = 10326, ["level"] = 46}); -- Turn Evil
-table.insert(paladinSkills, {["id"] = 1022, ["level"] = 48}); -- Hand of Protection
-table.insert(paladinSkills, {["id"] = 85043, ["level"] = 50, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Grand Crusader
-table.insert(paladinSkills, {["id"] = 53576, ["level"] = 50, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Infusion of Light
-table.insert(paladinSkills, {["id"] = 86102, ["level"] = 50, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(paladinSkills, {["id"] = 86103, ["level"] = 50, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(paladinSkills, {["id"] = 86539, ["level"] = 50, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(paladinSkills, {["id"] = 159374, ["level"] = 50, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Shining Protector
-table.insert(paladinSkills, {["id"] = 1044, ["level"] = 52}); -- Hand of Freedom
-table.insert(paladinSkills, {["id"] = 121783, ["level"] = 54, ["specs"] = {70}}); -- Emancipate
-table.insert(paladinSkills, {["id"] = 82326, ["level"] = 54, ["specs"] = {65}}); -- Holy Light
-table.insert(paladinSkills, {["id"] = 88821, ["level"] = 56, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Daybreak
-table.insert(paladinSkills, {["id"] = 25956, ["level"] = 58, ["subText"] = STRING_PASSIVE}); -- Sanctity of Battle
-table.insert(paladinSkills, {["id"] = 31821, ["level"] = 60, ["specs"] = {65}}); -- Devotion Aura
-table.insert(paladinSkills, {["id"] = 1038, ["level"] = 66, ["specs"] = {66}}); -- Hand of Salvation
-table.insert(paladinSkills, {["id"] = 31850, ["level"] = 70, ["specs"] = {66}}); -- Ardent Defender
-table.insert(paladinSkills, {["id"] = 85222, ["level"] = 70, ["specs"] = {65}}); -- Light of Dawn
-table.insert(paladinSkills, {["id"] = 20164, ["level"] = 70, ["specs"] = {70}}); -- Seal of Justice
-table.insert(paladinSkills, {["id"] = 31842, ["level"] = 72, ["specs"] = {65}}); -- Avenging Wrath
-table.insert(paladinSkills, {["id"] = 31884, ["level"] = 72, ["specs"] = {70}}); -- Avenging Wrath
-table.insert(paladinSkills, {["id"] = 86659, ["level"] = 75, ["specs"] = {66}}); -- Guardian of Ancient Kings
-table.insert(paladinSkills, {["id"] = 161800, ["level"] = 76, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Riposte
-table.insert(paladinSkills, {["id"] = 140333, ["level"] = 80, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Absolve
-table.insert(paladinSkills, {["id"] = 76671, ["level"] = 80, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Mastery: Divine Bulwark
-table.insert(paladinSkills, {["id"] = 76672, ["level"] = 80, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Mastery: Hand of Light
-table.insert(paladinSkills, {["id"] = 76669, ["level"] = 80, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Mastery: Illuminated Healing
-table.insert(paladinSkills, {["id"] = 167187, ["level"] = 80, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Sanctity Aura
-table.insert(paladinSkills, {["id"] = 6940, ["level"] = 80}); -- Hand of Sacrifice
-table.insert(paladinSkills, {["id"] = 19740, ["level"] = 81}); -- Blessing of Might
-table.insert(paladinSkills, {["id"] = 115675, ["level"] = 85, ["subText"] = STRING_PASSIVE}); -- Boundless Conviction
-table.insert(paladinSkills, {["id"] = 165381, ["level"] = 90, ["specs"] = {70}, ["subText"] = STRING_PASSIVE}); -- Righteous Vengeance
-table.insert(paladinSkills, {["id"] = 165375, ["level"] = 90, ["specs"] = {66}, ["subText"] = STRING_PASSIVE}); -- Sacred Duty
-table.insert(paladinSkills, {["id"] = 165380, ["level"] = 90, ["specs"] = {65}, ["subText"] = STRING_PASSIVE}); -- Sanctified Light
+local paladinSkills = { };
+	AddUnlock(paladinSkills, 3, {["id"] = 20271}); -- Judgement
+	AddUnlock(paladinSkills, 5, {["id"] = 19750}); -- Flash of Light
+	AddUnlock(paladinSkills, 8, {["id"] = 853}); -- Hammer of Justice
+	AddUnlock(paladinSkills, 10, {["id"] = 31935, ["specs"] = {66}}); -- Avenger's Shield
+	AddUnlock(paladinSkills, 10, {["id"] = 53592, ["specs"] = {66}}); -- Guarded by the Light
+	AddUnlock(paladinSkills, 10, {["id"] = 53595, ["specs"] = {66}}); -- Hammer of the Righteous
+	AddUnlock(paladinSkills, 10, {["id"] = 20473, ["specs"] = {65}}); -- Holy Shock
+	AddUnlock(paladinSkills, 10, {["id"] = 25780, ["specs"] = {66}}); -- Righteous Fury
+	AddUnlock(paladinSkills, 10, {["id"] = 105805, ["specs"] = {66}}); -- Sanctuary
+	AddUnlock(paladinSkills, 10, {["id"] = 85256, ["specs"] = {70}}); -- Templar's Verdict
+	AddUnlock(paladinSkills, 12, {["id"] = 62124}); -- Hand of Reckoning
+	AddUnlock(paladinSkills, 14, {["id"] = 7328}); -- Redemption
+	AddUnlock(paladinSkills, 16, {["id"] = 231661, ["specs"] = {70}}); -- Judgement 2
+	AddUnlock(paladinSkills, 18, {["id"] = 642}); -- Divine Shield
+	AddUnlock(paladinSkills, 20, {["id"] = 53563, ["specs"] = {65}}); -- Beacon of Light
+	AddUnlock(paladinSkills, 20, {["id"] = 184575, ["specs"] = {70}}); -- Blade of Justice
+	AddUnlock(paladinSkills, 20, {["id"] = 53600, ["specs"] = {66}}); -- Shield of the Righteous
+	AddUnlock(paladinSkills, 22, {["id"] = 4987, ["specs"] = {65}}); -- Cleanse
+	AddUnlock(paladinSkills, 22, {["id"] = 213644, ["specs"] = {66, 70}}); -- Cleanse Toxins
+	AddUnlock(paladinSkills, 24, {["id"] = 183218, ["specs"] = {70}}); -- Hand of Hindrance
+	AddUnlock(paladinSkills, 25, {["id"] = 85043, ["specs"] = {66}}); -- Grand Crusader
+	AddUnlock(paladinSkills, 25, {["id"] = 82326, ["specs"] = {65}}); -- Holy Light
+	AddUnlock(paladinSkills, 26, {["id"] = 231667, ["specs"] = {65, 70}}); -- Crusader Strike
+	AddUnlock(paladinSkills, 28, {["id"] = 105424, ["specs"] = {66}}); -- Judgments of the Wise
+	AddUnlock(paladinSkills, 28, {["id"] = 190784}); -- Divine Shield
+	AddUnlock(paladinSkills, 32, {["id"] = 498, ["specs"] = {65, 66}}); -- Divine Protection
+	AddUnlock(paladinSkills, 32, {["id"] = 184662, ["specs"] = {70}}); -- Shield of Vengeance
+	AddUnlock(paladinSkills, 35, {["id"] = 53576, ["specs"] = {65}}); -- Infusion of Light
+	AddUnlock(paladinSkills, 35, {["id"] = 96231, ["specs"] = {66, 70}}); -- Rebuke
+	AddUnlock(paladinSkills, 38, {["id"] = 1044}); -- Blessing of Freedom
+	AddUnlock(paladinSkills, 40, {["id"] = 53385, ["specs"] = {70}}); -- Divine Storm
+	AddUnlock(paladinSkills, 40, {["id"] = 85222, ["specs"] = {65}}); -- Light of Dawn
+	AddUnlock(paladinSkills, 40, {["id"] = 184092, ["specs"] = {66}}); -- Light of the Protector
+	AddUnlock(paladinSkills, 42, {["id"] = 231665, ["specs"] = {66}}); -- Avenger's Shield
+	AddUnlock(paladinSkills, 42, {["id"] = 231664, ["specs"] = {65}}); -- Judgment 2
+	AddUnlock(paladinSkills, 42, {["id"] = 231657, ["specs"] = {66}}); -- Judgment 2
+	AddUnlock(paladinSkills, 42, {["id"] = 231663, ["specs"] = {70}}); -- Judgment 2
+	AddUnlock(paladinSkills, 44, {["id"] = 32223}); -- Heart of the Crusader
+	AddUnlock(paladinSkills, 48, {["id"] = 1022, ["specs"] = {65, 66, 70}}); -- Blessing of Protection
+	AddUnlock(paladinSkills, 50, {["id"] = 31850, ["specs"] = {66}}); -- Argent Defender
+	AddUnlock(paladinSkills, 50, {["id"] = 183998, ["specs"] = {65}}); -- Light of the Martyr
+	AddUnlock(paladinSkills, 50, {["id"] = 86102, ["specs"] = {66}}); -- Plate Specialization
+	AddUnlock(paladinSkills, 50, {["id"] = 86103, ["specs"] = {65}}); -- Plate Specialization
+	AddUnlock(paladinSkills, 50, {["id"] = 86539, ["specs"] = {70}}); -- Plate Specialization
+	AddUnlock(paladinSkills, 52, {["id"] = 231663, ["specs"] = {65}}); -- Beacon of Light 2
+	AddUnlock(paladinSkills, 55, {["id"] = 633}); -- Lay on Hands
+	AddUnlock(paladinSkills, 56, {["id"] = 6940, ["specs"] = {65, 66}}); -- Blessing of Sacrifice
+	AddUnlock(paladinSkills, 58, {["id"] = 203538, ["specs"] = {70}}); -- Greater Blessing of Kings
+	AddUnlock(paladinSkills, 63, {["id"] = 227068, ["specs"] = {65}}); -- Righteousness
+	AddUnlock(paladinSkills, 65, {["id"] = 203539, ["specs"] = {70}}); -- Greater Blessing of Wisdom
+	AddUnlock(paladinSkills, 65, {["id"] = 227068, ["specs"] = {66}}); -- Riposte
+	AddUnlock(paladinSkills, 66, {["id"] = 212056, ["specs"] = {65}}); -- Absolution
+	AddUnlock(paladinSkills, 70, {["id"] = 31821, ["specs"] = {65}}); -- Aura Mastery
+	AddUnlock(paladinSkills, 70, {["id"] = 86659, ["specs"] = {66}}); -- Guardian of Ancient Kings
+	AddUnlock(paladinSkills, 70, {["id"] = 183435, ["specs"] = {70}}); -- Riposte
+	AddUnlock(paladinSkills, 78, {["id"] = 76671, ["specs"] = {66}}); -- Mastery: Divine Bulwark
+	AddUnlock(paladinSkills, 78, {["id"] = 76672, ["specs"] = {70}}); -- Mastery: Divine Judgment
+	AddUnlock(paladinSkills, 78, {["id"] = 183997, ["specs"] = {65}}); -- Mastery: Lightbringer
+	AddUnlock(paladinSkills, 80, {["id"] = 31842, ["specs"] = {65}}); -- Avenging Wrath
+	AddUnlock(paladinSkills, 80, {["id"] = 31884, ["specs"] = {66, 70}}); -- Avenging Wrath
+	
+	local _, race = UnitRace("player");
+	if (race == "Draenei") then
+		AddUnlock(paladinSkills, 20, {["id"] = 73629}); -- Summon Exarch's Elekk
+		AddUnlock(paladinSkills, 40, {["id"] = 73630}); -- Summon Great Exarch's Elekk
+	elseif (race == "Tauren") then
+		AddUnlock(paladinSkills, 20, {["id"] = 69820}); -- Summon Exarch's Kodo
+		AddUnlock(paladinSkills, 40, {["id"] = 69826}); -- Summon Great Exarch's Kodo
+	elseif (race == "Blood Elf") then
+		AddUnlock(paladinSkills, 20, {["id"] = 34769}); -- Summon Thalassian Warhorse
+		AddUnlock(paladinSkills, 40, {["id"] = 34767}); -- Summon Great Thalassian Warhorse
+	else -- dwarf / human
+		AddUnlock(paladinSkills, 20, {["id"] = 13819}); -- Summon Warhorse
+		AddUnlock(paladinSkills, 40, {["id"] = 23214}); -- Summon Great Warhorse
+	end
 
-_addonData.PALADIN = {};
-_addonData.PALADIN.Skills = paladinSkills;
-_addonData.PALADIN.Specs = paladinSpecs;
+_addonData.Skills = paladinSkills;
+_addonData.Specs = paladinSpecs;
+
+end
 
 --
 -- WARRIOR
 --
 
-local warriorSpecs = {};
-table.insert(warriorSpecs, 71); -- Arms
-table.insert(warriorSpecs, 72); -- Fury
-table.insert(warriorSpecs, 73); -- Protection
+if (playerClass == "WARRIOR") then
+local warriorSpecs = {
+	71 -- Arms
+	,72 -- Fury
+	,73 -- Protection
+};
 
-local warriorSkills = {};
-table.insert(warriorSkills, {["id"] = 100, ["level"] = 3}); -- Charge
-table.insert(warriorSkills, {["id"] = 34428, ["level"] = 5}); -- Victory Rush
-table.insert(warriorSkills, {["id"] = 5308, ["level"] = 7, ["specs"] = {72, 73}}); -- Execute
-table.insert(warriorSkills, {["id"] = 163201, ["level"] = 7, ["specs"] = {71}}); -- Execute
-table.insert(warriorSkills, {["id"] = 772, ["level"] = 7, ["specs"] = {71}}); -- Rend
-table.insert(warriorSkills, {["id"] = 71, ["level"] = 9}); -- Defensive Stance
-table.insert(warriorSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(warriorSkills, {["id"] = 46915, ["level"] = 10, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Bloodsurge
-table.insert(warriorSkills, {["id"] = 23881, ["level"] = 10, ["specs"] = {72}}); -- Bloodthirst
-table.insert(warriorSkills, {["id"] = 23588, ["level"] = 10, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Crazed Berserker
-table.insert(warriorSkills, {["id"] = 12294, ["level"] = 10, ["specs"] = {71}}); -- Mortal Strike
-table.insert(warriorSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(warriorSkills, {["id"] = 12712, ["level"] = 10, ["specs"] = {71}, ["subText"] = STRING_PASSIVE}); -- Seasoned Soldier
-table.insert(warriorSkills, {["id"] = 23922, ["level"] = 10, ["specs"] = {73}}); -- Shield Slam
-table.insert(warriorSkills, {["id"] = 46953, ["level"] = 10, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Sword and Board
-table.insert(warriorSkills, {["id"] = 46917, ["level"] = 10, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Titan
-table.insert(warriorSkills, {["id"] = 122509, ["level"] = 10, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Ultimatum
-table.insert(warriorSkills, {["id"] = 29144, ["level"] = 10, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Unwavering Sentinel
-table.insert(warriorSkills, {["id"] = 355, ["level"] = 12}); -- Taunt
-table.insert(warriorSkills, {["id"] = 13046, ["level"] = 14, ["specs"] = {72, 73}, ["subText"] = STRING_PASSIVE}); -- Enrage
-table.insert(warriorSkills, {["id"] = 6343, ["level"] = 14, ["specs"] = {71, 73}}); -- Thunder Clap
-table.insert(warriorSkills, {["id"] = 158836, ["level"] = 15, ["subText"] = STRING_PASSIVE}); -- Headlong Rush
-table.insert(warriorSkills, {["id"] = 2565, ["level"] = 18, ["specs"] = {73}}); -- Shield Block
-table.insert(warriorSkills, {["id"] = 100130, ["level"] = 18, ["specs"] = {72}}); -- Wild Strike
-table.insert(warriorSkills, {["id"] = 156321, ["level"] = 18}); -- Shield Charge
-table.insert(warriorSkills, {["id"] = 12323, ["level"] = 19, ["specs"] = {72}}); -- Piercing Howl
-table.insert(warriorSkills, {["id"] = 57755, ["level"] = 22}); -- Heroic Throw
-table.insert(warriorSkills, {["id"] = 6552, ["level"] = 24}); -- Pummel
-table.insert(warriorSkills, {["id"] = 20243, ["level"] = 26, ["specs"] = {73}}); -- Devastate
-table.insert(warriorSkills, {["id"] = 1680, ["level"] = 26, ["specs"] = {71, 72}}); -- Whirlwind
-table.insert(warriorSkills, {["id"] = 85288, ["level"] = 30, ["specs"] = {72}}); -- Raging Blow
-table.insert(warriorSkills, {["id"] = 6572, ["level"] = 30, ["specs"] = {73}}); -- Revenge
-table.insert(warriorSkills, {["id"] = 115767, ["level"] = 32}); -- Deep Wounds
-table.insert(warriorSkills, {["id"] = 1715, ["level"] = 36}); -- Hamstring
-table.insert(warriorSkills, {["id"] = 12975, ["level"] = 38, ["specs"] = {73}}); -- Last Stand
-table.insert(warriorSkills, {["id"] = 81099, ["level"] = 38, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Single
-table.insert(warriorSkills, {["id"] = 6673, ["level"] = 42}); -- Battle Shout
-table.insert(warriorSkills, {["id"] = 871, ["level"] = 48, ["specs"] = {73}}); -- Shield Wall
-table.insert(warriorSkills, {["id"] = 86101, ["level"] = 50, ["specs"] = {71}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(warriorSkills, {["id"] = 86110, ["level"] = 50, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(warriorSkills, {["id"] = 86535, ["level"] = 50, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(warriorSkills, {["id"] = 5246, ["level"] = 52}); -- Intimidating Shout
-table.insert(warriorSkills, {["id"] = 18499, ["level"] = 54}); -- Berserker Rage
-table.insert(warriorSkills, {["id"] = 1160, ["level"] = 56, ["specs"] = {73}}); -- Demoralizing Shout
-table.insert(warriorSkills, {["id"] = 118038, ["level"] = 56, ["specs"] = {71, 72}}); -- Die by the Sword
-table.insert(warriorSkills, {["id"] = 12950, ["level"] = 58, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Meat Cleaver
-table.insert(warriorSkills, {["id"] = 84608, ["level"] = 60, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Bastion of Defense
-table.insert(warriorSkills, {["id"] = 12328, ["level"] = 60, ["specs"] = {71}}); -- Sweeping Strikes
-table.insert(warriorSkills, {["id"] = 23920, ["level"] = 66}); -- Spell Reflection
-table.insert(warriorSkills, {["id"] = 469, ["level"] = 68}); -- Commanding Shout
-table.insert(warriorSkills, {["id"] = 3411, ["level"] = 72}); -- Intervene
-table.insert(warriorSkills, {["id"] = 64382, ["level"] = 74}); -- Shattering Throw
-table.insert(warriorSkills, {["id"] = 161798, ["level"] = 76, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Riposte
-table.insert(warriorSkills, {["id"] = 167188, ["level"] = 80, ["specs"] = {71, 72}, ["subText"] = STRING_PASSIVE}); -- Inspiring Presence
-table.insert(warriorSkills, {["id"] = 76857, ["level"] = 80, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Mastery: Critical Block
-table.insert(warriorSkills, {["id"] = 76856, ["level"] = 80, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Mastery: Unshackled Fury
-table.insert(warriorSkills, {["id"] = 76838, ["level"] = 80, ["specs"] = {71}, ["subText"] = STRING_PASSIVE}); -- Mastery: Weapons Master
-table.insert(warriorSkills, {["id"] = 167105, ["level"] = 81, ["specs"] = {71}}); -- Colossus Smash
-table.insert(warriorSkills, {["id"] = 174926, ["level"] = 81, ["specs"] = {71, 72}}); -- Shield Barrier
-table.insert(warriorSkills, {["id"] = 97462, ["level"] = 83, ["specs"] = {71, 72}}); -- Rallying Cry
-table.insert(warriorSkills, {["id"] = 6544, ["level"] = 85}); -- Heroic Leap
-table.insert(warriorSkills, {["id"] = 114192, ["level"] = 87, ["specs"] = {73}}); -- Mocking Banner
-table.insert(warriorSkills, {["id"] = 1719, ["level"] = 87, ["specs"] = {71, 72}}); -- Recklessness
-table.insert(warriorSkills, {["id"] = 159362, ["level"] = 90, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Blood Craze
-table.insert(warriorSkills, {["id"] = 165383, ["level"] = 90, ["specs"] = {72}, ["subText"] = STRING_PASSIVE}); -- Cruelty
-table.insert(warriorSkills, {["id"] = 165393, ["level"] = 90, ["specs"] = {73}, ["subText"] = STRING_PASSIVE}); -- Shield Mastery
-table.insert(warriorSkills, {["id"] = 165365, ["level"] = 90, ["specs"] = {71}, ["subText"] = STRING_PASSIVE}); -- Weapon Mastery
+local warriorSkills = { };
+	-- AddUnlock(warriorSkills, 52, {["id"] = 231663, ["specs"] = {65}, ["isPassive"] = true, ["rank"] = 2}); -- Beacon of Light 2
+	
+	AddUnlock(warriorSkills, 3, {["id"] = 100}); -- Charge
+	AddUnlock(warriorSkills, 5, {["id"] = 34428, ["specs"] = {71, 73}}); -- Victory Rush
+	AddUnlock(warriorSkills, 8, {["id"] = 5308, ["specs"] = {72}}); -- Execute
+	AddUnlock(warriorSkills, 8, {["id"] = 163201, ["specs"] = {71}}); -- Execute
+	AddUnlock(warriorSkills, 10, {["id"] = 71, ["specs"] = {73}}); -- Defensive Stance
+	AddUnlock(warriorSkills, 10, {["id"] = 23881, ["specs"] = {72}}); -- Bloodthirst
+	AddUnlock(warriorSkills, 10, {["id"] = 20243, ["specs"] = {73}}); -- Devastate
+	AddUnlock(warriorSkills, 10, {["id"] = 100130, ["specs"] = {72}}); -- Furious Slash
+	AddUnlock(warriorSkills, 10, {["id"] = 12294, ["specs"] = {71}}); -- Mortal Strike
+	AddUnlock(warriorSkills, 10, {["id"] = 23922, ["specs"] = {73}}); -- Shield Slam
+	AddUnlock(warriorSkills, 10, {["id"] = 231842, ["specs"] = {72}}); -- Dual Wield
+	AddUnlock(warriorSkills, 10, {["id"] = 46917, ["specs"] = {72}}); -- Titan's Grip
+	AddUnlock(warriorSkills, 10, {["id"] = 29144, ["specs"] = {73}}); -- Unwavering Sentinel
+	AddUnlock(warriorSkills, 12, {["id"] = 184367, ["specs"] = {72}}); -- Rampage
+	AddUnlock(warriorSkills, 13, {["id"] = 355}); -- Taunt
+	AddUnlock(warriorSkills, 14, {["id"] = 184361, ["specs"] = {72}}); -- Enrage
+	AddUnlock(warriorSkills, 14, {["id"] = 6343, ["specs"] = {73}}); -- Thunder Clap
+	AddUnlock(warriorSkills, 17, {["id"] = 57755}); -- Heroic Throw
+	AddUnlock(warriorSkills, 20, {["id"] = 167105, ["specs"] = {71}}); -- Colossus Smash
+	AddUnlock(warriorSkills, 20, {["id"] = 85288, ["specs"] = {72}}); -- Raging Blow
+	AddUnlock(warriorSkills, 20, {["id"] = 2565, ["specs"] = {73}}); -- Shield Block
+	AddUnlock(warriorSkills, 22, {["id"] = 845, ["specs"] = {71}}); -- Cleave
+	AddUnlock(warriorSkills, 22, {["id"] = 231824, ["specs"] = {72}}); -- Furious Slash 2
+	AddUnlock(warriorSkills, 22, {["id"] = 6572, ["specs"] = {73}}); -- Revenge
+	AddUnlock(warriorSkills, 24, {["id"] = 6552}); -- Pummel
+	AddUnlock(warriorSkills, 26, {["id"] = 6544}); -- Heroic Leap
+	AddUnlock(warriorSkills, 28, {["id"] = 231827, ["specs"] = {72}}); -- Execute 2
+	AddUnlock(warriorSkills, 28, {["id"] = 231830, ["specs"] = {71}}); -- Execute 2
+	AddUnlock(warriorSkills, 32, {["id"] = 1715, ["specs"] = {71}}); -- Hamstring
+	AddUnlock(warriorSkills, 32, {["id"] = 12323, ["specs"] = {72}}); -- Piercing Howl
+	AddUnlock(warriorSkills, 32, {["id"] = 12975, ["specs"] = {73}}); -- Last Stand
+	AddUnlock(warriorSkills, 34, {["id"] = 231834, ["specs"] = {73}}); -- Shield Slam 2
+	AddUnlock(warriorSkills, 34, {["id"] = 184783, ["specs"] = {71}}); -- Tacttician
+	AddUnlock(warriorSkills, 36, {["id"] = 118038, ["specs"] = {71}}); -- Die by the Sword
+	AddUnlock(warriorSkills, 36, {["id"] = 184364, ["specs"] = {72}}); -- Enrged Regeneration
+	AddUnlock(warriorSkills, 38, {["id"] = 231847, ["specs"] = {73}}); -- Shield Block 2
+	AddUnlock(warriorSkills, 40, {["id"] = 190456, ["specs"] = {73}}); -- Ignore Pain
+	AddUnlock(warriorSkills, 40, {["id"] = 1680, ["specs"] = {71}}); -- Whirlwind
+	AddUnlock(warriorSkills, 40, {["id"] = 190411, ["specs"] = {72}}); -- Whirlwind
+	AddUnlock(warriorSkills, 42, {["id"] = 18499, ["specs"] = {71, 72, 73}}); -- Berserker Rage
+	AddUnlock(warriorSkills, 48, {["id"] = 1160, ["specs"] = {73}}); -- Demoralizing Shout
+	AddUnlock(warriorSkills, 50, {["id"] = 1719, ["specs"] = {71, 72, 73}}); -- Battle Cry
+	AddUnlock(warriorSkills, 50, {["id"] = 86101, ["specs"] = {71}}); -- Plate Specialization
+	AddUnlock(warriorSkills, 50, {["id"] = 86110, ["specs"] = {72}}); -- Plate Specialization
+	AddUnlock(warriorSkills, 50, {["id"] = 86535, ["specs"] = {73}}); -- Plate Specialization
+	AddUnlock(warriorSkills, 55, {["id"] = 231833, ["specs"] = {71}}); -- Cleave 2
+	AddUnlock(warriorSkills, 55, {["id"] = 871, ["specs"] = {73}}); -- Shield Wall
+	AddUnlock(warriorSkills, 55, {["id"] = 12950, ["specs"] = {72}}); -- Whirlwind 2
+	AddUnlock(warriorSkills, 60, {["id"] = 84608, ["specs"] = {73}}); -- Bastion of Defense
+	AddUnlock(warriorSkills, 65, {["id"] = 227847, ["specs"] = {71}}); -- Bladestorm
+	AddUnlock(warriorSkills, 65, {["id"] = 161798, ["specs"] = {73}}); -- Riposte
+	AddUnlock(warriorSkills, 70, {["id"] = 5246, ["specs"] = {71, 72}}); -- Intimidating Shout
+	AddUnlock(warriorSkills, 78, {["id"] = 76838, ["specs"] = {71}}); -- Mastery: Colossal Might
+	AddUnlock(warriorSkills, 78, {["id"] = 76857, ["specs"] = {73}}); -- Mastery: Critical Block
+	AddUnlock(warriorSkills, 78, {["id"] = 76856, ["specs"] = {72}}); -- Mastery: Unshackled Fury
+	AddUnlock(warriorSkills, 80, {["id"] = 97462, ["specs"] = {71, 72}}); -- Commanding Shout
+	AddUnlock(warriorSkills, 80, {["id"] = 23920, ["specs"] = {73}}); -- Spell Reflection
 
-_addonData.WARRIOR = {};
-_addonData.WARRIOR.Skills = warriorSkills;
-_addonData.WARRIOR.Specs = warriorSpecs;
+_addonData.Skills = warriorSkills;
+_addonData.Specs = warriorSpecs;
+
+end
 
 --
 -- DRUID
 --
 
-local druidSpecs = {};
-table.insert(druidSpecs, 102); -- Balance
-table.insert(druidSpecs, 103); -- Feral
-table.insert(druidSpecs, 104); -- Guardian
-table.insert(druidSpecs, 105); -- Restoration
+if (playerClass == "DRUID") then
+local druidSpecs = {
+	102 -- Balance
+	,103 -- Feral
+	,104 -- Guardian
+	,105 -- Restoration
+};
 
-local druidSkills = {};
-table.insert(druidSkills, {["id"] = 8921, ["level"] = 3}); -- Moonfire
-table.insert(druidSkills, {["id"] = 774, ["level"] = 4}); -- Rejuvenation
-table.insert(druidSkills, {["id"] = 1822, ["level"] = 6, ["specs"] = {103}}); -- Rake
-table.insert(druidSkills, {["id"] = 768, ["level"] = 6}); -- Cat Form
-table.insert(druidSkills, {["id"] = 125972, ["level"] = 6, ["subText"] = STRING_PASSIVE}); -- Feline Grace
-table.insert(druidSkills, {["id"] = 22568, ["level"] = 6}); -- Ferocious Bite
-table.insert(druidSkills, {["id"] = 5215, ["level"] = 6}); -- Prowl
-table.insert(druidSkills, {["id"] = 5221, ["level"] = 6}); -- Shred
-table.insert(druidSkills, {["id"] = 5487, ["level"] = 8}); -- Bear Form
-table.insert(druidSkills, {["id"] = 6795, ["level"] = 8}); -- Growl
-table.insert(druidSkills, {["id"] = 33917, ["level"] = 8}); -- Mangle
-table.insert(druidSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(druidSkills, {["id"] = 108299, ["level"] = 10, ["specs"] = {102, 105}, ["subText"] = STRING_PASSIVE}); -- Killer Instinct
-table.insert(druidSkills, {["id"] = 92364, ["level"] = 10, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Malfurion
-table.insert(druidSkills, {["id"] = 6807, ["level"] = 10, ["specs"] = {104}}); -- Maul
-table.insert(druidSkills, {["id"] = 17073, ["level"] = 10, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Natural Healing
-table.insert(druidSkills, {["id"] = 112857, ["level"] = 10, ["specs"] = {102, 105}, ["subText"] = STRING_PASSIVE}); -- Natural Insight
-table.insert(druidSkills, {["id"] = 33873, ["level"] = 10, ["specs"] = {103, 104}, ["subText"] = STRING_PASSIVE}); -- Nurturing Instinct
-table.insert(druidSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(druidSkills, {["id"] = 62606, ["level"] = 10, ["specs"] = {104}}); -- Savage Defense
-table.insert(druidSkills, {["id"] = 2912, ["level"] = 10, ["specs"] = {102}}); -- Starfire
-table.insert(druidSkills, {["id"] = 18562, ["level"] = 10, ["specs"] = {105}}); -- Swiftmend
-table.insert(druidSkills, {["id"] = 16931, ["level"] = 10, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Thick Hide
-table.insert(druidSkills, {["id"] = 5217, ["level"] = 10, ["specs"] = {103}}); -- Tiger
-table.insert(druidSkills, {["id"] = 16870, ["level"] = 10}); -- Clearcasting
-table.insert(druidSkills, {["id"] = 339, ["level"] = 10}); -- Entangling Roots
-table.insert(druidSkills, {["id"] = 78674, ["level"] = 12, ["specs"] = {102}}); -- Starsurge
-table.insert(druidSkills, {["id"] = 50769, ["level"] = 12}); -- Revive
-table.insert(druidSkills, {["id"] = 85101, ["level"] = 14, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(druidSkills, {["id"] = 18960, ["level"] = 14}); -- Teleport: Moonglade
-table.insert(druidSkills, {["id"] = 106832, ["level"] = 14}); -- Thrash
-table.insert(druidSkills, {["id"] = 24858, ["level"] = 16, ["specs"] = {102}}); -- Moonkin Form
-table.insert(druidSkills, {["id"] = 783, ["level"] = 16}); -- Travel Form
-table.insert(druidSkills, {["id"] = 8936, ["level"] = 18, ["specs"] = {105}}); -- Regrowth
-table.insert(druidSkills, {["id"] = 52610, ["level"] = 18, ["specs"] = {103}}); -- Savage Roar
-table.insert(druidSkills, {["id"] = 164815, ["level"] = 18}); -- Sunfire
-table.insert(druidSkills, {["id"] = 127663, ["level"] = 20, ["specs"] = {102}}); -- Astral Communion
-table.insert(druidSkills, {["id"] = 1079, ["level"] = 20, ["specs"] = {103}}); -- Rip
-table.insert(druidSkills, {["id"] = 88423, ["level"] = 22, ["specs"] = {105}}); -- Nature
-table.insert(druidSkills, {["id"] = 2782, ["level"] = 22, ["specs"] = {102, 103, 104}}); -- Remove Corruption
-table.insert(druidSkills, {["id"] = 106785, ["level"] = 22, ["specs"] = {103}}); -- Swipe
-table.insert(druidSkills, {["id"] = 1850, ["level"] = 24}); -- Dash
-table.insert(druidSkills, {["id"] = 16974, ["level"] = 26, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Predatory Swiftness
-table.insert(druidSkills, {["id"] = 93399, ["level"] = 26, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Shooting Stars
-table.insert(druidSkills, {["id"] = 5185, ["level"] = 26}); -- Healing Touch
-table.insert(druidSkills, {["id"] = 770, ["level"] = 28, ["specs"] = {103, 104}}); -- Faerie Fire
-table.insert(druidSkills, {["id"] = 48500, ["level"] = 28, ["specs"] = {105}}); -- Living Seed
-table.insert(druidSkills, {["id"] = 78675, ["level"] = 28, ["specs"] = {102}}); -- Solar Beam
-table.insert(druidSkills, {["id"] = 77758, ["level"] = 28}); -- Thrash
-table.insert(druidSkills, {["id"] = 106830, ["level"] = 28}); -- Thrash
-table.insert(druidSkills, {["id"] = 132158, ["level"] = 30, ["specs"] = {105}}); -- Nature
-table.insert(druidSkills, {["id"] = 16961, ["level"] = 30}); -- Primal Fury
-table.insert(druidSkills, {["id"] = 135288, ["level"] = 32, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Tooth and Claw
-table.insert(druidSkills, {["id"] = 33763, ["level"] = 36, ["specs"] = {105}}); -- Lifebloom
-table.insert(druidSkills, {["id"] = 5225, ["level"] = 36}); -- Track Humanoids
-table.insert(druidSkills, {["id"] = 33745, ["level"] = 38, ["specs"] = {104}}); -- Lacerate
-table.insert(druidSkills, {["id"] = 179333, ["level"] = 38, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Nature
-table.insert(druidSkills, {["id"] = 16864, ["level"] = 38, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Omen of Clarity
-table.insert(druidSkills, {["id"] = 113043, ["level"] = 38, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Omen of Clarity
-table.insert(druidSkills, {["id"] = 48484, ["level"] = 40, ["specs"] = {103, 104}, ["subText"] = STRING_PASSIVE}); -- Infected Wounds
-table.insert(druidSkills, {["id"] = 22812, ["level"] = 44, ["specs"] = {102, 104, 105}}); -- Barkskin
-table.insert(druidSkills, {["id"] = 17007, ["level"] = 46, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Leader of the Pack
-table.insert(druidSkills, {["id"] = 106952, ["level"] = 48, ["specs"] = {103, 104}}); -- Berserk
-table.insert(druidSkills, {["id"] = 86093, ["level"] = 50, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(druidSkills, {["id"] = 86096, ["level"] = 50, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(druidSkills, {["id"] = 86097, ["level"] = 50, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(druidSkills, {["id"] = 86104, ["level"] = 50, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(druidSkills, {["id"] = 61336, ["level"] = 56, ["specs"] = {103, 104}}); -- Survival Instincts
-table.insert(druidSkills, {["id"] = 20484, ["level"] = 56}); -- Rebirth
-table.insert(druidSkills, {["id"] = 165962, ["level"] = 58}); -- Flight Form
-table.insert(druidSkills, {["id"] = 2908, ["level"] = 60}); -- Soothe
-table.insert(druidSkills, {["id"] = 1126, ["level"] = 62}); -- Mark of the Wild
-table.insert(druidSkills, {["id"] = 102342, ["level"] = 64, ["specs"] = {105}}); -- Ironbark
-table.insert(druidSkills, {["id"] = 106839, ["level"] = 64, ["specs"] = {103, 104}}); -- Skull Bash
-table.insert(druidSkills, {["id"] = 112071, ["level"] = 68, ["specs"] = {102}}); -- Celestial Alignment
-table.insert(druidSkills, {["id"] = 22842, ["level"] = 68}); -- Frenzied Regeneration
-table.insert(druidSkills, {["id"] = 740, ["level"] = 74, ["specs"] = {105}}); -- Tranquility
-table.insert(druidSkills, {["id"] = 48505, ["level"] = 76, ["specs"] = {102}}); -- Starfall
-table.insert(druidSkills, {["id"] = 48438, ["level"] = 76, ["specs"] = {105}}); -- Wild Growth
-table.insert(druidSkills, {["id"] = 33786, ["level"] = 78}); -- Cyclone
-table.insert(druidSkills, {["id"] = 77495, ["level"] = 80, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Mastery: Harmony
-table.insert(druidSkills, {["id"] = 155783, ["level"] = 80, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Mastery: Primal Tenacity
-table.insert(druidSkills, {["id"] = 77493, ["level"] = 80, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Mastery: Razor Claws
-table.insert(druidSkills, {["id"] = 77492, ["level"] = 80, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Mastery: Total Eclipse
-table.insert(druidSkills, {["id"] = 33605, ["level"] = 82, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Astral Showers
-table.insert(druidSkills, {["id"] = 22570, ["level"] = 82, ["specs"] = {103}}); -- Maim
-table.insert(druidSkills, {["id"] = 88747, ["level"] = 84, ["specs"] = {102}}); -- Wild Mushroom
-table.insert(druidSkills, {["id"] = 145205, ["level"] = 84, ["specs"] = {105}}); -- Wild Mushroom
-table.insert(druidSkills, {["id"] = 106898, ["level"] = 84}); -- Stampeding Roar
-table.insert(druidSkills, {["id"] = 145518, ["level"] = 88, ["specs"] = {105}}); -- Genesis
-table.insert(druidSkills, {["id"] = 165386, ["level"] = 90, ["specs"] = {102}, ["subText"] = STRING_PASSIVE}); -- Lunar Guidance
-table.insert(druidSkills, {["id"] = 165374, ["level"] = 90, ["specs"] = {105}, ["subText"] = STRING_PASSIVE}); -- Naturalist
-table.insert(druidSkills, {["id"] = 165372, ["level"] = 90, ["specs"] = {103}, ["subText"] = STRING_PASSIVE}); -- Sharpened Claws
-table.insert(druidSkills, {["id"] = 165387, ["level"] = 90, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Survival of the Fittest
-table.insert(druidSkills, {["id"] = 159232, ["level"] = 90, ["specs"] = {104}, ["subText"] = STRING_PASSIVE}); -- Ursa Major
+local druidSkills = { };
+	AddUnlock(druidSkills, 3, {["id"] = 8921}); -- Moonfire
+	AddUnlock(druidSkills, 5, {["id"] = 8936}); -- Regrowth
+	AddUnlock(druidSkills, 8, {["id"] = 768}); -- Cat Form
+	AddUnlock(druidSkills, 8, {["id"] = 1850}); -- Dash
+	AddUnlock(druidSkills, 10, {["id"] = 5487}); -- Bear Form
+	AddUnlock(druidSkills, 10, {["id"] = 22568, ["specs"] = {103}}); -- Ferocious Bite
+	AddUnlock(druidSkills, 10, {["id"] = 108299, ["specs"] = {102, 105}}); -- Killer Instinct
+	AddUnlock(druidSkills, 10, {["id"] = 33917, ["specs"] = {104}}); -- Mangle
+	AddUnlock(druidSkills, 10, {["id"] = 6807, ["specs"] = {104}}); -- Maul
+	AddUnlock(druidSkills, 10, {["id"] = 33873, ["specs"] = {103, 104}}); -- Nurturing Instinct
+	AddUnlock(druidSkills, 10, {["id"] = 774, ["specs"] = {105}}); -- Rejuvenation
+	AddUnlock(druidSkills, 10, {["id"] = 5221, ["specs"] = {103}}); -- Shred
+	AddUnlock(druidSkills, 10, {["id"] = 78674, ["specs"] = {102}}); -- Starsurge
+	AddUnlock(druidSkills, 12, {["id"] = 194153, ["specs"] = {102}}); -- Lunar Strike
+	AddUnlock(druidSkills, 12, {["id"] = 1822, ["specs"] = {103}}); -- Rake
+	AddUnlock(druidSkills, 12, {["id"] = 18562, ["specs"] = {105}}); -- Swiftmend
+	AddUnlock(druidSkills, 12, {["id"] = 106832, ["specs"] = {103, 104}}); -- Thrash
+	AddUnlock(druidSkills, 13, {["id"] = 6795}); -- Growl
+	AddUnlock(druidSkills, 13, {["id"] = 5217, ["specs"] = {103}}); -- Tiger's Fury
+	AddUnlock(druidSkills, 14, {["id"] = 50769}); -- Revive
+	AddUnlock(druidSkills, 14, {["id"] = 18960}); -- Teleport: Moonglade
+	AddUnlock(druidSkills, 16, {["id"] = 24858, ["specs"] = {102}}); -- Moonkin Form
+	AddUnlock(druidSkills, 16, {["id"] = 5215, ["specs"] = {102, 103, 104, 105}}); -- Prowl
+	AddUnlock(druidSkills, 16, {["id"] = 93402, ["specs"] = {102, 105}}); -- Sunfire
+	AddUnlock(druidSkills, 18, {["id"] = 783}); -- Travel Form
+	AddUnlock(druidSkills, 20, {["id"] = 192081, ["specs"] = {104}}); -- Ironfur
+	AddUnlock(druidSkills, 20, {["id"] = 33763, ["specs"] = {105}}); -- Lifebloom
+	AddUnlock(druidSkills, 20, {["id"] = 1079, ["specs"] = {103}}); -- Riposte
+	AddUnlock(druidSkills, 22, {["id"] = 88423, ["specs"] = {105}}); -- Nature's Cure
+	AddUnlock(druidSkills, 22, {["id"] = 2782, ["specs"] = {102, 103, 104}}); -- Remove Corruption
+	AddUnlock(druidSkills, 24, {["id"] = 339}); -- Entangling Roots
+	AddUnlock(druidSkills, 24, {["id"] = 5185, ["specs"] = {105}}); -- Healing Touch
+	AddUnlock(druidSkills, 25, {["id"] = 231052, ["specs"] = {103}}); -- Rake 2
+	AddUnlock(druidSkills, 26, {["id"] = 22812, ["specs"] = {102, 104, 105}}); -- Barkskin
+	AddUnlock(druidSkills, 28, {["id"] = 99, ["specs"] = {104}}); -- Incapacitating Roar
+	AddUnlock(druidSkills, 32, {["id"] = 231050, ["specs"] = {102, 105}}); -- Sunfire 2
+	AddUnlock(druidSkills, 32, {["id"] = 213764, ["specs"] = {103, 104}}); -- Swipe
+	AddUnlock(druidSkills, 34, {["id"] = 197524, ["specs"] = {102}}); -- Astral Influence
+	AddUnlock(druidSkills, 34, {["id"] = 131768, ["specs"] = {103}}); -- Feline Swiftness
+	AddUnlock(druidSkills, 34, {["id"] = 16931, ["specs"] = {104}}); -- Thick Hide
+	AddUnlock(druidSkills, 34, {["id"] = 145108, ["specs"] = {105}}); -- Ysera's Gift
+	AddUnlock(druidSkills, 36, {["id"] = 61336, ["specs"] = {103, 104}}); -- Survival Insticts
+	AddUnlock(druidSkills, 40, {["id"] = 210053}); -- Stag Form
+	AddUnlock(druidSkills, 40, {["id"] = 106951, ["specs"] = {103}}); -- Berserker
+	AddUnlock(druidSkills, 40, {["id"] = 22842, ["specs"] = {104}}); -- Frenzied Regeneration
+	AddUnlock(druidSkills, 40, {["id"] = 191034, ["specs"] = {102}}); -- Starfall
+	AddUnlock(druidSkills, 40, {["id"] = 48438, ["specs"] = {105}}); -- Wild Growth
+	AddUnlock(druidSkills, 42, {["id"] = 20484}); -- Rebirth
+	AddUnlock(druidSkills, 44, {["id"] = 231064, ["specs"] = {104}}); -- Mangle
+	AddUnlock(druidSkills, 44, {["id"] = 231032, ["specs"] = {105}}); -- Regrowth 2
+	AddUnlock(druidSkills, 44, {["id"] = 231063, ["specs"] = {103}}); -- Shred 2
+	AddUnlock(druidSkills, 44, {["id"] = 231283, ["specs"] = {103}}); -- Swipe 2
+	AddUnlock(druidSkills, 48, {["id"] = 194223, ["specs"] = {102}}); -- Celestial Alignment
+	AddUnlock(druidSkills, 48, {["id"] = 210706, ["specs"] = {104}}); -- Gorefiend
+	AddUnlock(druidSkills, 48, {["id"] = 16864, ["specs"] = {103}}); -- Omen of Clarity
+	AddUnlock(druidSkills, 48, {["id"] = 113043, ["specs"] = {105}}); -- Oem of Clarity
+	AddUnlock(druidSkills, 50, {["id"] = 29166, ["specs"] = {102, 105}}); -- Innervate
+	AddUnlock(druidSkills, 50, {["id"] = 86093, ["specs"] = {105}}); -- Leather Specialization
+	AddUnlock(druidSkills, 50, {["id"] = 86096, ["specs"] = {104}}); -- Leather Specialization
+	AddUnlock(druidSkills, 50, {["id"] = 86097, ["specs"] = {103}}); -- Leather Specialization
+	AddUnlock(druidSkills, 50, {["id"] = 86104, ["specs"] = {102}}); -- Leather Specialization
+	AddUnlock(druidSkills, 50, {["id"] = 106898, ["specs"] = {103, 104}}); -- Stampeding Roar
+	AddUnlock(druidSkills, 52, {["id"] = 231040, ["specs"] = {105}}); -- Rejuvenation 2
+	AddUnlock(druidSkills, 52, {["id"] = 231055, ["specs"] = {103}}); -- Tiger's Fury 2
+	AddUnlock(druidSkills, 54, {["id"] = 48484, ["specs"] = {103}}); -- Infected Wounds
+	AddUnlock(druidSkills, 54, {["id"] = 102342, ["specs"] = {105}}); -- Ironbark
+	AddUnlock(druidSkills, 54, {["id"] = 231070, ["specs"] = {104}}); -- Ironfur 2
+	AddUnlock(druidSkills, 54, {["id"] = 231042, ["specs"] = {102}}); -- Moonkin Form 2
+	AddUnlock(druidSkills, 56, {["id"] = 48500, ["specs"] = {105}}); -- Living Seed
+	AddUnlock(druidSkills, 56, {["id"] = 231057, ["specs"] = {103}}); -- Shred 3
+	AddUnlock(druidSkills, 58, {["id"] = 165962}); -- Flight Form
+	AddUnlock(druidSkills, 63, {["id"] = 22570, ["specs"] = {103}}); -- Maim
+	AddUnlock(druidSkills, 63, {["id"] = 102793, ["specs"] = {105}}); -- Ursol's Vortex
+	AddUnlock(druidSkills, 65, {["id"] = 231065, ["specs"] = {104}}); -- Lightning Reflexes
+	AddUnlock(druidSkills, 65, {["id"] = 231049, ["specs"] = {102}}); -- Starfall 2
+	AddUnlock(druidSkills, 66, {["id"] = 231056, ["specs"] = {103}}); -- Ferocious Bite 2
+	AddUnlock(druidSkills, 66, {["id"] = 212040, ["specs"] = {105}}); -- Revitalize
+	AddUnlock(druidSkills, 70, {["id"] = 145205, ["specs"] = {105}}); -- Efflorescence
+	AddUnlock(druidSkills, 70, {["id"] = 106839, ["specs"] = {103, 104}}); -- Skull Bash
+	AddUnlock(druidSkills, 70, {["id"] = 231021, ["specs"] = {102}}); -- Starsurge 20
+	AddUnlock(druidSkills, 78, {["id"] = 77495, ["specs"] = {105}}); -- Mastery: Harmony
+	AddUnlock(druidSkills, 78, {["id"] = 155783, ["specs"] = {104}}); -- Mastery: Nature's Guardian
+	AddUnlock(druidSkills, 78, {["id"] = 77493, ["specs"] = {103}}); -- Mastery: Raxor Claws
+	AddUnlock(druidSkills, 78, {["id"] = 77492, ["specs"] = {102}}); -- Mastery: Starlight
+	AddUnlock(druidSkills, 80, {["id"] = 16974, ["specs"] = {103}}); -- Predatory Swiftness
+	AddUnlock(druidSkills, 80, {["id"] = 78675, ["specs"] = {102}}); -- Solar Beam
+	AddUnlock(druidSkills, 80, {["id"] = 740, ["specs"] = {105}}); -- Tranquility
 
-_addonData.DRUID = {};
-_addonData.DRUID.Skills = druidSkills;
-_addonData.DRUID.Specs = druidSpecs;
+_addonData.Skills = druidSkills;
+_addonData.Specs = druidSpecs;
+
+end
 
 --
 -- DEATH KNIGHT
 --
 
-local dkSpecs = {};
-table.insert(dkSpecs, 250); -- Blood
-table.insert(dkSpecs, 251); -- Frost
-table.insert(dkSpecs, 252); -- Unholy
+if (playerClass == "DEATHKNIGHT") then
+local dkSpecs = {
+	250 -- Blood
+	,251 -- Frost
+	,252 -- Unholy
+};
 
-local dkSkills = {};
-table.insert(dkSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(dkSkills, {["id"] = 81136, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Crimson Scourge
-table.insert(dkSkills, {["id"] = 51160, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Ebon Plaguebringer
-table.insert(dkSkills, {["id"] = 56835, ["level"] = 10, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Reaping
-table.insert(dkSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(dkSkills, {["id"] = 59057, ["level"] = 10, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Rime
-table.insert(dkSkills, {["id"] = 49509, ["level"] = 10, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Scent of Blood
-table.insert(dkSkills, {["id"] = 86524, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSkills, {["id"] = 54637, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Blood of the North
-table.insert(dkSkills, {["id"] = 50034, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Blood Rites
-table.insert(dkSkills, {["id"] = 49143, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Frost Strike
-table.insert(dkSkills, {["id"] = 49184, ["level"] = 55, ["specs"] = {251}}); -- Howling Blast
-table.insert(dkSkills, {["id"] = 50887, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Icy Talons
-table.insert(dkSkills, {["id"] = 50371, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Improved Blood Presence
-table.insert(dkSkills, {["id"] = 86113, ["level"] = 55, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSkills, {["id"] = 86536, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSkills, {["id"] = 86537, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Plate Specialization
-table.insert(dkSkills, {["id"] = 91107, ["level"] = 55, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Unholy Might
-table.insert(dkSkills, {["id"] = 50029, ["level"] = 55, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Veteran of the Third War
-table.insert(dkSkills, {["id"] = 50842, ["level"] = 55}); -- Blood Boil
-table.insert(dkSkills, {["id"] = 55078, ["level"] = 55}); -- Blood Plague
-table.insert(dkSkills, {["id"] = 47541, ["level"] = 55}); -- Death Coil
-table.insert(dkSkills, {["id"] = 50977, ["level"] = 55}); -- Death Gate
-table.insert(dkSkills, {["id"] = 49576, ["level"] = 55}); -- Death Grip
-table.insert(dkSkills, {["id"] = 55095, ["level"] = 55}); -- Frost Fever
-table.insert(dkSkills, {["id"] = 48266, ["level"] = 55}); -- Frost Presence
-table.insert(dkSkills, {["id"] = 45477, ["level"] = 55}); -- Icy Touch
-table.insert(dkSkills, {["id"] = 45462, ["level"] = 55}); -- Plague Strike
-table.insert(dkSkills, {["id"] = 53343, ["level"] = 55}); -- Rune of Razorice
-table.insert(dkSkills, {["id"] = 53428, ["level"] = 55}); -- Runeforging
-table.insert(dkSkills, {["id"] = 46584, ["level"] = 56, ["specs"] = {252}}); -- Raise Dead
-table.insert(dkSkills, {["id"] = 49998, ["level"] = 56}); -- Death Strike
-table.insert(dkSkills, {["id"] = 48263, ["level"] = 57}); -- Blood Presence
-table.insert(dkSkills, {["id"] = 47528, ["level"] = 57}); -- Mind Freeze
-table.insert(dkSkills, {["id"] = 54447, ["level"] = 57}); -- Rune of Spellbreaking
-table.insert(dkSkills, {["id"] = 53342, ["level"] = 57}); -- Rune of Spellshattering
-table.insert(dkSkills, {["id"] = 56222, ["level"] = 58, ["specs"] = {250}}); -- Dark Command
-table.insert(dkSkills, {["id"] = 49020, ["level"] = 58, ["specs"] = {251}}); -- Obliterate
-table.insert(dkSkills, {["id"] = 55090, ["level"] = 58, ["specs"] = {252}}); -- Scourge Strike
-table.insert(dkSkills, {["id"] = 45524, ["level"] = 58}); -- Chains of Ice
-table.insert(dkSkills, {["id"] = 47476, ["level"] = 58}); -- Strangulate
-table.insert(dkSkills, {["id"] = 49572, ["level"] = 60, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Shadow Infusion
-table.insert(dkSkills, {["id"] = 55610, ["level"] = 60, ["specs"] = {251, 252}, ["subText"] = STRING_PASSIVE}); -- Unholy Aura
-table.insert(dkSkills, {["id"] = 178819, ["level"] = 60, ["subText"] = STRING_PASSIVE}); -- Dark Succor
-table.insert(dkSkills, {["id"] = 43265, ["level"] = 60}); -- Death and Decay
-table.insert(dkSkills, {["id"] = 53331, ["level"] = 60}); -- Rune of Lichbane
-table.insert(dkSkills, {["id"] = 51986, ["level"] = 61, ["subText"] = STRING_PASSIVE}); -- On a Pale Horse
-table.insert(dkSkills, {["id"] = 85948, ["level"] = 62, ["specs"] = {252}}); -- Festering Strike
-table.insert(dkSkills, {["id"] = 48792, ["level"] = 62}); -- Icebound Fortitude
-table.insert(dkSkills, {["id"] = 51128, ["level"] = 63, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Killing Machine
-table.insert(dkSkills, {["id"] = 48982, ["level"] = 64, ["specs"] = {250}}); -- Rune Tap
-table.insert(dkSkills, {["id"] = 49530, ["level"] = 64, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Sudden Doom
-table.insert(dkSkills, {["id"] = 48265, ["level"] = 64}); -- Unholy Presence
-table.insert(dkSkills, {["id"] = 50385, ["level"] = 65, ["specs"] = {251}}); -- Improved Frost Presence
-table.insert(dkSkills, {["id"] = 57330, ["level"] = 65}); -- Horn of Winter
-table.insert(dkSkills, {["id"] = 3714, ["level"] = 66}); -- Path of Frost
-table.insert(dkSkills, {["id"] = 51271, ["level"] = 68, ["specs"] = {251}}); -- Pillar of Frost
-table.insert(dkSkills, {["id"] = 48707, ["level"] = 68}); -- Anti
-table.insert(dkSkills, {["id"] = 111673, ["level"] = 69}); -- Control Undead
-table.insert(dkSkills, {["id"] = 63560, ["level"] = 70, ["specs"] = {252}}); -- Dark Transformation
-table.insert(dkSkills, {["id"] = 81164, ["level"] = 70, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Will of the Necropolis
-table.insert(dkSkills, {["id"] = 53344, ["level"] = 70}); -- Rune of the Fallen Crusader
-table.insert(dkSkills, {["id"] = 81127, ["level"] = 72, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Sanguine Fortitude
-table.insert(dkSkills, {["id"] = 61999, ["level"] = 72}); -- Raise Ally
-table.insert(dkSkills, {["id"] = 62158, ["level"] = 72}); -- Rune of the Stoneskin Gargoyle
-table.insert(dkSkills, {["id"] = 49028, ["level"] = 74, ["specs"] = {250}}); -- Dancing Rune Weapon
-table.insert(dkSkills, {["id"] = 81333, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Might of the Frozen Wastes
-table.insert(dkSkills, {["id"] = 49206, ["level"] = 74, ["specs"] = {252}}); -- Summon Gargoyle
-table.insert(dkSkills, {["id"] = 66192, ["level"] = 74, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Threat of Thassarian
-table.insert(dkSkills, {["id"] = 50392, ["level"] = 75, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Improved Unholy Presence
-table.insert(dkSkills, {["id"] = 161797, ["level"] = 76, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Riposte
-table.insert(dkSkills, {["id"] = 55233, ["level"] = 76, ["specs"] = {250}}); -- Vampiric Blood
-table.insert(dkSkills, {["id"] = 47568, ["level"] = 76}); -- Empower Rune Weapon
-table.insert(dkSkills, {["id"] = 49222, ["level"] = 78, ["specs"] = {250}}); -- Bone Shield
-table.insert(dkSkills, {["id"] = 77513, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Mastery: Blood Shield
-table.insert(dkSkills, {["id"] = 77515, ["level"] = 80, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Mastery: Dreadblade
-table.insert(dkSkills, {["id"] = 77514, ["level"] = 80, ["specs"] = {251}, ["subText"] = STRING_PASSIVE}); -- Mastery: Frozen Heart
-table.insert(dkSkills, {["id"] = 155522, ["level"] = 80, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Power of the Grave
-table.insert(dkSkills, {["id"] = 42650, ["level"] = 80}); -- Army of the Dead
-table.insert(dkSkills, {["id"] = 77575, ["level"] = 81}); -- Outbreak
-table.insert(dkSkills, {["id"] = 77606, ["level"] = 85}); -- Dark Simulacrum
-table.insert(dkSkills, {["id"] = 114866, ["level"] = 87, ["specs"] = {250}}); -- Soul Reaper
-table.insert(dkSkills, {["id"] = 130735, ["level"] = 87, ["specs"] = {251}}); -- Soul Reaper
-table.insert(dkSkills, {["id"] = 130736, ["level"] = 87}); -- Soul Reaper
-table.insert(dkSkills, {["id"] = 165395, ["level"] = 90, ["specs"] = {252}, ["subText"] = STRING_PASSIVE}); -- Necrosis
-table.insert(dkSkills, {["id"] = 165394, ["level"] = 90, ["specs"] = {250}, ["subText"] = STRING_PASSIVE}); -- Runic Strikes
+local dkSkills = { };
+	AddUnlock(dkSkills, 56, {["id"] = 50842, ["specs"] = {250}}); -- Blood Boil
+	AddUnlock(dkSkills, 56, {["id"] = 43265, ["specs"] = {250, 252}}); -- Deat and Decay
+	AddUnlock(dkSkills, 56, {["id"] = 51128, ["specs"] = {251}}); -- Killing Machine
+	AddUnlock(dkSkills, 57, {["id"] = 48707}); -- Anti-magic Shell
+	AddUnlock(dkSkills, 57, {["id"] = 49028, ["specs"] = {250}}); -- Dancing Rune Weapon
+	AddUnlock(dkSkills, 57, {["id"] = 47568, ["specs"] = {251}}); -- Empower Rune Weapon
+	AddUnlock(dkSkills, 57, {["id"] = 48792, ["specs"] = {250, 251, 252}}); -- Icebound Fortitude
+	AddUnlock(dkSkills, 57, {["id"] = 51271, ["specs"] = {251}}); -- Pillar of Frost
+	AddUnlock(dkSkills, 57, {["id"] = 196770, ["specs"] = {251}}); -- Remorseless Winter
+	AddUnlock(dkSkills, 58, {["id"] = 56222}); -- Dark Command
+	AddUnlock(dkSkills, 58, {["id"] = 178819, ["specs"] = {251, 252}}); -- 178819
+	AddUnlock(dkSkills, 58, {["id"] = 195292, ["specs"] = {250}}); -- Death's Caress
+	AddUnlock(dkSkills, 59, {["id"] = 59057, ["specs"] = {251}}); -- Rime
+	AddUnlock(dkSkills, 60, {["id"] = 55233, ["specs"] = {250}}); -- Vampiric Blood
+	AddUnlock(dkSkills, 60, {["id"] = 212552, ["specs"] = {250, 251, 252}}); -- Wraith Walk
+	AddUnlock(dkSkills, 61, {["id"] = 51986}); -- On a Pale Horse
+	AddUnlock(dkSkills, 62, {["id"] = 47528}); -- Mind Freeze
+	AddUnlock(dkSkills, 63, {["id"] = 45524, ["specs"] = {251, 252}}); -- Chains of Ice
+	AddUnlock(dkSkills, 63, {["id"] = 81136, ["specs"] = {250}}); -- Crimson Scourge
+	AddUnlock(dkSkills, 64, {["id"] = 108199, ["specs"] = {250}}); -- Gorefiend's Grasp
+	AddUnlock(dkSkills, 64, {["id"] = 49530, ["specs"] = {252}}); -- Sudden Doom
+	AddUnlock(dkSkills, 66, {["id"] = 3714}); -- Path of Frost
+	AddUnlock(dkSkills, 69, {["id"] = 111673}); -- Control Undead
+	AddUnlock(dkSkills, 70, {["id"] = 53344}); -- Rune of the Fallen Crusader
+	AddUnlock(dkSkills, 72, {["id"] = 61999}); -- Raise Ally
+	AddUnlock(dkSkills, 72, {["id"] = 62158}); -- Rune of the Stoneskin Gargoyle
+	AddUnlock(dkSkills, 74, {["id"] = 63560, ["specs"] = {252}}); -- Dark Transformation
+	AddUnlock(dkSkills, 75, {["id"] = 49206, ["specs"] = {252}}); -- Summon Gargoyle
+	AddUnlock(dkSkills, 76, {["id"] = 161797, ["specs"] = {250}}); -- Riposte
+	AddUnlock(dkSkills, 78, {["id"] = 77513, ["specs"] = {250}}); -- Mastery: Blood Shield
+	AddUnlock(dkSkills, 78, {["id"] = 77515, ["specs"] = {252}}); -- Mastery: Dreadblade
+	AddUnlock(dkSkills, 78, {["id"] = 77514, ["specs"] = {251}}); -- Mastery: Frozen Heart
+	AddUnlock(dkSkills, 82, {["id"] = 42650, ["specs"] = {252}}); -- Army of the Dead
 
-_addonData.DEATHKNIGHT = {};
-_addonData.DEATHKNIGHT.Skills = dkSkills;
-_addonData.DEATHKNIGHT.Specs = dkSpecs;
+_addonData.Skills = dkSkills;
+_addonData.Specs = dkSpecs;
+end
 
 --
 -- HUNTER
 --
 
-local hunterSpecs = {};
-table.insert(hunterSpecs, 253); -- Beast Mastery
-table.insert(hunterSpecs, 254); -- Marksmanship
-table.insert(hunterSpecs, 255); -- Survival
+if (playerClass == "HUNTER") then
+local hunterSpecs = {
+	253 -- Beast Mastery
+	,254 -- Marksmanship
+	,255 -- Survival
+};
 
-local hunterSkills = {};
-table.insert(hunterSkills, {["id"] = 56641, ["level"] = 3}); -- Steady Shot
-table.insert(hunterSkills, {["id"] = 1494, ["level"] = 4}); -- Track Beasts
-table.insert(hunterSkills, {["id"] = 19878, ["level"] = 4}); -- Track Demons
-table.insert(hunterSkills, {["id"] = 19879, ["level"] = 4}); -- Track Dragonkin
-table.insert(hunterSkills, {["id"] = 19880, ["level"] = 4}); -- Track Elementals
-table.insert(hunterSkills, {["id"] = 19882, ["level"] = 4}); -- Track Giants
-table.insert(hunterSkills, {["id"] = 19885, ["level"] = 4}); -- Track Hidden
-table.insert(hunterSkills, {["id"] = 19883, ["level"] = 4}); -- Track Humanoids
-table.insert(hunterSkills, {["id"] = 19884, ["level"] = 4}); -- Track Undead
-table.insert(hunterSkills, {["id"] = 5116, ["level"] = 8}); -- Concussive Shot
-table.insert(hunterSkills, {["id"] = 19434, ["level"] = 10, ["specs"] = {254}}); -- Aimed Shot
-table.insert(hunterSkills, {["id"] = 53270, ["level"] = 10, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Exotic Beasts
-table.insert(hunterSkills, {["id"] = 53301, ["level"] = 10, ["specs"] = {255}}); -- Explosive Shot
-table.insert(hunterSkills, {["id"] = 34026, ["level"] = 10, ["specs"] = {253}}); -- Kill Command
-table.insert(hunterSkills, {["id"] = 164856, ["level"] = 10, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Survivalist
-table.insert(hunterSkills, {["id"] = 63458, ["level"] = 10, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Trap Mastery
-table.insert(hunterSkills, {["id"] = 1462, ["level"] = 10}); -- Beast Lore
-table.insert(hunterSkills, {["id"] = 83242, ["level"] = 10}); -- Call Pet 2
-table.insert(hunterSkills, {["id"] = 93321, ["level"] = 10, ["subText"] = STRING_PASSIVE}); -- Control Pet
-table.insert(hunterSkills, {["id"] = 2641, ["level"] = 10}); -- Dismiss Pet
-table.insert(hunterSkills, {["id"] = 1515, ["level"] = 10}); -- Tame Beast
-table.insert(hunterSkills, {["id"] = 6991, ["level"] = 11}); -- Feed Pet
-table.insert(hunterSkills, {["id"] = 781, ["level"] = 14}); -- Disengage
-table.insert(hunterSkills, {["id"] = 6197, ["level"] = 16}); -- Eagle Eye
-table.insert(hunterSkills, {["id"] = 34483, ["level"] = 20, ["specs"] = {254}, ["subText"] = STRING_PASSIVE}); -- Careful Aim
-table.insert(hunterSkills, {["id"] = 34954, ["level"] = 20, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Go for the Throat
-table.insert(hunterSkills, {["id"] = 147362, ["level"] = 22}); -- Counter Shot
-table.insert(hunterSkills, {["id"] = 115939, ["level"] = 24, ["specs"] = {253}}); -- Beast Cleave
-table.insert(hunterSkills, {["id"] = 5118, ["level"] = 24}); -- Aspect of the Cheetah
-table.insert(hunterSkills, {["id"] = 2643, ["level"] = 24}); -- Multi
-table.insert(hunterSkills, {["id"] = 1499, ["level"] = 28}); -- Freezing Trap
-table.insert(hunterSkills, {["id"] = 19623, ["level"] = 30, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Frenzy
-table.insert(hunterSkills, {["id"] = 82692, ["level"] = 32, ["specs"] = {253}}); -- Focus Fire
-table.insert(hunterSkills, {["id"] = 5384, ["level"] = 32}); -- Feign Death
-table.insert(hunterSkills, {["id"] = 53351, ["level"] = 35, ["specs"] = {253, 254}}); -- Kill Shot
-table.insert(hunterSkills, {["id"] = 19801, ["level"] = 35}); -- Tranquilizing Shot
-table.insert(hunterSkills, {["id"] = 13813, ["level"] = 38}); -- Explosive Trap
-table.insert(hunterSkills, {["id"] = 1543, ["level"] = 38}); -- Flare
-table.insert(hunterSkills, {["id"] = 19506, ["level"] = 39, ["subText"] = STRING_PASSIVE}); -- Trueshot Aura
-table.insert(hunterSkills, {["id"] = 19574, ["level"] = 40, ["specs"] = {253}}); -- Bestial Wrath
-table.insert(hunterSkills, {["id"] = 8737, ["level"] = 40, ["subText"] = STRING_PASSIVE}); -- Mail
-table.insert(hunterSkills, {["id"] = 83243, ["level"] = 42}); -- Call Pet 3
-table.insert(hunterSkills, {["id"] = 34477, ["level"] = 42}); -- Misdirection
-table.insert(hunterSkills, {["id"] = 53260, ["level"] = 43, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Cobra Strikes
-table.insert(hunterSkills, {["id"] = 35110, ["level"] = 45, ["specs"] = {254}, ["subText"] = STRING_PASSIVE}); -- Bombardment
-table.insert(hunterSkills, {["id"] = 13809, ["level"] = 46}); -- Ice Trap
-table.insert(hunterSkills, {["id"] = 77769, ["level"] = 48}); -- Trap Launcher
-table.insert(hunterSkills, {["id"] = 3674, ["level"] = 50, ["specs"] = {255}}); -- Black Arrow
-table.insert(hunterSkills, {["id"] = 86538, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Black Arrow
-table.insert(hunterSkills, {["id"] = 20736, ["level"] = 52}); -- Distracting Shot
-table.insert(hunterSkills, {["id"] = 3045, ["level"] = 54, ["specs"] = {254}}); -- Rapid Fire
-table.insert(hunterSkills, {["id"] = 19387, ["level"] = 55, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Entrapment
-table.insert(hunterSkills, {["id"] = 13159, ["level"] = 56}); -- Aspect of the Pack
-table.insert(hunterSkills, {["id"] = 56315, ["level"] = 58, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Kindred Spirits
-table.insert(hunterSkills, {["id"] = 53209, ["level"] = 60, ["specs"] = {254}}); -- Chimaera Shot
-table.insert(hunterSkills, {["id"] = 83244, ["level"] = 62}); -- Call Pet 4
-table.insert(hunterSkills, {["id"] = 53253, ["level"] = 63, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Invigoration
-table.insert(hunterSkills, {["id"] = 87935, ["level"] = 68, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Serpent Sting
-table.insert(hunterSkills, {["id"] = 53271, ["level"] = 74}); -- Master
-table.insert(hunterSkills, {["id"] = 19263, ["level"] = 78}); -- Deterrence
-table.insert(hunterSkills, {["id"] = 76658, ["level"] = 80, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Mastery: Essence of the Viper
-table.insert(hunterSkills, {["id"] = 76657, ["level"] = 80, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Mastery: Master of Beasts
-table.insert(hunterSkills, {["id"] = 76659, ["level"] = 80, ["specs"] = {254}, ["subText"] = STRING_PASSIVE}); -- Mastery: Sniper Training
-table.insert(hunterSkills, {["id"] = 77767, ["level"] = 81, ["specs"] = {253, 255}}); -- Cobra Shot
-table.insert(hunterSkills, {["id"] = 83245, ["level"] = 82}); -- Call Pet 5
-table.insert(hunterSkills, {["id"] = 51753, ["level"] = 85}); -- Camouflage
-table.insert(hunterSkills, {["id"] = 165389, ["level"] = 90, ["specs"] = {253}, ["subText"] = STRING_PASSIVE}); -- Animal Handler
-table.insert(hunterSkills, {["id"] = 165378, ["level"] = 90, ["specs"] = {254}, ["subText"] = STRING_PASSIVE}); -- Lethal Shots
-table.insert(hunterSkills, {["id"] = 165396, ["level"] = 90, ["specs"] = {255}, ["subText"] = STRING_PASSIVE}); -- Lightning Reflexes
+local hunterSkills = { };
+	AddUnlock(hunterSkills, 4, {["id"] = 5116, ["specs"] = {253, 254}}); -- Concussive Shot
+	AddUnlock(hunterSkills, 4, {["id"] = 1494}); -- Track Beasts
+	AddUnlock(hunterSkills, 4, {["id"] = 19878}); -- Track Demons
+	AddUnlock(hunterSkills, 4, {["id"] = 19879}); -- Track Dragonkin
+	AddUnlock(hunterSkills, 4, {["id"] = 19880}); -- Track Elementals
+	AddUnlock(hunterSkills, 4, {["id"] = 19882}); -- Track Giants
+	AddUnlock(hunterSkills, 4, {["id"] = 19885}); -- Track Hidden
+	AddUnlock(hunterSkills, 4, {["id"] = 19883}); -- Track Humanoids
+	AddUnlock(hunterSkills, 4, {["id"] = 19884}); -- Track Undead
+	AddUnlock(hunterSkills, 6, {["id"] = 781, ["specs"] = {253, 254}}); -- Disengage
+	AddUnlock(hunterSkills, 10, {["id"] = 185358, ["specs"] = {254}}); -- Arcane Shot
+	AddUnlock(hunterSkills, 10, {["id"] = 53270, ["specs"] = {253}}); -- Exotic Beasts
+	AddUnlock(hunterSkills, 10, {["id"] = 190925, ["specs"] = {255}}); -- Harpoon
+	AddUnlock(hunterSkills, 10, {["id"] = 34026, ["specs"] = {253}}); -- Kill Command
+	AddUnlock(hunterSkills, 10, {["id"] = 186270, ["specs"] = {255}}); -- Raptor Strike
+	AddUnlock(hunterSkills, 10, {["id"] = 195645, ["specs"] = {255}}); -- Wing Clip
+	AddUnlock(hunterSkills, 10, {["id"] = 93321}); -- Control Pet
+	AddUnlock(hunterSkills, 10, {["id"] = 2641}); -- Dismiss Pet
+	AddUnlock(hunterSkills, 12, {["id"] = 19434, ["specs"] = {254}}); -- Aimed Shot
+	AddUnlock(hunterSkills, 12, {["id"] = 120679, ["specs"] = {253}}); -- Dire Beast
+	AddUnlock(hunterSkills, 12, {["id"] = 202800, ["specs"] = {255}}); -- Flanking Strike
+	AddUnlock(hunterSkills, 13, {["id"] = 1462}); -- Beast Lore
+	AddUnlock(hunterSkills, 13, {["id"] = 83242}); -- Call Pet 2 
+	AddUnlock(hunterSkills, 13, {["id"] = 6991}); -- Feed Pet
+	AddUnlock(hunterSkills, 13, {["id"] = 1515}); -- Tame Beast
+	AddUnlock(hunterSkills, 14, {["id"] = 193265, ["specs"] = {255}}); -- Hatchet Toss
+	AddUnlock(hunterSkills, 14, {["id"] = 136}); -- Mend Pet
+	AddUnlock(hunterSkills, 16, {["id"] = 2643, ["specs"] = {253, 254}}); -- Multi-Shot
+	AddUnlock(hunterSkills, 16, {["id"] = 164856, ["specs"] = {255}}); -- Survivalist
+	AddUnlock(hunterSkills, 18, {["id"] = 6197}); -- Eagle Eye
+	AddUnlock(hunterSkills, 18, {["id"] = 187650, ["specs"] = {253, 254, 255}}); -- Freezing Traps
+	AddUnlock(hunterSkills, 20, {["id"] = 185987, ["specs"] = {254}}); -- Hunter's Mark 
+	AddUnlock(hunterSkills, 20, {["id"] = 185901, ["specs"] = {254}}); -- Marked Shot 
+	AddUnlock(hunterSkills, 20, {["id"] = 190928, ["specs"] = {255}}); -- Mongoose Bite
+	AddUnlock(hunterSkills, 20, {["id"] = 185789, ["specs"] = {253}}); -- Wild Call
+	AddUnlock(hunterSkills, 22, {["id"] = 186257}); -- Aspect of the Cheetah
+	AddUnlock(hunterSkills, 24, {["id"] = 109304, ["specs"] = {253, 254, 255}}); -- Exhilaration
+	AddUnlock(hunterSkills, 26, {["id"] = 193530, ["specs"] = {253}}); -- Aspect of the Wild
+	AddUnlock(hunterSkills, 26, {["id"] = 186387, ["specs"] = {254}}); -- Bursting Shot
+	AddUnlock(hunterSkills, 26, {["id"] = 185855, ["specs"] = {255}}); -- Lacerate
+	AddUnlock(hunterSkills, 28, {["id"] = 5384}); -- Feign Death
+	AddUnlock(hunterSkills, 32, {["id"] = 210000}); -- Wake Up 
+	AddUnlock(hunterSkills, 32, {["id"] = 147362, ["specs"] = {253, 254}}); -- Counter Shot
+	AddUnlock(hunterSkills, 32, {["id"] = 187707, ["specs"] = {255}}); -- Muzzle
+	AddUnlock(hunterSkills, 34, {["id"] = 83243}); -- Call Pet 3 
+	AddUnlock(hunterSkills, 36, {["id"] = 187698, ["specs"] = {253, 254, 255}}); -- Tar Trap 
+	AddUnlock(hunterSkills, 38, {["id"] = 1543}); -- Flare
+	AddUnlock(hunterSkills, 40, {["id"] = 186289, ["specs"] = {255}}); -- Aspect of the Eagle
+	AddUnlock(hunterSkills, 40, {["id"] = 19574, ["specs"] = {253}}); -- Bestial Wrath
+	AddUnlock(hunterSkills, 40, {["id"] = 193526, ["specs"] = {254}}); -- Trueshot
+	AddUnlock(hunterSkills, 42, {["id"] = 187708, ["specs"] = {255}}); -- Carve
+	AddUnlock(hunterSkills, 42, {["id"] = 34477, ["specs"] = {253, 254}}); -- Misdiraction
+	AddUnlock(hunterSkills, 44, {["id"] = 56315, ["specs"] = {253}}); -- Kindrad Spirits
+	AddUnlock(hunterSkills, 44, {["id"] = 231554, ["specs"] = {254}}); -- Marksman's Focus
+	AddUnlock(hunterSkills, 44, {["id"] = 234955, ["specs"] = {255}}); -- Waylay
+	AddUnlock(hunterSkills, 48, {["id"] = 231546, ["specs"] = {253, 254, 255}}); -- Exhilaration 2 
+	AddUnlock(hunterSkills, 50, {["id"] = 115939, ["specs"] = {253}}); -- Beast Cleave 
+	AddUnlock(hunterSkills, 50, {["id"] = 35110, ["specs"] = {254}}); -- Bombardment 
+	AddUnlock(hunterSkills, 50, {["id"] = 191433, ["specs"] = {255}}); -- Explosive Trap 
+	AddUnlock(hunterSkills, 54, {["id"] = 231555, ["specs"] = {255}}); -- Aspect of the Eagle 2 
+	AddUnlock(hunterSkills, 54, {["id"] = 231548, ["specs"] = {253}}); -- Beastial Wrath 2 
+	AddUnlock(hunterSkills, 57, {["id"] = 83244}); -- Call Pet 4 
+	AddUnlock(hunterSkills, 58, {["id"] = 212658, ["specs"] = {254}}); -- Hunting Party 
+	AddUnlock(hunterSkills, 65, {["id"] = 231549, ["specs"] = {253, 254}}); -- Disengage 2 
+	AddUnlock(hunterSkills, 65, {["id"] = 231550, ["specs"] = {255}}); -- Harpoon 2 
+	AddUnlock(hunterSkills, 78, {["id"] = 237327, ["specs"] = {255}}); -- Flanking Strike 2 
+	AddUnlock(hunterSkills, 78, {["id"] = 191334, ["specs"] = {255}}); -- Mastery: Hunting Companion
+	AddUnlock(hunterSkills, 78, {["id"] = 76657, ["specs"] = {253}}); -- Mastery: Master of Beasts
+	AddUnlock(hunterSkills, 78, {["id"] = 193468, ["specs"] = {254}}); -- Mastery: Sniper Training
+	AddUnlock(hunterSkills, 80, {["id"] = 83245}); -- Call Pet 5 
 
-_addonData.HUNTER = {};
-_addonData.HUNTER.Skills = hunterSkills;
-_addonData.HUNTER.Specs = hunterSpecs;
+_addonData.Skills = hunterSkills;
+_addonData.Specs = hunterSpecs;
+
+end
 
 --
 -- PRIEST
 --
 
-local priestSpecs = {};
-table.insert(priestSpecs, 256); -- Disciplin
-table.insert(priestSpecs, 257); -- Holy
-table.insert(priestSpecs, 258); -- Shadow
+if (playerClass == "PRIEST") then
+local priestSpecs = {
+	256 -- Disciplin
+	,257 -- Holy
+	,258 -- Shadow
+};
 
-local priestSkills = {};
-table.insert(priestSkills, {["id"] = 589, ["level"] = 3}); -- Shadow Word: Pain
-table.insert(priestSkills, {["id"] = 81782, ["level"] = 5}); -- Power Word: Barrier
-table.insert(priestSkills, {["id"] = 17, ["level"] = 5}); -- Power Word: Shield
-table.insert(priestSkills, {["id"] = 2061, ["level"] = 7}); -- Flash Heal
-table.insert(priestSkills, {["id"] = 52798, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Borrowed Time
-table.insert(priestSkills, {["id"] = 47517, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Grace
-table.insert(priestSkills, {["id"] = 88625, ["level"] = 10, ["specs"] = {257}}); -- Holy Word: Chastise
-table.insert(priestSkills, {["id"] = 95860, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(priestSkills, {["id"] = 95861, ["level"] = 10, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(priestSkills, {["id"] = 15407, ["level"] = 10, ["specs"] = {258}}); -- Mind Flay
-table.insert(priestSkills, {["id"] = 47540, ["level"] = 10, ["specs"] = {256}}); -- Penance
-table.insert(priestSkills, {["id"] = 47536, ["level"] = 10, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Rapture
-table.insert(priestSkills, {["id"] = 87336, ["level"] = 10, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Spiritual Healing
-table.insert(priestSkills, {["id"] = 14914, ["level"] = 18, ["specs"] = {256, 257}}); -- Holy Fire
-table.insert(priestSkills, {["id"] = 2006, ["level"] = 18}); -- Resurrection
-table.insert(priestSkills, {["id"] = 132157, ["level"] = 20, ["specs"] = {256}}); -- Holy Nova
-table.insert(priestSkills, {["id"] = 88684, ["level"] = 20}); -- Holy Word: Serenity
-table.insert(priestSkills, {["id"] = 2944, ["level"] = 21, ["specs"] = {258}}); -- Devouring Plague
-table.insert(priestSkills, {["id"] = 8092, ["level"] = 21, ["specs"] = {258}}); -- Mind Blast
-table.insert(priestSkills, {["id"] = 95740, ["level"] = 21, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadow Orbs
-table.insert(priestSkills, {["id"] = 527, ["level"] = 22, ["specs"] = {256, 257}}); -- Purify
-table.insert(priestSkills, {["id"] = 21562, ["level"] = 22}); -- Power Word: Fortitude
-table.insert(priestSkills, {["id"] = 47515, ["level"] = 24, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Divine Aegis
-table.insert(priestSkills, {["id"] = 15473, ["level"] = 24, ["specs"] = {258}}); -- Shadowform
-table.insert(priestSkills, {["id"] = 586, ["level"] = 24}); -- Fade
-table.insert(priestSkills, {["id"] = 49868, ["level"] = 26, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mind Quickening
-table.insert(priestSkills, {["id"] = 139, ["level"] = 26, ["specs"] = {257}}); -- Renew
-table.insert(priestSkills, {["id"] = 528, ["level"] = 26}); -- Dispel Magic
-table.insert(priestSkills, {["id"] = 34914, ["level"] = 28, ["specs"] = {258}}); -- Vampiric Touch
-table.insert(priestSkills, {["id"] = 48045, ["level"] = 28}); -- Mind Sear
-table.insert(priestSkills, {["id"] = 45243, ["level"] = 30, ["specs"] = {256, 257}, ["subText"] = STRING_PASSIVE}); -- Focused Will
-table.insert(priestSkills, {["id"] = 20711, ["level"] = 30, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Spirit of Redemption
-table.insert(priestSkills, {["id"] = 9484, ["level"] = 32}); -- Shackle Undead
-table.insert(priestSkills, {["id"] = 2060, ["level"] = 34, ["specs"] = {256, 257}}); -- Heal
-table.insert(priestSkills, {["id"] = 63733, ["level"] = 34, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Serendipity
-table.insert(priestSkills, {["id"] = 1706, ["level"] = 34}); -- Levitate
-table.insert(priestSkills, {["id"] = 126135, ["level"] = 36, ["specs"] = {257}}); -- Lightwell
-table.insert(priestSkills, {["id"] = 81749, ["level"] = 38, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Atonement
-table.insert(priestSkills, {["id"] = 78203, ["level"] = 42, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Shadowy Apparitions
-table.insert(priestSkills, {["id"] = 2096, ["level"] = 42}); -- Mind Vision
-table.insert(priestSkills, {["id"] = 34433, ["level"] = 42}); -- Shadowfiend
-table.insert(priestSkills, {["id"] = 81662, ["level"] = 44, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Evangelism
-table.insert(priestSkills, {["id"] = 73510, ["level"] = 44, ["specs"] = {258}}); -- Mind Spike
-table.insert(priestSkills, {["id"] = 596, ["level"] = 46, ["specs"] = {256, 257}}); -- Prayer of Healing
-table.insert(priestSkills, {["id"] = 32379, ["level"] = 46, ["specs"] = {258}}); -- Shadow Word: Death
-table.insert(priestSkills, {["id"] = 32546, ["level"] = 48, ["specs"] = {257}}); -- Binding Heal
-table.insert(priestSkills, {["id"] = 89745, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Archangel
-table.insert(priestSkills, {["id"] = 81700, ["level"] = 50, ["specs"] = {256}}); -- Archangel
-table.insert(priestSkills, {["id"] = 34861, ["level"] = 50, ["specs"] = {257}}); -- Circle of Healing
-table.insert(priestSkills, {["id"] = 15487, ["level"] = 52, ["specs"] = {256, 258}}); -- Silence
-table.insert(priestSkills, {["id"] = 6346, ["level"] = 54}); -- Fear Ward
-table.insert(priestSkills, {["id"] = 81209, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Chastise
-table.insert(priestSkills, {["id"] = 81206, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Sanctuary
-table.insert(priestSkills, {["id"] = 81208, ["level"] = 56, ["specs"] = {257}}); -- Chakra: Serenity
-table.insert(priestSkills, {["id"] = 33206, ["level"] = 58, ["specs"] = {256}}); -- Pain Suppression
-table.insert(priestSkills, {["id"] = 47585, ["level"] = 60, ["specs"] = {258}}); -- Dispersion
-table.insert(priestSkills, {["id"] = 95649, ["level"] = 64, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Rapid Renewal
-table.insert(priestSkills, {["id"] = 33076, ["level"] = 68}); -- Prayer of Mending
-table.insert(priestSkills, {["id"] = 47788, ["level"] = 70, ["specs"] = {257}}); -- Guardian Spirit
-table.insert(priestSkills, {["id"] = 62618, ["level"] = 70, ["specs"] = {256}}); -- Power Word: Barrier
-table.insert(priestSkills, {["id"] = 32375, ["level"] = 72}); -- Mass Dispel
-table.insert(priestSkills, {["id"] = 64044, ["level"] = 74, ["specs"] = {258}}); -- Psychic Horror
-table.insert(priestSkills, {["id"] = 64843, ["level"] = 78, ["specs"] = {257}}); -- Divine Hymn
-table.insert(priestSkills, {["id"] = 15286, ["level"] = 78, ["specs"] = {258}}); -- Vampiric Embrace
-table.insert(priestSkills, {["id"] = 77485, ["level"] = 80, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Mastery: Echo of Light
-table.insert(priestSkills, {["id"] = 77486, ["level"] = 80, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastery: Mental Anguish
-table.insert(priestSkills, {["id"] = 77484, ["level"] = 80, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Mastery: Shield Discipline
-table.insert(priestSkills, {["id"] = 73325, ["level"] = 84}); -- Leap of Faith
-table.insert(priestSkills, {["id"] = 165362, ["level"] = 90, ["specs"] = {257}, ["subText"] = STRING_PASSIVE}); -- Divine Providence
-table.insert(priestSkills, {["id"] = 165376, ["level"] = 90, ["specs"] = {256}, ["subText"] = STRING_PASSIVE}); -- Enlightenment
-table.insert(priestSkills, {["id"] = 165370, ["level"] = 90, ["specs"] = {258}, ["subText"] = STRING_PASSIVE}); -- Mastermind
+local priestSkills = { };
+	AddUnlock(priestSkills, 3, {["id"] = 589, ["specs"] = {256, 258}}); -- Shadow Word: Pain 
+	AddUnlock(priestSkills, 5, {["id"] = 2061, ["specs"] = {256, 257, 258}}); -- Flash Heal
+	AddUnlock(priestSkills, 8, {["id"] = 17, ["specs"] = {256, 258}}); -- Power Word: Shield 
+	AddUnlock(priestSkills, 10, {["id"] = 14914, ["specs"] = {257}}); -- Holy Shock
+	AddUnlock(priestSkills, 10, {["id"] = 2050, ["specs"] = {257}}); -- Holy Word: Serenity 
+	AddUnlock(priestSkills, 10, {["id"] = 8092, ["specs"] = {258}}); -- Mind Blast
+	AddUnlock(priestSkills, 10, {["id"] = 15407, ["specs"] = {258}}); -- Mind Flay 
+	AddUnlock(priestSkills, 10, {["id"] = 47540, ["specs"] = {256}}); -- Penance
+	AddUnlock(priestSkills, 12, {["id"] = 139, ["specs"] = {257}}); -- Renew
+	AddUnlock(priestSkills, 12, {["id"] = 232698, ["specs"] = {258}}); -- Shadowform
+	AddUnlock(priestSkills, 13, {["id"] = 2096, ["specs"] = {256, 258}}); -- Mind Vision
+	AddUnlock(priestSkills, 14, {["id"] = 2006}); -- Resurrection
+	AddUnlock(priestSkills, 18, {["id"] = 88625, ["specs"] = {257}}); -- Holy Word: Chastise
+	AddUnlock(priestSkills, 18, {["id"] = 8122, ["specs"] = {256, 258}}); -- Penance
+	AddUnlock(priestSkills, 20, {["id"] = 81749, ["specs"] = {256}}); -- Atonement
+	AddUnlock(priestSkills, 20, {["id"] = 63733, ["specs"] = {257}}); -- Serendipity
+	AddUnlock(priestSkills, 20, {["id"] = 228260, ["specs"] = {258}}); -- Void Eruption
+	AddUnlock(priestSkills, 20, {["id"] = 228264, ["specs"] = {258}}); -- Voidform 
+	AddUnlock(priestSkills, 20, {["id"] = 228266, ["specs"] = {258}}); -- Void Bolt
+	AddUnlock(priestSkills, 22, {["id"] = 527, ["specs"] = {256, 257}}); -- Purify
+	AddUnlock(priestSkills, 22, {["id"] = 213634, ["specs"] = {258}}); -- Purify Disease
+	AddUnlock(priestSkills, 24, {["id"] = 2060, ["specs"] = {257}}); -- Heal
+	AddUnlock(priestSkills, 24, {["id"] = 200829, ["specs"] = {256}}); -- Plea
+	AddUnlock(priestSkills, 24, {["id"] = 34914, ["specs"] = {258}}); -- Vampiric Touch
+	AddUnlock(priestSkills, 26, {["id"] = 132157, ["specs"] = {257}}); -- Holy Nova
+	AddUnlock(priestSkills, 26, {["id"] = 234702, ["specs"] = {258}}); -- Mind Sear
+	AddUnlock(priestSkills, 28, {["id"] = 596, ["specs"] = {257}}); -- Prayer of Healing
+	AddUnlock(priestSkills, 28, {["id"] = 186263, ["specs"] = {256, 258}}); -- Shadow Mend
+	AddUnlock(priestSkills, 32, {["id"] = 1706, ["specs"] = {256, 257, 258}}); -- Levitate
+	AddUnlock(priestSkills, 32, {["id"] = 20711, ["specs"] = {257}}); -- Spirit of Redemption
+	AddUnlock(priestSkills, 34, {["id"] = 9484}); -- Shackle Undead
+	AddUnlock(priestSkills, 36, {["id"] = 231687, ["specs"] = {257}}); -- Holy Fire 2 
+	AddUnlock(priestSkills, 36, {["id"] = 231682, ["specs"] = {256}}); -- Smite 2 
+	AddUnlock(priestSkills, 36, {["id"] = 231688, ["specs"] = {258}}); -- Void Bolt 2 
+	AddUnlock(priestSkills, 38, {["id"] = 45243, ["specs"] = {256, 257}}); -- Focused Will
+	AddUnlock(priestSkills, 38, {["id"] = 78203, ["specs"] = {258}}); -- Shadowy Apparitions
+	AddUnlock(priestSkills, 40, {["id"] = 34861, ["specs"] = {257}}); -- Holy Word: Sanctify
+	AddUnlock(priestSkills, 40, {["id"] = 34433, ["specs"] = {256, 258}}); -- Shadowfiend 
+	AddUnlock(priestSkills, 42, {["id"] = 605}); -- Mind Control
+	AddUnlock(priestSkills, 44, {["id"] = 586}); -- Fade 
+	AddUnlock(priestSkills, 48, {["id"] = 47585, ["specs"] = {258}}); -- Dispersion
+	AddUnlock(priestSkills, 48, {["id"] = 47788, ["specs"] = {257}}); -- Guardian Spirit
+	AddUnlock(priestSkills, 48, {["id"] = 33206, ["specs"] = {256}}); -- Pain Suppression
+	AddUnlock(priestSkills, 50, {["id"] = 33076, ["specs"] = {257}}); -- Prayer of Mending
+	AddUnlock(priestSkills, 50, {["id"] = 47536, ["specs"] = {256}}); -- Rapture 
+	AddUnlock(priestSkills, 50, {["id"] = 32379, ["specs"] = {258}}); -- Shadow Word: Death
+	AddUnlock(priestSkills, 52, {["id"] = 19236, ["specs"] = {257}}); -- Desperate Prayer
+	AddUnlock(priestSkills, 52, {["id"] = 194509, ["specs"] = {256}}); -- Power Word: Radiance
+	AddUnlock(priestSkills, 52, {["id"] = 15487, ["specs"] = {258}}); -- Silence
+	AddUnlock(priestSkills, 56, {["id"] = 528}); -- Dispel Magic 
+	AddUnlock(priestSkills, 63, {["id"] = 73325, ["specs"] = {256, 257}}); -- Leap of Faith
+	AddUnlock(priestSkills, 65, {["id"] = 231689, ["specs"] = {258}}); -- Shadow Word: Death
+	AddUnlock(priestSkills, 66, {["id"] = 212036, ["specs"] = {256, 257}}); -- Mass Resurrection
+	AddUnlock(priestSkills, 70, {["id"] = 64843, ["specs"] = {257}}); -- Divine Hymn
+	AddUnlock(priestSkills, 70, {["id"] = 62618, ["specs"] = {256}}); -- Power Word: Barrier
+	AddUnlock(priestSkills, 70, {["id"] = 15286, ["specs"] = {258}}); -- Vampiric Embrace
+	AddUnlock(priestSkills, 78, {["id"] = 77484, ["specs"] = {256}}); -- Mastery: Absolution
+	AddUnlock(priestSkills, 78, {["id"] = 77485, ["specs"] = {257}}); -- Mastery: Echo of Light
+	AddUnlock(priestSkills, 78, {["id"] = 77486, ["specs"] = {258}}); -- Mastery: Madness
+	AddUnlock(priestSkills, 80, {["id"] = 32375}); -- Mass Dispel
 
-_addonData.PRIEST = {};
-_addonData.PRIEST.Skills = priestSkills;
-_addonData.PRIEST.Specs = priestSpecs;
+_addonData.Skills = priestSkills;
+_addonData.Specs = priestSpecs;
+
+end
 
 --
 -- ROGUE
 --
 
-local rogueSpecs = {};
-table.insert(rogueSpecs, 259); -- Assassination
-table.insert(rogueSpecs, 260); -- Combat
-table.insert(rogueSpecs, 261); -- Subtlety
+if (playerClass == "ROGUE") then
+local rogueSpecs = {
+	259 -- Assassination
+	,260 -- Outlaw
+	,261 -- Subtlety
+};
 
-local rogueSkills = {};
-table.insert(rogueSkills, {["id"] = 2098, ["level"] = 3}); -- Eviscerate
-table.insert(rogueSkills, {["id"] = 1784, ["level"] = 5}); -- Stealth
-table.insert(rogueSkills, {["id"] = 8676, ["level"] = 6}); -- Ambush
-table.insert(rogueSkills, {["id"] = 5277, ["level"] = 8}); -- Evasion
-table.insert(rogueSkills, {["id"] = 84601, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Assassin's Resolve
-table.insert(rogueSkills, {["id"] = 13877, ["level"] = 10, ["specs"] = {260}}); -- Blade Flurry
-table.insert(rogueSkills, {["id"] = 79152, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Energetic Recovery
-table.insert(rogueSkills, {["id"] = 91023, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Find Weakness
-table.insert(rogueSkills, {["id"] = 16511, ["level"] = 10, ["specs"] = {261}}); -- Hemorrhage
-table.insert(rogueSkills, {["id"] = 14117, ["level"] = 10, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Improved Poisons
-table.insert(rogueSkills, {["id"] = 31223, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Master of Subtlety
-table.insert(rogueSkills, {["id"] = 1329, ["level"] = 10, ["specs"] = {259}}); -- Mutilate
-table.insert(rogueSkills, {["id"] = 31220, ["level"] = 10, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sinister Calling
-table.insert(rogueSkills, {["id"] = 61329, ["level"] = 10, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Vitality
-table.insert(rogueSkills, {["id"] = 2823, ["level"] = 10}); -- Deadly Poison
-table.insert(rogueSkills, {["id"] = 6770, ["level"] = 12}); -- Sap
-table.insert(rogueSkills, {["id"] = 5171, ["level"] = 14}); -- Slice and Dice
-table.insert(rogueSkills, {["id"] = 921, ["level"] = 15}); -- Pick Pocket
-table.insert(rogueSkills, {["id"] = 73651, ["level"] = 16}); -- Recuperate
-table.insert(rogueSkills, {["id"] = 1766, ["level"] = 18}); -- Kick
-table.insert(rogueSkills, {["id"] = 51667, ["level"] = 20, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Cut to the Chase
-table.insert(rogueSkills, {["id"] = 32645, ["level"] = 20, ["specs"] = {259}}); -- Envenom
-table.insert(rogueSkills, {["id"] = 84617, ["level"] = 20, ["specs"] = {260}}); -- Revealing Strike
-table.insert(rogueSkills, {["id"] = 3408, ["level"] = 20}); -- Crippling Poison
-table.insert(rogueSkills, {["id"] = 1776, ["level"] = 22}); -- Gouge
-table.insert(rogueSkills, {["id"] = 1804, ["level"] = 24}); -- Pick Lock
-table.insert(rogueSkills, {["id"] = 2983, ["level"] = 26}); -- Sprint
-table.insert(rogueSkills, {["id"] = 1725, ["level"] = 28}); -- Distract
-table.insert(rogueSkills, {["id"] = 35551, ["level"] = 30, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Combat Potency
-table.insert(rogueSkills, {["id"] = 14183, ["level"] = 30, ["specs"] = {261}}); -- Premeditation
-table.insert(rogueSkills, {["id"] = 14190, ["level"] = 30, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Seal Fate
-table.insert(rogueSkills, {["id"] = 1833, ["level"] = 30}); -- Cheap Shot
-table.insert(rogueSkills, {["id"] = 113742, ["level"] = 30, ["subText"] = STRING_PASSIVE}); -- Swiftblade
-table.insert(rogueSkills, {["id"] = 8679, ["level"] = 30}); -- Wound Poison
-table.insert(rogueSkills, {["id"] = 14161, ["level"] = 32, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Ruthlessness
-table.insert(rogueSkills, {["id"] = 1856, ["level"] = 34}); -- Vanish
-table.insert(rogueSkills, {["id"] = 2094, ["level"] = 38}); -- Blind
-table.insert(rogueSkills, {["id"] = 13750, ["level"] = 40, ["specs"] = {260}}); -- Adrenaline Rush
-table.insert(rogueSkills, {["id"] = 53, ["level"] = 40, ["specs"] = {261}}); -- Backstab
-table.insert(rogueSkills, {["id"] = 121152, ["level"] = 40, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Blindside
-table.insert(rogueSkills, {["id"] = 111240, ["level"] = 40, ["specs"] = {259}}); -- Dispatch
-table.insert(rogueSkills, {["id"] = 408, ["level"] = 40}); -- Kidney Shot
-table.insert(rogueSkills, {["id"] = 2836, ["level"] = 42}); -- Detect Traps
-table.insert(rogueSkills, {["id"] = 1966, ["level"] = 44}); -- Feint
-table.insert(rogueSkills, {["id"] = 1943, ["level"] = 46, ["specs"] = {259, 261}}); -- Rupture
-table.insert(rogueSkills, {["id"] = 79134, ["level"] = 46, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Venomous Wounds
-table.insert(rogueSkills, {["id"] = 703, ["level"] = 48}); -- Garrote
-table.insert(rogueSkills, {["id"] = 1860, ["level"] = 48, ["subText"] = STRING_PASSIVE}); -- Safe Fall
-table.insert(rogueSkills, {["id"] = 51701, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Honor Among Thieves
-table.insert(rogueSkills, {["id"] = 86092, ["level"] = 50, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(rogueSkills, {["id"] = 58423, ["level"] = 54, ["specs"] = {259, 261}, ["subText"] = STRING_PASSIVE}); -- Relentless Strikes
-table.insert(rogueSkills, {["id"] = 31224, ["level"] = 58}); -- Cloak of Shadows
-table.insert(rogueSkills, {["id"] = 84654, ["level"] = 60, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Bandit
-table.insert(rogueSkills, {["id"] = 79147, ["level"] = 60, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Sanguinary Vein
-table.insert(rogueSkills, {["id"] = 31209, ["level"] = 62, ["subText"] = STRING_PASSIVE}); -- Fleet Footed
-table.insert(rogueSkills, {["id"] = 51723, ["level"] = 66, ["specs"] = {259, 261}}); -- Fan of Knives
-table.insert(rogueSkills, {["id"] = 14185, ["level"] = 68}); -- Preparation
-table.insert(rogueSkills, {["id"] = 5938, ["level"] = 74}); -- Shiv
-table.insert(rogueSkills, {["id"] = 114018, ["level"] = 76}); -- Shroud of Concealment
-table.insert(rogueSkills, {["id"] = 57934, ["level"] = 78}); -- Tricks of the Trade
-table.insert(rogueSkills, {["id"] = 51690, ["level"] = 80, ["specs"] = {260}}); -- Killing Spree
-table.insert(rogueSkills, {["id"] = 76808, ["level"] = 80, ["specs"] = {261}, ["subText"] = STRING_PASSIVE}); -- Mastery: Executioner
-table.insert(rogueSkills, {["id"] = 76806, ["level"] = 80, ["specs"] = {260}, ["subText"] = STRING_PASSIVE}); -- Mastery: Main Gauche
-table.insert(rogueSkills, {["id"] = 76803, ["level"] = 80, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Mastery: Potent Poisons
-table.insert(rogueSkills, {["id"] = 51713, ["level"] = 80, ["specs"] = {261}}); -- Shadow Dance
-table.insert(rogueSkills, {["id"] = 79140, ["level"] = 80, ["specs"] = {259}}); -- Vendetta
-table.insert(rogueSkills, {["id"] = 121411, ["level"] = 83}); -- Crimson Tempest
-table.insert(rogueSkills, {["id"] = 76577, ["level"] = 85}); -- Smoke Bomb
-table.insert(rogueSkills, {["id"] = 165390, ["level"] = 90, ["specs"] = {259}, ["subText"] = STRING_PASSIVE}); -- Master Poisoner
+local rogueSkills = { };
+	AddUnlock(rogueSkills, 3, {["id"] = 196819, ["specs"] = {259, 261}}); -- Eviscerate
+	AddUnlock(rogueSkills, 5, {["id"] = 1784, ["specs"] = {259, 260, 261}}); -- Stealth
+	AddUnlock(rogueSkills, 8, {["id"] = 1833, ["specs"] = {259, 260, 261}}); -- Cheap Shot 
+	AddUnlock(rogueSkills, 10, {["id"] = 84601, ["specs"] = {259}}); -- Assassin's Resolve 
+	AddUnlock(rogueSkills, 10, {["id"] = 53, ["specs"] = {261}}); -- Backstab
+	AddUnlock(rogueSkills, 10, {["id"] = 2823, ["specs"] = {259}}); -- Deadly Poison
+	AddUnlock(rogueSkills, 10, {["id"] = 79152, ["specs"] = {261}}); -- Energy Recovery
+	AddUnlock(rogueSkills, 10, {["id"] = 14117, ["specs"] = {259}}); -- Improved Poisons
+	AddUnlock(rogueSkills, 10, {["id"] = 185565, ["specs"] = {259}}); -- Poisoned Knife
+	AddUnlock(rogueSkills, 10, {["id"] = 2098, ["specs"] = {260}}); -- Run Through
+	AddUnlock(rogueSkills, 10, {["id"] = 193315, ["specs"] = {260}}); -- Saber Slash
+	AddUnlock(rogueSkills, 10, {["id"] = 114014, ["specs"] = {261}}); -- Shurken Toss
+	AddUnlock(rogueSkills, 10, {["id"] = 61329, ["specs"] = {260}}); -- Assassin's Resolve 
+	AddUnlock(rogueSkills, 12, {["id"] = 703, ["specs"] = {259}}); -- Garrote
+	AddUnlock(rogueSkills, 12, {["id"] = 185763, ["specs"] = {260}}); -- Pistol Shot
+	AddUnlock(rogueSkills, 12, {["id"] = 185438, ["specs"] = {261}}); -- Shadowstrike
+	AddUnlock(rogueSkills, 13, {["id"] = 921, ["specs"] = {259, 260, 261}}); -- Pick Pocket
+	AddUnlock(rogueSkills, 14, {["id"] = 6770, ["specs"] = {259, 260, 261}}); -- Sap
+	AddUnlock(rogueSkills, 16, {["id"] = 185311}); -- Crimson Vial
+	AddUnlock(rogueSkills, 18, {["id"] = 1766}); -- Kick
+	AddUnlock(rogueSkills, 20, {["id"] = 199804, ["specs"] = {260}}); -- Between the Eyes
+	AddUnlock(rogueSkills, 20, {["id"] = 51667, ["specs"] = {259}}); -- Cut to the Chase
+	AddUnlock(rogueSkills, 20, {["id"] = 195452, ["specs"] = {261}}); -- Nightblade
+	AddUnlock(rogueSkills, 20, {["id"] = 1943, ["specs"] = {259}}); -- Rupture
+	AddUnlock(rogueSkills, 22, {["id"] = 8676, ["specs"] = {260}}); -- Ambush
+	AddUnlock(rogueSkills, 22, {["id"] = 36554, ["specs"] = {259, 261}}); -- Shadowstep
+	AddUnlock(rogueSkills, 24, {["id"] = 1804}); -- Pick Lock
+	AddUnlock(rogueSkills, 24, {["id"] = 2094, ["specs"] = {259, 260, 261}}); -- Blind
+	AddUnlock(rogueSkills, 26, {["id"] = 5277, ["specs"] = {259, 261}}); -- Evasion
+	AddUnlock(rogueSkills, 26, {["id"] = 199754, ["specs"] = {260}}); -- Ripsote
+	AddUnlock(rogueSkills, 28, {["id"] = 14161, ["specs"] = {260}}); -- Ruthlessness
+	AddUnlock(rogueSkills, 28, {["id"] = 14190, ["specs"] = {259}}); -- Seal Fate
+	AddUnlock(rogueSkills, 28, {["id"] = 196912, ["specs"] = {261}}); -- Shadow Techniques
+	AddUnlock(rogueSkills, 32, {["id"] = 2983}); -- Sprint
+	AddUnlock(rogueSkills, 34, {["id"] = 1776, ["specs"] = {260}}); -- Gouge
+	AddUnlock(rogueSkills, 34, {["id"] = 408, ["specs"] = {259, 261}}); -- Kidney Shot
+	AddUnlock(rogueSkills, 36, {["id"] = 32645, ["specs"] = {259}}); -- Envenom
+	AddUnlock(rogueSkills, 36, {["id"] = 212283, ["specs"] = {261}}); -- Symbols of Death
+	AddUnlock(rogueSkills, 38, {["id"] = 3408, ["specs"] = {259}}); -- Crippling Poison
+	AddUnlock(rogueSkills, 38, {["id"] = 1725, ["specs"] = {259, 260, 261}}); -- Distract
+	AddUnlock(rogueSkills, 40, {["id"] = 1329, ["specs"] = {259}}); -- Mutilate
+	AddUnlock(rogueSkills, 40, {["id"] = 193316, ["specs"] = {260}}); -- Roll the Bones
+	AddUnlock(rogueSkills, 40, {["id"] = 185313, ["specs"] = {261}}); -- Shadow Dance
+	AddUnlock(rogueSkills, 42, {["id"] = 2836}); -- Detect Traps
+	AddUnlock(rogueSkills, 42, {["id"] = 235484, ["specs"] = {260}}); -- Between the Eyes
+	AddUnlock(rogueSkills, 42, {["id"] = 231719, ["specs"] = {259}}); -- Garrote
+	AddUnlock(rogueSkills, 42, {["id"] = 231718, ["specs"] = {261}}); -- Shadowstrike
+	AddUnlock(rogueSkills, 44, {["id"] = 1966}); -- Feint
+	AddUnlock(rogueSkills, 48, {["id"] = 1856, ["specs"] = {259, 260, 261}}); -- Vanish
+	AddUnlock(rogueSkills, 50, {["id"] = 35551, ["specs"] = {260}}); -- Combat Potency
+	AddUnlock(rogueSkills, 50, {["id"] = 58423, ["specs"] = {261}}); -- Assassin's Resolve 
+	AddUnlock(rogueSkills, 50, {["id"] = 79096, ["specs"] = {260}}); -- Restless Bladestorm
+	AddUnlock(rogueSkills, 50, {["id"] = 79134, ["specs"] = {259}}); -- Venomous Wounds
+	AddUnlock(rogueSkills, 52, {["id"] = 231716, ["specs"] = {261}}); -- Eviscerate
+	AddUnlock(rogueSkills, 54, {["id"] = 199740, ["specs"] = {260}}); -- Bribe
+	AddUnlock(rogueSkills, 54, {["id"] = 185314, ["specs"] = {261}}); -- Deepening Shadows
+	AddUnlock(rogueSkills, 54, {["id"] = 8679, ["specs"] = {259}}); -- Wound Poison
+	AddUnlock(rogueSkills, 56, {["id"] = 13750, ["specs"] = {260}}); -- Adrenaline Rush
+	AddUnlock(rogueSkills, 56, {["id"] = 121471, ["specs"] = {261}}); -- Shadow Blades 
+	AddUnlock(rogueSkills, 56, {["id"] = 79140, ["specs"] = {259}}); -- Vendetta
+	AddUnlock(rogueSkills, 58, {["id"] = 31209}); -- Fleet Footed
+	AddUnlock(rogueSkills, 61, {["id"] = 245751, ["specs"] = {261}}); -- Sprint 2
+	AddUnlock(rogueSkills, 62, {["id"] = 1860}); -- Safe Fall
+	AddUnlock(rogueSkills, 63, {["id"] = 13877, ["specs"] = {260}}); -- Blade Flurry
+	AddUnlock(rogueSkills, 63, {["id"] = 51723, ["specs"] = {259}}); -- Fan of Knives
+	AddUnlock(rogueSkills, 63, {["id"] = 197835, ["specs"] = {261}}); -- Shuriken Storm 
+	AddUnlock(rogueSkills, 66, {["id"] = 231691, ["specs"] = {259, 260, 261}}); -- Sprint 2 	
+	AddUnlock(rogueSkills, 68, {["id"] = 114018}); -- Shroud of Concealment
+	AddUnlock(rogueSkills, 70, {["id"] = 57934}); -- Tricks of the Trade
+	AddUnlock(rogueSkills, 70, {["id"] = 84601, ["specs"] = {261}}); -- Shuriken Combo
+	AddUnlock(rogueSkills, 78, {["id"] = 76808, ["specs"] = {261}}); -- Mastery: Executioner
+	AddUnlock(rogueSkills, 78, {["id"] = 76806, ["specs"] = {260}}); -- Mastery: Main Gauche
+	AddUnlock(rogueSkills, 78, {["id"] = 76803, ["specs"] = {259}}); -- Mastery: Potent Poisons
+	AddUnlock(rogueSkills, 80, {["id"] = 31224}); -- Cloak of Shadows
 
-_addonData.ROGUE = {};
-_addonData.ROGUE.Skills = rogueSkills;
-_addonData.ROGUE.Specs = rogueSpecs;
+_addonData.Skills = rogueSkills;
+_addonData.Specs = rogueSpecs;
+
+end
 
 --
 -- SHAMAN
 --
 
-local shamanSpecs = {};
-table.insert(shamanSpecs, 262); -- Elemental
-table.insert(shamanSpecs, 263); -- Enhancement
-table.insert(shamanSpecs, 264); -- Restoration
+if (playerClass == "SHAMAN") then
+local shamanSpecs = {
+	262 -- Elemental
+	,263 -- Enhancement
+	,264 -- Restoration
+};
 
-local shamanSkills = {};
-table.insert(shamanSkills, {["id"] = 73899, ["level"] = 3}); -- Primal Strike
-table.insert(shamanSkills, {["id"] = 8042, ["level"] = 6, ["specs"] = {262}}); -- Earth Shock
-table.insert(shamanSkills, {["id"] = 8004, ["level"] = 7}); -- Healing Surge
-table.insert(shamanSkills, {["id"] = 324, ["level"] = 8}); -- Lightning Shield
-table.insert(shamanSkills, {["id"] = 86629, ["level"] = 10, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Dual Wield
-table.insert(shamanSkills, {["id"] = 60188, ["level"] = 10, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Elemental Fury
-table.insert(shamanSkills, {["id"] = 29000, ["level"] = 10, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Elemental Reach
-table.insert(shamanSkills, {["id"] = 10400, ["level"] = 10, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Flametongue
-table.insert(shamanSkills, {["id"] = 60103, ["level"] = 10, ["specs"] = {263}}); -- Lava Lash
-table.insert(shamanSkills, {["id"] = 95862, ["level"] = 10, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Meditation
-table.insert(shamanSkills, {["id"] = 30814, ["level"] = 10, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Mental Quickness
---table.insert(shamanSkills, {["id"] = 51522, ["level"] = 10, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Primal Wisdom
-table.insert(shamanSkills, {["id"] = 16213, ["level"] = 10, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Restorative Waves
-table.insert(shamanSkills, {["id"] = 61295, ["level"] = 10, ["specs"] = {264}}); -- Riptide
-table.insert(shamanSkills, {["id"] = 62099, ["level"] = 10, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Shamanism
-table.insert(shamanSkills, {["id"] = 112858, ["level"] = 10, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Spiritual Insight
-table.insert(shamanSkills, {["id"] = 123099, ["level"] = 10, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Spiritual Insight
-table.insert(shamanSkills, {["id"] = 51490, ["level"] = 10, ["specs"] = {262}}); -- Thunderstorm
-table.insert(shamanSkills, {["id"] = 8050, ["level"] = 12}); -- Flame Shock
-table.insert(shamanSkills, {["id"] = 370, ["level"] = 12}); -- Purge
-table.insert(shamanSkills, {["id"] = 2008, ["level"] = 14}); -- Ancestral Spirit
-table.insert(shamanSkills, {["id"] = 2645, ["level"] = 15}); -- Ghost Wolf
-table.insert(shamanSkills, {["id"] = 3599, ["level"] = 16}); -- Searing Totem
-table.insert(shamanSkills, {["id"] = 57994, ["level"] = 16}); -- Wind Shear
-table.insert(shamanSkills, {["id"] = 77130, ["level"] = 18, ["specs"] = {264}}); -- Purify Spirit
-table.insert(shamanSkills, {["id"] = 51886, ["level"] = 18}); -- Cleanse Spirit
-table.insert(shamanSkills, {["id"] = 16282, ["level"] = 20, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Flurry
-table.insert(shamanSkills, {["id"] = 88766, ["level"] = 20, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Fulmination
-table.insert(shamanSkills, {["id"] = 52127, ["level"] = 20, ["specs"] = {264}}); -- Water Shield
-table.insert(shamanSkills, {["id"] = 8056, ["level"] = 22}); -- Frost Shock
-table.insert(shamanSkills, {["id"] = 546, ["level"] = 24}); -- Water Walking
-table.insert(shamanSkills, {["id"] = 974, ["level"] = 26, ["specs"] = {264}}); -- Earth Shield
-table.insert(shamanSkills, {["id"] = 17364, ["level"] = 26, ["specs"] = {263}}); -- Stormstrike
-table.insert(shamanSkills, {["id"] = 2484, ["level"] = 26}); -- Earthbind Totem
-table.insert(shamanSkills, {["id"] = 421, ["level"] = 28}); -- Chain Lightning
-table.insert(shamanSkills, {["id"] = 166221, ["level"] = 30, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Enhanced Weapons
-table.insert(shamanSkills, {["id"] = 33757, ["level"] = 30, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Windfury
-table.insert(shamanSkills, {["id"] = 5394, ["level"] = 30}); -- Healing Stream Totem
-table.insert(shamanSkills, {["id"] = 36936, ["level"] = 30}); -- Totemic Recall
-table.insert(shamanSkills, {["id"] = 20608, ["level"] = 32, ["subText"] = STRING_PASSIVE}); -- Reincarnation
-table.insert(shamanSkills, {["id"] = 51505, ["level"] = 34, ["specs"] = {262, 264}}); -- Lava Burst
-table.insert(shamanSkills, {["id"] = 556, ["level"] = 34}); -- Astral Recall
-table.insert(shamanSkills, {["id"] = 8190, ["level"] = 36, ["specs"] = {263}}); -- Magma Totem
-table.insert(shamanSkills, {["id"] = 6196, ["level"] = 36}); -- Far Sight
-table.insert(shamanSkills, {["id"] = 8177, ["level"] = 38}); -- Grounding Totem
-table.insert(shamanSkills, {["id"] = 16196, ["level"] = 40, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Resurgence
-table.insert(shamanSkills, {["id"] = 8737, ["level"] = 40, ["subText"] = STRING_PASSIVE}); -- Mail
-table.insert(shamanSkills, {["id"] = 1064, ["level"] = 44, ["specs"] = {264}}); -- Chain Heal
-table.insert(shamanSkills, {["id"] = 1535, ["level"] = 44, ["specs"] = {263}}); -- Fire Nova
-table.insert(shamanSkills, {["id"] = 77756, ["level"] = 50, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Lava Surge
-table.insert(shamanSkills, {["id"] = 51530, ["level"] = 50, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Maelstrom Weapon
-table.insert(shamanSkills, {["id"] = 86099, ["level"] = 50, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Mail Specialization
-table.insert(shamanSkills, {["id"] = 86100, ["level"] = 50, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Mail Specialization
-table.insert(shamanSkills, {["id"] = 86108, ["level"] = 50, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Mail Specialization
-table.insert(shamanSkills, {["id"] = 51564, ["level"] = 50, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Tidal Waves
-table.insert(shamanSkills, {["id"] = 86529, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Mail Specialization
-table.insert(shamanSkills, {["id"] = 8143, ["level"] = 54}); -- Tremor Totem
-table.insert(shamanSkills, {["id"] = 2062, ["level"] = 58}); -- Earth Elemental Totem
-table.insert(shamanSkills, {["id"] = 61882, ["level"] = 60, ["specs"] = {262}}); -- Earthquake
-table.insert(shamanSkills, {["id"] = 51533, ["level"] = 60, ["specs"] = {263}}); -- Feral Spirit
-table.insert(shamanSkills, {["id"] = 77472, ["level"] = 60, ["specs"] = {264}}); -- Healing Wave
-table.insert(shamanSkills, {["id"] = 58875, ["level"] = 60, ["specs"] = {263}}); -- Spirit Walk
-table.insert(shamanSkills, {["id"] = 73920, ["level"] = 60}); -- Healing Rain
-table.insert(shamanSkills, {["id"] = 108269, ["level"] = 63}); -- Capacitor Totem
-table.insert(shamanSkills, {["id"] = 108280, ["level"] = 65, ["specs"] = {264}}); -- Healing Tide Totem
-table.insert(shamanSkills, {["id"] = 30823, ["level"] = 65, ["specs"] = {262, 263}}); -- Shamanistic Rage
-table.insert(shamanSkills, {["id"] = 2894, ["level"] = 66}); -- Fire Elemental Totem
-table.insert(shamanSkills, {["id"] = 98008, ["level"] = 70, ["specs"] = {264}}); -- Spirit Link Totem
-table.insert(shamanSkills, {["id"] = 2825, ["level"] = 70}); -- Bloodlust
---table.insert(shamanSkills, {["id"] = 32182, ["level"] = 70}); -- Heroism
-table.insert(shamanSkills, {["id"] = 51514, ["level"] = 75}); -- Hex
-table.insert(shamanSkills, {["id"] = 77226, ["level"] = 80, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Mastery: Deep Healing
-table.insert(shamanSkills, {["id"] = 77223, ["level"] = 80, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Mastery: Enhanced Elements
-table.insert(shamanSkills, {["id"] = 170374, ["level"] = 80, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Mastery: Molten Earth
-table.insert(shamanSkills, {["id"] = 116956, ["level"] = 80, ["subText"] = STRING_PASSIVE}); -- Grace of Air
-table.insert(shamanSkills, {["id"] = 73680, ["level"] = 81, ["specs"] = {263}}); -- Unleash Elements
-table.insert(shamanSkills, {["id"] = 165462, ["level"] = 81, ["specs"] = {262}}); -- Unleash Flame
-table.insert(shamanSkills, {["id"] = 79206, ["level"] = 85, ["specs"] = {262, 264}}); -- Spiritwalker
-table.insert(shamanSkills, {["id"] = 114050, ["level"] = 87, ["specs"] = {262}}); -- Ascendance
-table.insert(shamanSkills, {["id"] = 114051, ["level"] = 87, ["specs"] = {263}}); -- Ascendance
-table.insert(shamanSkills, {["id"] = 114052, ["level"] = 87, ["specs"] = {264}}); -- Ascendance
-table.insert(shamanSkills, {["id"] = 165399, ["level"] = 90, ["specs"] = {262}, ["subText"] = STRING_PASSIVE}); -- Elemental Overload
-table.insert(shamanSkills, {["id"] = 165368, ["level"] = 90, ["specs"] = {263}, ["subText"] = STRING_PASSIVE}); -- Lightning Strikes
-table.insert(shamanSkills, {["id"] = 165391, ["level"] = 90, ["specs"] = {264}, ["subText"] = STRING_PASSIVE}); -- Purification
+local shamanSkills = { };
+	AddUnlock(shamanSkills, 3, {["id"] = 188389, ["specs"] = {262}}); -- Flame Shock
+	AddUnlock(shamanSkills, 3, {["id"] = 188838, ["specs"] = {264}}); -- Flame Shock
+	AddUnlock(shamanSkills, 5, {["id"] = 8004, ["specs"] = {262, 264}}); -- Healing Surge
+	AddUnlock(shamanSkills, 5, {["id"] = 188070, ["specs"] = {263}}); -- Healing Surge
+	AddUnlock(shamanSkills, 8, {["id"] = 2484}); -- Earthbind Totem 
+	AddUnlock(shamanSkills, 10, {["id"] = 157444, ["specs"] = {263}}); -- Critical Strikes
+	AddUnlock(shamanSkills, 10, {["id"] = 86629, ["specs"] = {263}}); -- Dual Wield
+	AddUnlock(shamanSkills, 10, {["id"] = 8042, ["specs"] = {262}}); -- Earth Shock
+	AddUnlock(shamanSkills, 10, {["id"] = 60103, ["specs"] = {263}}); -- Lava Lash
+	AddUnlock(shamanSkills, 10, {["id"] = 61295, ["specs"] = {264}}); -- Riptide
+	AddUnlock(shamanSkills, 10, {["id"] = 193786, ["specs"] = {263}}); -- Rockbiter
+	AddUnlock(shamanSkills, 12, {["id"] = 193796, ["specs"] = {263}}); -- Flametongue
+	AddUnlock(shamanSkills, 12, {["id"] = 51505, ["specs"] = {262, 264}}); -- Lava Burst 
+	AddUnlock(shamanSkills, 13, {["id"] = 6196}); -- Far Sight
+	AddUnlock(shamanSkills, 13, {["id"] = 232643, ["specs"] = {262}}); -- Flame Shock 2
+	AddUnlock(shamanSkills, 14, {["id"] = 2008}); -- Ancestral Spirit 
+	AddUnlock(shamanSkills, 14, {["id"] = 5394, ["specs"] = {264}}); -- Healing Steam Totem
+	AddUnlock(shamanSkills, 16, {["id"] = 2645}); -- Ghost Wolf 
+	AddUnlock(shamanSkills, 18, {["id"] = 57994, ["specs"] = {262, 263, 264}}); -- Wind Shear
+	AddUnlock(shamanSkills, 20, {["id"] = 1064, ["specs"] = {264}}); -- Chain Heal
+	AddUnlock(shamanSkills, 20, {["id"] = 231721, ["specs"] = {262, 264}}); -- Lava Burst 2
+	AddUnlock(shamanSkills, 20, {["id"] = 17364, ["specs"] = {263}}); -- Stormstrike
+	AddUnlock(shamanSkills, 22, {["id"] = 51886, ["specs"] = {262, 263}}); -- Cleanse Spirit 
+	AddUnlock(shamanSkills, 22, {["id"] = 77130, ["specs"] = {264}}); -- Purify Spirit 
+	AddUnlock(shamanSkills, 24, {["id"] = 77472, ["specs"] = {264}}); -- Healing Wave 
+	AddUnlock(shamanSkills, 24, {["id"] = 51490, ["specs"] = {262}}); -- Thunderstorm 
+	AddUnlock(shamanSkills, 24, {["id"] = 33757, ["specs"] = {263}}); -- Windfury
+	AddUnlock(shamanSkills, 26, {["id"] = 20608}); -- Reincarnation 
+	AddUnlock(shamanSkills, 28, {["id"] = 421, ["specs"] = {264}}); -- Chain Lightning 
+	AddUnlock(shamanSkills, 28, {["id"] = 188443, ["specs"] = {262}}); -- Chain Lightning 
+	AddUnlock(shamanSkills, 28, {["id"] = 187874, ["specs"] = {263}}); -- Crash Lightning
+	AddUnlock(shamanSkills, 32, {["id"] = 546}); -- Water Walking 
+	AddUnlock(shamanSkills, 34, {["id"] = 60188, ["specs"] = {262}}); -- Elemental Fury 
+	AddUnlock(shamanSkills, 34, {["id"] = 51564, ["specs"] = {264}}); -- Tidal Wave 
+	AddUnlock(shamanSkills, 36, {["id"] = 198103, ["specs"] = {262}}); -- Earth Elemental 
+	AddUnlock(shamanSkills, 36, {["id"] = 51533, ["specs"] = {263}}); -- Feral Spirit 
+	AddUnlock(shamanSkills, 36, {["id"] = 79206, ["specs"] = {264}}); -- Spiritwalker's Grace 
+	AddUnlock(shamanSkills, 38, {["id"] = 196840, ["specs"] = {262}}); -- Frost Shock 
+	AddUnlock(shamanSkills, 38, {["id"] = 196834, ["specs"] = {263}}); -- Frostbrand 
+	AddUnlock(shamanSkills, 38, {["id"] = 231725, ["specs"] = {264}}); -- Riptide 2 
+	AddUnlock(shamanSkills, 40, {["id"] = 73920, ["specs"] = {264}}); -- Healing Rain
+	AddUnlock(shamanSkills, 40, {["id"] = 77756, ["specs"] = {262, 264}}); -- Lava Surge 
+	AddUnlock(shamanSkills, 40, {["id"] = 187880, ["specs"] = {263}}); -- Maelstrom Weapon 	
+	AddUnlock(shamanSkills, 42, {["id"] = 51514}); -- Hex 
+	AddUnlock(shamanSkills, 44, {["id"] = 556}); -- Astral Recall 
+	AddUnlock(shamanSkills, 48, {["id"] = 61882, ["specs"] = {262}}); -- Earthquake 
+	AddUnlock(shamanSkills, 48, {["id"] = 16196, ["specs"] = {264}}); -- Resurgence 
+	AddUnlock(shamanSkills, 48, {["id"] = 201845, ["specs"] = {263}}); -- Stormbringer 
+	AddUnlock(shamanSkills, 50, {["id"] = 86099, ["specs"] = {263}}); -- Mail Specialization 
+	AddUnlock(shamanSkills, 50, {["id"] = 86100, ["specs"] = {264}}); -- Mail Specialization 
+	AddUnlock(shamanSkills, 50, {["id"] = 86108, ["specs"] = {262}}); -- Mail Specialization 
+	AddUnlock(shamanSkills, 52, {["id"] = 108271}); -- Astral Shift 
+	AddUnlock(shamanSkills, 54, {["id"] = 231780, ["specs"] = {264}}); -- Chain Heal 2
+	AddUnlock(shamanSkills, 56, {["id"] = 231723, ["specs"] = {263}}); -- Feral Spirit 2 
+	AddUnlock(shamanSkills, 56, {["id"] = 198067, ["specs"] = {262}}); -- Fire Elemental 
+	AddUnlock(shamanSkills, 56, {["id"] = 98008, ["specs"] = {264}}); -- Spirit Link Totem
+	AddUnlock(shamanSkills, 63, {["id"] = 370}); -- Purge
+	AddUnlock(shamanSkills, 66, {["id"] = 212048, ["specs"] = {264}}); -- Ancestral Vision 
+	AddUnlock(shamanSkills, 70, {["id"] = 231722, ["specs"] = {262}}); -- Chain Lightning 2 
+	AddUnlock(shamanSkills, 70, {["id"] = 195255, ["specs"] = {263}}); -- Stormlash 
+	AddUnlock(shamanSkills, 70, {["id"] = 231785, ["specs"] = {264}}); -- Tidal Waves 2 
+	AddUnlock(shamanSkills, 78, {["id"] = 77226, ["specs"] = {264}}); -- Mastery: Deep Healing
+	AddUnlock(shamanSkills, 78, {["id"] = 168534, ["specs"] = {262}}); -- Mastery: Elemental Overload
+	AddUnlock(shamanSkills, 78, {["id"] = 77223, ["specs"] = {263}}); -- Mastery: Enhanced Elements
+	AddUnlock(shamanSkills, 80, {["id"] = 16164, ["specs"] = {262}}); -- Elemental Focus 
+	AddUnlock(shamanSkills, 80, {["id"] = 108280, ["specs"] = {264}}); -- Healing Tide Totem 
+	AddUnlock(shamanSkills, 80, {["id"] = 58875, ["specs"] = {263}}); -- Spirit Walk
+	
+if (playerFaction == "Alliance") then
+	AddUnlock(shamanSkills, 50, {["id"] = 32182}); -- Wannabe Bloodlust
+else
+	AddUnlock(shamanSkills, 50, {["id"] = 2825}); -- Bloodlust
+end
 
-_addonData.SHAMAN = {};
-_addonData.SHAMAN.Skills = shamanSkills;
-_addonData.SHAMAN.Specs = shamanSpecs;
+_addonData.Skills = shamanSkills;
+_addonData.Specs = shamanSpecs;
+
+end
 
 --
 -- WARLOCK
 --
 
-local warlockSpecs = {};
-table.insert(warlockSpecs, 265); -- Affliction
-table.insert(warlockSpecs, 266); -- Demonology
-table.insert(warlockSpecs, 267); -- Destruction
+if (playerClass == "WARLOCK") then
+local warlockSpecs = {
+	265 -- Affliction
+	,266 -- Demonology
+	,267 -- Destruction
+};
 
-local warlockSkills = {};
-table.insert(warlockSkills, {["id"] = 172, ["level"] = 3}); -- Corruption
-table.insert(warlockSkills, {["id"] = 689, ["level"] = 7, ["specs"] = {265, 266}}); -- Drain Life
-table.insert(warlockSkills, {["id"] = 697, ["level"] = 8}); -- Summon Voidwalker
-table.insert(warlockSkills, {["id"] = 6201, ["level"] = 9}); -- Create Healthstone
-table.insert(warlockSkills, {["id"] = 108647, ["level"] = 10, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Burning Embers
-table.insert(warlockSkills, {["id"] = 116858, ["level"] = 10, ["specs"] = {267}}); -- Chaos Bolt
-table.insert(warlockSkills, {["id"] = 111546, ["level"] = 10, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Chaotic Energy
-table.insert(warlockSkills, {["id"] = 17962, ["level"] = 10, ["specs"] = {267}}); -- Conflagrate
-table.insert(warlockSkills, {["id"] = 108869, ["level"] = 10, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Decimation
-table.insert(warlockSkills, {["id"] = 104315, ["level"] = 10, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Demonic Fury
-table.insert(warlockSkills, {["id"] = 124913, ["level"] = 10, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Doom
-table.insert(warlockSkills, {["id"] = 29722, ["level"] = 10, ["specs"] = {267}}); -- Incinerate
-table.insert(warlockSkills, {["id"] = 103958, ["level"] = 10, ["specs"] = {266}}); -- Metamorphosis
-table.insert(warlockSkills, {["id"] = 122351, ["level"] = 10, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Molten Core
-table.insert(warlockSkills, {["id"] = 108558, ["level"] = 10, ["specs"] = {265}, ["subText"] = STRING_PASSIVE}); -- Nightfall
-table.insert(warlockSkills, {["id"] = 30108, ["level"] = 10, ["specs"] = {265}}); -- Unstable Affliction
-table.insert(warlockSkills, {["id"] = 93375, ["level"] = 10, ["subText"] = STRING_PASSIVE}); -- Control Demon
-table.insert(warlockSkills, {["id"] = 755, ["level"] = 11, ["specs"] = {265, 266}}); -- Health Funnel
-table.insert(warlockSkills, {["id"] = 109151, ["level"] = 12, ["specs"] = {266}}); -- Demonic Leap
-table.insert(warlockSkills, {["id"] = 348, ["level"] = 12, ["specs"] = {267}}); -- Immolate
-table.insert(warlockSkills, {["id"] = 6353, ["level"] = 13, ["specs"] = {266}}); -- Soul Fire
-table.insert(warlockSkills, {["id"] = 5782, ["level"] = 14}); -- Fear
-table.insert(warlockSkills, {["id"] = 114635, ["level"] = 15, ["specs"] = {267}}); -- Ember Tap
-table.insert(warlockSkills, {["id"] = 1454, ["level"] = 16, ["specs"] = {265, 266}}); -- Life Tap
-table.insert(warlockSkills, {["id"] = 20707, ["level"] = 18}); -- Soulstone
-table.insert(warlockSkills, {["id"] = 105174, ["level"] = 19, ["specs"] = {266}}); -- Hand of Gul
-table.insert(warlockSkills, {["id"] = 117198, ["level"] = 19, ["specs"] = {265}, ["subText"] = STRING_PASSIVE}); -- Soul Shards
-table.insert(warlockSkills, {["id"] = 74434, ["level"] = 19, ["specs"] = {265}}); -- Soulburn
-table.insert(warlockSkills, {["id"] = 5784, ["level"] = 20}); -- Felsteed
-table.insert(warlockSkills, {["id"] = 712, ["level"] = 20}); -- Summon Succubus
-table.insert(warlockSkills, {["id"] = 5740, ["level"] = 21, ["specs"] = {267}}); -- Rain of Fire
-table.insert(warlockSkills, {["id"] = 27243, ["level"] = 21, ["specs"] = {265}}); -- Seed of Corruption
-table.insert(warlockSkills, {["id"] = 1949, ["level"] = 22, ["specs"] = {266}}); -- Hellfire
-table.insert(warlockSkills, {["id"] = 126, ["level"] = 22}); -- Eye of Kilrogg
-table.insert(warlockSkills, {["id"] = 103103, ["level"] = 24, ["specs"] = {265}}); -- Drain Soul
-table.insert(warlockSkills, {["id"] = 5697, ["level"] = 24}); -- Unending Breath
-table.insert(warlockSkills, {["id"] = 101976, ["level"] = 27, ["subText"] = STRING_PASSIVE}); -- Soul Harvest
-table.insert(warlockSkills, {["id"] = 691, ["level"] = 29}); -- Summon Felhunter
-table.insert(warlockSkills, {["id"] = 1098, ["level"] = 31}); -- Enslave Demon
-table.insert(warlockSkills, {["id"] = 114592, ["level"] = 32, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Wild Imps
-table.insert(warlockSkills, {["id"] = 710, ["level"] = 32}); -- Banish
-table.insert(warlockSkills, {["id"] = 980, ["level"] = 36, ["specs"] = {265}}); -- Agony
-table.insert(warlockSkills, {["id"] = 80240, ["level"] = 36, ["specs"] = {267}}); -- Havoc
-table.insert(warlockSkills, {["id"] = 23161, ["level"] = 40}); -- Dreadsteed
-table.insert(warlockSkills, {["id"] = 30146, ["level"] = 42, ["specs"] = {266}}); -- Summon Felguard
-table.insert(warlockSkills, {["id"] = 698, ["level"] = 42}); -- Ritual of Summoning
-table.insert(warlockSkills, {["id"] = 17877, ["level"] = 47, ["specs"] = {267}}); -- Shadowburn
-table.insert(warlockSkills, {["id"] = 1122, ["level"] = 49}); -- Summon Infernal
-table.insert(warlockSkills, {["id"] = 86091, ["level"] = 50, ["subText"] = STRING_PASSIVE}); -- Nethermancy	
-table.insert(warlockSkills, {["id"] = 109784, ["level"] = 54, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Aftermath
-table.insert(warlockSkills, {["id"] = 108683, ["level"] = 54, ["specs"] = {267}}); -- Fire and Brimstone
-table.insert(warlockSkills, {["id"] = 119898, ["level"] = 56}); -- Command Demon
-table.insert(warlockSkills, {["id"] = 18540, ["level"] = 58}); -- Summon Doomguard
-table.insert(warlockSkills, {["id"] = 48181, ["level"] = 60, ["specs"] = {265}}); -- Haunt
-table.insert(warlockSkills, {["id"] = 104773, ["level"] = 64}); -- Unending Resolve
-table.insert(warlockSkills, {["id"] = 29858, ["level"] = 66}); -- Soulshatter
-table.insert(warlockSkills, {["id"] = 29893, ["level"] = 68}); -- Create Soulwell
-table.insert(warlockSkills, {["id"] = 117896, ["level"] = 69, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Backdraft
-table.insert(warlockSkills, {["id"] = 48018, ["level"] = 76}); -- Demonic Circle: Summon
-table.insert(warlockSkills, {["id"] = 48020, ["level"] = 76}); -- Demonic Circle: Teleport
-table.insert(warlockSkills, {["id"] = 120451, ["level"] = 79, ["specs"] = {267}}); -- Flames of Xoroth
-table.insert(warlockSkills, {["id"] = 86121, ["level"] = 79, ["specs"] = {265}}); -- Soul Swap
-table.insert(warlockSkills, {["id"] = 77220, ["level"] = 80, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Mastery: Emberstorm
-table.insert(warlockSkills, {["id"] = 77219, ["level"] = 80, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Mastery: Master Demonologist
-table.insert(warlockSkills, {["id"] = 77215, ["level"] = 80, ["specs"] = {265}, ["subText"] = STRING_PASSIVE}); -- Mastery: Potent Afflictions
-table.insert(warlockSkills, {["id"] = 166928, ["level"] = 80, ["subText"] = STRING_PASSIVE}); -- Blood Pact
-table.insert(warlockSkills, {["id"] = 109773, ["level"] = 82}); -- Dark Intent
-table.insert(warlockSkills, {["id"] = 113858, ["level"] = 84, ["specs"] = {267}}); -- Dark Soul: Instability
-table.insert(warlockSkills, {["id"] = 113861, ["level"] = 84, ["specs"] = {266}}); -- Dark Soul: Knowledge
-table.insert(warlockSkills, {["id"] = 113860, ["level"] = 84, ["specs"] = {265}}); -- Dark Soul: Misery
-table.insert(warlockSkills, {["id"] = 111771, ["level"] = 87}); -- Demonic Gateway
-table.insert(warlockSkills, {["id"] = 165392, ["level"] = 90, ["specs"] = {266}, ["subText"] = STRING_PASSIVE}); -- Demonic Tactics
-table.insert(warlockSkills, {["id"] = 165363, ["level"] = 90, ["specs"] = {267}, ["subText"] = STRING_PASSIVE}); -- Devastation
-table.insert(warlockSkills, {["id"] = 165367, ["level"] = 90, ["specs"] = {265}, ["subText"] = STRING_PASSIVE}); -- Eradication
+local warlockSkills = { };
+	AddUnlock(warlockSkills, 3, {["id"] = 172, ["specs"] = {265}}); -- Corruption
+	AddUnlock(warlockSkills, 5, {["id"] = 688}); -- Summon Imp
+	AddUnlock(warlockSkills, 8, {["id"] = 1454, ["specs"] = {265, 266, 267}}); -- Life Tap
+	AddUnlock(warlockSkills, 10, {["id"] = 93375}); -- Control Demon 
+	AddUnlock(warlockSkills, 10, {["id"] = 980, ["specs"] = {265}}); -- Agony 
+	AddUnlock(warlockSkills, 10, {["id"] = 17962, ["specs"] = {267}}); -- Conflagrate 
+	AddUnlock(warlockSkills, 10, {["id"] = 105174, ["specs"] = {266}}); -- Hand of Gul'dan 
+	AddUnlock(warlockSkills, 10, {["id"] = 348, ["specs"] = {267}}); -- Immolate 
+	AddUnlock(warlockSkills, 12, {["id"] = 116858, ["specs"] = {267}}); -- Chaos Bolt 
+	AddUnlock(warlockSkills, 12, {["id"] = 193396, ["specs"] = {266}}); -- Demonic Empowerment 
+	AddUnlock(warlockSkills, 13, {["id"] = 234153, ["specs"] = {266, 267}}); -- Drain Life 
+	AddUnlock(warlockSkills, 13, {["id"] = 198590, ["specs"] = {265}}); -- Drain Soul 
+	AddUnlock(warlockSkills, 14, {["id"] = 104316, ["specs"] = {266}}); -- Call Dreadstalkers 
+	AddUnlock(warlockSkills, 14, {["id"] = 29722, ["specs"] = {267}}); -- Incinerate 
+	AddUnlock(warlockSkills, 14, {["id"] = 30108, ["specs"] = {265}}); -- Unstable Affliction
+	AddUnlock(warlockSkills, 16, {["id"] = 5782}); -- Fear 
+	AddUnlock(warlockSkills, 18, {["id"] = 6201}); -- Create Healthstone 
+	AddUnlock(warlockSkills, 20, {["id"] = 5784}); -- Felsteed 
+	AddUnlock(warlockSkills, 20, {["id"] = 697}); -- Summon Voidwalker 
+	AddUnlock(warlockSkills, 22, {["id"] = 755}); -- Health Funnel 
+	AddUnlock(warlockSkills, 24, {["id"] = 126}); -- Eye of Kilrogg 
+	AddUnlock(warlockSkills, 24, {["id"] = 5697}); -- Unending Breath
+	AddUnlock(warlockSkills, 26, {["id"] = 603, ["specs"] = {266}}); -- Doom 
+	AddUnlock(warlockSkills, 26, {["id"] = 5740, ["specs"] = {267}}); -- Rain of Fire 
+	AddUnlock(warlockSkills, 26, {["id"] = 231791, ["specs"] = {265}}); -- Unstable Corruption 2
+	AddUnlock(warlockSkills, 28, {["id"] = 712}); -- Summon Succubus 
+	AddUnlock(warlockSkills, 32, {["id"] = 710}); -- Banish 
+	AddUnlock(warlockSkills, 34, {["id"] = 108370}); -- Soul Leech 
+	AddUnlock(warlockSkills, 36, {["id"] = 691}); -- Summon Felhunter 
+	AddUnlock(warlockSkills, 38, {["id"] = 119898}); -- Command Demon 
+	AddUnlock(warlockSkills, 38, {["id"] = 27243, ["specs"] = {265}}); -- Seed of Corruption
+	AddUnlock(warlockSkills, 40, {["id"] = 23161}); -- Dreadsteed 
+	AddUnlock(warlockSkills, 40, {["id"] = 80240, ["specs"] = {267}}); -- Havoc 
+	AddUnlock(warlockSkills, 40, {["id"] = 30146, ["specs"] = {266}}); -- Summon Felguard
+	AddUnlock(warlockSkills, 42, {["id"] = 698}); -- Ritual of Summoning 
+	AddUnlock(warlockSkills, 44, {["id"] = 20707}); -- Soulstone 
+	AddUnlock(warlockSkills, 48, {["id"] = 193440, ["specs"] = {266}}); -- Demonwrath 
+	AddUnlock(warlockSkills, 48, {["id"] = 231795, ["specs"] = {267}}); -- Firebolt 2 
+	AddUnlock(warlockSkills, 48, {["id"] = 231799, ["specs"] = {265}}); -- Shadow Bite 2
+	AddUnlock(warlockSkills, 50, {["id"] = 18540}); -- Summon Doomguard 
+	AddUnlock(warlockSkills, 52, {["id"] = 231792, ["specs"] = {265}}); -- Agony 2 
+	AddUnlock(warlockSkills, 52, {["id"] = 231793, ["specs"] = {267}}); -- Conflagrate 
+	AddUnlock(warlockSkills, 52, {["id"] = 108415, ["specs"] = {266}}); -- Soul Link
+	AddUnlock(warlockSkills, 54, {["id"] = 104773}); -- Unending Resolve 
+	AddUnlock(warlockSkills, 56, {["id"] = 1098}); -- Enslave Demon 
+	AddUnlock(warlockSkills, 58, {["id"] = 1122}); -- Summon Infernal 
+	AddUnlock(warlockSkills, 63, {["id"] = 231794, ["specs"] = {267}}); -- Unending Resolve 2 
+	AddUnlock(warlockSkills, 66, {["id"] = 29893}); -- Create Soulwell 
+	AddUnlock(warlockSkills, 70, {["id"] = 231811, ["specs"] = {265, 266, 267}}); -- Soulstone
+	AddUnlock(warlockSkills, 78, {["id"] = 77220, ["specs"] = {267}}); -- Mastery: Chaotic Energies
+	AddUnlock(warlockSkills, 78, {["id"] = 77219, ["specs"] = {266}}); -- Mastery: Master Demonologist
+	AddUnlock(warlockSkills, 78, {["id"] = 77215, ["specs"] = {265}}); -- Mastery: Potent Afflictions
+	AddUnlock(warlockSkills, 80, {["id"] = 111771}); -- Demonic Gateway
+	
+_addonData.Skills = warlockSkills;
+_addonData.Specs = warlockSpecs;
 
-_addonData.WARLOCK = {};
-_addonData.WARLOCK.Skills = warlockSkills;
-_addonData.WARLOCK.Specs = warlockSpecs;
+end
 
 --
 -- MONK
 --
 
-local monkSpecs = {};
-table.insert(monkSpecs, 268); -- Brewmaster
-table.insert(monkSpecs, 269); -- Windwalker
-table.insert(monkSpecs, 270); -- Mistweaver
+if (playerClass == "MONK") then
+local monkSpecs = {
+	268		-- Brewmaster
+	,269	-- Windwalker
+	,270	-- Mistweaver
+};
 
-local monkSkills = {};
-table.insert(monkSkills, {["id"] = 100787, ["level"] = 3}); -- Tiger Palm
-table.insert(monkSkills, {["id"] = 109132, ["level"] = 5}); -- Roll
-table.insert(monkSkills, {["id"] = 100784, ["level"] = 7}); -- Blackout Kick
-table.insert(monkSkills, {["id"] = 161608, ["level"] = 10, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Bladed Armor
-table.insert(monkSkills, {["id"] = 117967, ["level"] = 10, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Brewmaster Training
-table.insert(monkSkills, {["id"] = 137384, ["level"] = 10, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Combo Breaker
-table.insert(monkSkills, {["id"] = 139598, ["level"] = 10, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Crane Style Techniques
-table.insert(monkSkills, {["id"] = 115180, ["level"] = 10, ["specs"] = {268}}); -- Dizzying Haze
-table.insert(monkSkills, {["id"] = 124146, ["level"] = 10, ["specs"] = {268, 269}, ["subText"] = STRING_PASSIVE}); -- Dual Wield
-table.insert(monkSkills, {["id"] = 113656, ["level"] = 10, ["specs"] = {269}}); -- Fists of Fury
-table.insert(monkSkills, {["id"] = 121278, ["level"] = 10, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Mana Meditation
-table.insert(monkSkills, {["id"] = 158298, ["level"] = 10, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Resolve
-table.insert(monkSkills, {["id"] = 115175, ["level"] = 10, ["specs"] = {270}}); -- Soothing Mist
-table.insert(monkSkills, {["id"] = 154436, ["level"] = 10, ["specs"] = {270}}); -- Stance of the Spirited Crane
-table.insert(monkSkills, {["id"] = 115069, ["level"] = 10, ["specs"] = {268}}); -- Stance of the Sturdy Ox
-table.insert(monkSkills, {["id"] = 115070, ["level"] = 10, ["specs"] = {270}}); -- Stance of the Wise Serpent
-table.insert(monkSkills, {["id"] = 116645, ["level"] = 10, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Teachings of the Monastery
-table.insert(monkSkills, {["id"] = 120272, ["level"] = 10, ["subText"] = STRING_PASSIVE}); -- Tiger Strikes
-table.insert(monkSkills, {["id"] = 121253, ["level"] = 11, ["specs"] = {268}}); -- Keg Smash
-table.insert(monkSkills, {["id"] = 116694, ["level"] = 12}); -- Surging Mist
-table.insert(monkSkills, {["id"] = 115546, ["level"] = 14}); -- Provoke
-table.insert(monkSkills, {["id"] = 124682, ["level"] = 16, ["specs"] = {270}}); -- Enveloping Mist
-table.insert(monkSkills, {["id"] = 115181, ["level"] = 18, ["specs"] = {268}}); -- Breath of Fire
-table.insert(monkSkills, {["id"] = 101545, ["level"] = 18, ["specs"] = {269}}); -- Flying Serpent Kick
-table.insert(monkSkills, {["id"] = 115178, ["level"] = 18}); -- Resuscitate
-table.insert(monkSkills, {["id"] = 128595, ["level"] = 20, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Combat Conditioning
-table.insert(monkSkills, {["id"] = 115451, ["level"] = 20, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Internal Medicine
-table.insert(monkSkills, {["id"] = 115450, ["level"] = 20}); -- Detox
-table.insert(monkSkills, {["id"] = 126892, ["level"] = 20}); -- Zen Pilgrimage
-table.insert(monkSkills, {["id"] = 115921, ["level"] = 22, ["specs"] = {270}}); -- Legacy of the Emperor
-table.insert(monkSkills, {["id"] = 122470, ["level"] = 22, ["specs"] = {269}}); -- Touch of Karma
-table.insert(monkSkills, {["id"] = 115080, ["level"] = 22}); -- Touch of Death
-table.insert(monkSkills, {["id"] = 115151, ["level"] = 24, ["specs"] = {270}}); -- Renewing Mist
-table.insert(monkSkills, {["id"] = 115203, ["level"] = 24}); -- Fortifying Brew
-table.insert(monkSkills, {["id"] = 116092, ["level"] = 26, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Afterlife
-table.insert(monkSkills, {["id"] = 115295, ["level"] = 26, ["specs"] = {268}}); -- Guard
-table.insert(monkSkills, {["id"] = 115072, ["level"] = 26}); -- Expel Harm
-table.insert(monkSkills, {["id"] = 116095, ["level"] = 28, ["specs"] = {269}}); -- Disable
-table.insert(monkSkills, {["id"] = 137562, ["level"] = 30}); -- Nimble Brew
-table.insert(monkSkills, {["id"] = 126895, ["level"] = 30}); -- Zen Pilgrimage: Return
-table.insert(monkSkills, {["id"] = 116705, ["level"] = 32}); -- Spear Hand Strike
-table.insert(monkSkills, {["id"] = 128938, ["level"] = 36, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Brewing: Elusive Brew
-table.insert(monkSkills, {["id"] = 115308, ["level"] = 36, ["specs"] = {268}}); -- Elusive Brew
-table.insert(monkSkills, {["id"] = 115288, ["level"] = 36, ["specs"] = {269}}); -- Energizing Brew
-table.insert(monkSkills, {["id"] = 115078, ["level"] = 44}); -- Paralysis
-table.insert(monkSkills, {["id"] = 126060, ["level"] = 45, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Desperate Measures
-table.insert(monkSkills, {["id"] = 154555, ["level"] = 45, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Focus and Harmony
-table.insert(monkSkills, {["id"] = 101546, ["level"] = 46}); -- Spinning Crane Kick
-table.insert(monkSkills, {["id"] = 120224, ["level"] = 50, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(monkSkills, {["id"] = 120225, ["level"] = 50, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(monkSkills, {["id"] = 120227, ["level"] = 50, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Leather Specialization
-table.insert(monkSkills, {["id"] = 116849, ["level"] = 50, ["specs"] = {270}}); -- Life Cocoon
-table.insert(monkSkills, {["id"] = 117952, ["level"] = 54}); -- Crackling Jade Lightning
-table.insert(monkSkills, {["id"] = 123766, ["level"] = 56, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Brewing: Mana Tea
-table.insert(monkSkills, {["id"] = 123980, ["level"] = 56, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Brewing: Tigereye Brew
-table.insert(monkSkills, {["id"] = 124502, ["level"] = 56, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Gift of the Ox
-table.insert(monkSkills, {["id"] = 115294, ["level"] = 56, ["specs"] = {270}}); -- Mana Tea
-table.insert(monkSkills, {["id"] = 107428, ["level"] = 56, ["specs"] = {269, 270}}); -- Rising Sun Kick
-table.insert(monkSkills, {["id"] = 116740, ["level"] = 56, ["specs"] = {269}}); -- Tigereye Brew
-table.insert(monkSkills, {["id"] = 116670, ["level"] = 62, ["specs"] = {270}}); -- Uplift
-table.insert(monkSkills, {["id"] = 115460, ["level"] = 64, ["specs"] = {270}}); -- Detonate Chi
-table.insert(monkSkills, {["id"] = 116680, ["level"] = 66, ["specs"] = {270}}); -- Thunder Focus Tea
-table.insert(monkSkills, {["id"] = 115315, ["level"] = 70, ["specs"] = {268}}); -- Summon Black Ox Statue
-table.insert(monkSkills, {["id"] = 115313, ["level"] = 70, ["specs"] = {270}}); -- Summon Jade Serpent Statue
-table.insert(monkSkills, {["id"] = 119582, ["level"] = 75, ["specs"] = {268}}); -- Purifying Brew
-table.insert(monkSkills, {["id"] = 137639, ["level"] = 75, ["specs"] = {269}}); -- Storm
-table.insert(monkSkills, {["id"] = 115310, ["level"] = 78, ["specs"] = {270}}); -- Revival
-table.insert(monkSkills, {["id"] = 115636, ["level"] = 80, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Mastery: Bottled Fury
-table.insert(monkSkills, {["id"] = 117906, ["level"] = 80, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Mastery: Elusive Brawler
-table.insert(monkSkills, {["id"] = 117907, ["level"] = 80, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Mastery: Gift of the Serpent
-table.insert(monkSkills, {["id"] = 166916, ["level"] = 80, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Windflurry
-table.insert(monkSkills, {["id"] = 116781, ["level"] = 81, ["specs"] = {268, 269}}); -- Legacy of the White Tiger
-table.insert(monkSkills, {["id"] = 115176, ["level"] = 82, ["specs"] = {268, 269}}); -- Zen Meditation
-table.insert(monkSkills, {["id"] = 101643, ["level"] = 87}); -- Transcendence
-table.insert(monkSkills, {["id"] = 119996, ["level"] = 87}); -- Transcendence: Transfer
-table.insert(monkSkills, {["id"] = 165398, ["level"] = 90, ["specs"] = {269}, ["subText"] = STRING_PASSIVE}); -- Battle Trance
-table.insert(monkSkills, {["id"] = 165379, ["level"] = 90, ["specs"] = {268}, ["subText"] = STRING_PASSIVE}); -- Ferment
-table.insert(monkSkills, {["id"] = 165397, ["level"] = 90, ["specs"] = {270}, ["subText"] = STRING_PASSIVE}); -- Jade Mists
+local monkSkills = { };
+	AddUnlock(monkSkills, 3, {["id"] = 100784}); -- Blackout Kick
+	AddUnlock(monkSkills, 5, {["id"] = 109132}); -- Roll 
+	AddUnlock(monkSkills, 8, {["id"] = 116694, ["specs"] = {268, 269, 270}}); -- Effuse
+	AddUnlock(monkSkills, 10, {["id"] = 209525}); -- Smoothing Mist 
+	AddUnlock(monkSkills, 10, {["id"] = 205523, ["specs"] = {268}}); -- Blackout Strike
+	AddUnlock(monkSkills, 10, {["id"] = 245013, ["specs"] = {268}}); -- Brwemaster's Balance 
+	AddUnlock(monkSkills, 10, {["id"] = 121253, ["specs"] = {268}}); -- Keg Smash 
+	AddUnlock(monkSkills, 10, {["id"] = 107428, ["specs"] = {269, 270}}); -- Rising Sun Kick 
+	AddUnlock(monkSkills, 10, {["id"] = 193884, ["specs"] = {270}}); -- Soothing Mist 
+	AddUnlock(monkSkills, 12, {["id"] = 231602, ["specs"] = {268, 269}}); -- Effuse 2 
+	AddUnlock(monkSkills, 12, {["id"] = 124682, ["specs"] = {270}}); -- Enveloping Mist 
+	AddUnlock(monkSkills, 12, {["id"] = 116645, ["specs"] = {270}}); -- Teaching of the Monastery
+	AddUnlock(monkSkills, 13, {["id"] = 115546}); -- Provoke 
+	AddUnlock(monkSkills, 14, {["id"] = 115178}); -- Resuscitate 
+	AddUnlock(monkSkills, 14, {["id"] = 126892}); -- Zen Pilgrimage 
+	AddUnlock(monkSkills, 16, {["id"] = 116095, ["specs"] = {269}}); -- Disable 
+	AddUnlock(monkSkills, 16, {["id"] = 115069, ["specs"] = {268}}); -- Stager
+	AddUnlock(monkSkills, 18, {["id"] = 117952}); -- Crackling Jade Lightning  
+	AddUnlock(monkSkills, 20, {["id"] = 128595, ["specs"] = {269}}); -- Combat Conditioning 
+	AddUnlock(monkSkills, 20, {["id"] = 113656, ["specs"] = {269}}); -- Fists of Fury 
+	AddUnlock(monkSkills, 20, {["id"] = 115308, ["specs"] = {268}}); -- Ironskin Brew 
+	AddUnlock(monkSkills, 20, {["id"] = 115151, ["specs"] = {270}}); -- Renewing Mist 
+	AddUnlock(monkSkills, 22, {["id"] = 115450, ["specs"] = {270}}); -- Blackout Strike
+	AddUnlock(monkSkills, 22, {["id"] = 218164, ["specs"] = {268, 269}}); -- Blackout Strike
+	AddUnlock(monkSkills, 25, {["id"] = 115078}); -- Paralusis 
+	AddUnlock(monkSkills, 28, {["id"] = 116092, ["specs"] = {269}}); -- Afterlife 
+	AddUnlock(monkSkills, 28, {["id"] = 119582, ["specs"] = {268}}); -- Purifying Brew 
+	AddUnlock(monkSkills, 28, {["id"] = 116670, ["specs"] = {270}}); -- Vivify
+	AddUnlock(monkSkills, 32, {["id"] = 231605, ["specs"] = {270}}); -- Enveloping Mist 2 
+	AddUnlock(monkSkills, 32, {["id"] = 124502, ["specs"] = {268}}); -- Gift of the Ox 
+	AddUnlock(monkSkills, 32, {["id"] = 115080, ["specs"] = {269}}); -- Touch of Death 
+	AddUnlock(monkSkills, 35, {["id"] = 116849, ["specs"] = {270}}); -- Life Cocoon 
+	AddUnlock(monkSkills, 35, {["id"] = 116705, ["specs"] = {268, 269}}); -- Spear Hand Strike 
+	AddUnlock(monkSkills, 38, {["id"] = 157411, ["specs"] = {269}}); -- Windwalking 
+	AddUnlock(monkSkills, 40, {["id"] = 115181, ["specs"] = {268}}); -- Breath of Fire 
+	AddUnlock(monkSkills, 40, {["id"] = 101546, ["specs"] = {269}}); -- Cyclone Strikes 
+	AddUnlock(monkSkills, 40, {["id"] = 191837, ["specs"] = {269}}); -- Essence Font 
+	AddUnlock(monkSkills, 42, {["id"] = 137384, ["specs"] = {269}}); -- Combo Breaker 
+	AddUnlock(monkSkills, 42, {["id"] = 231606, ["specs"] = {270}}); -- Renewing Mist 2 
+	AddUnlock(monkSkills, 48, {["id"] = 101545, ["specs"] = {269}}); -- Flying Serpent Kick 
+	AddUnlock(monkSkills, 50, {["id"] = 115072, ["specs"] = {268}}); -- Expel Harm 
+	AddUnlock(monkSkills, 50, {["id"] = 120224, ["specs"] = {269}}); -- Leather Specialization 
+	AddUnlock(monkSkills, 50, {["id"] = 120225, ["specs"] = {268}}); -- Leather Specialization 
+	AddUnlock(monkSkills, 50, {["id"] = 120227, ["specs"] = {270}}); -- Leather Specialization 
+	AddUnlock(monkSkills, 50, {["id"] = 137639, ["specs"] = {269}}); -- Storm, Earth, and Fire
+	AddUnlock(monkSkills, 50, {["id"] = 116680, ["specs"] = {270}}); -- Thunder Focus Tea 
+	AddUnlock(monkSkills, 55, {["id"] = 115203, ["specs"] = {268}}); -- Fortifying Brew 
+	AddUnlock(monkSkills, 55, {["id"] = 243435, ["specs"] = {270}}); -- Fortifying Brew 
+	AddUnlock(monkSkills, 55, {["id"] = 122470, ["specs"] = {269}}); -- Touch of Karma 
+	AddUnlock(monkSkills, 58, {["id"] = 231633, ["specs"] = {270}}); -- Essence Font 2 
+	AddUnlock(monkSkills, 63, {["id"] = 231876, ["specs"] = {270}}); -- Thunder Focus Tea 
+	AddUnlock(monkSkills, 65, {["id"] = 115176, ["specs"] = {268}}); -- Zen Meditation 
+	AddUnlock(monkSkills, 66, {["id"] = 212051, ["specs"] = {270}}); -- Reawaken
+	AddUnlock(monkSkills, 70, {["id"] = 216519, ["specs"] = {268}}); -- Celestial Fortune 
+	AddUnlock(monkSkills, 70, {["id"] = 115310, ["specs"] = {270}}); -- Revival 
+	AddUnlock(monkSkills, 70, {["id"] = 231627, ["specs"] = {269}}); -- Storm, Earth, and Fire 2 
+	AddUnlock(monkSkills, 78, {["id"] = 115636, ["specs"] = {269}}); -- Mastery: Combo Strikes
+	AddUnlock(monkSkills, 78, {["id"] = 117906, ["specs"] = {268}}); -- Mastery: Elusive Brawler
+	AddUnlock(monkSkills, 78, {["id"] = 117907, ["specs"] = {270}}); -- Mastery: Gust of Mists
+	AddUnlock(monkSkills, 80, {["id"] = 101643}); -- Transcendence
+	AddUnlock(monkSkills, 80, {["id"] = 119996}); -- Transcendence: Transfer
 
-_addonData.MONK = {};
-_addonData.MONK.Skills = monkSkills;
-_addonData.MONK.Specs = monkSpecs;
+_addonData.Skills = monkSkills;
+_addonData.Specs = monkSpecs;
 
+end
+
+--
+-- DEMON HUNTER
+--
+
+if (playerClass == "DEMONHUNTER") then
+local dhSpecs = {
+	577 -- Havoc
+	, 581 -- Vengeance
+};
+
+local dhSkills = { };
+	AddUnlock(dhSkills, 100, {["id"] = 196718, ["specs"] = {577}}); -- Darkness
+	AddUnlock(dhSkills, 101, {["id"] = 202137, ["specs"] = {581}}); -- Sigil of Silence
+	AddUnlock(dhSkills, 103, {["id"] = 218256, ["specs"] = {581}}); -- Empower Wards
+	AddUnlock(dhSkills, 105, {["id"] = 207684, ["specs"] = {581}}); -- Sigil of Misery
+
+_addonData.Skills = dhSkills;
+_addonData.Specs = dhSpecs;
+
+end

@@ -1,2 +1,0 @@
-6.2.05
-Preventing popup from showing during combat

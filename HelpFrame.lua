@@ -6,14 +6,14 @@ local _help = _addonData.help;
 local HELP_BUTTON_NORMAL_SIZE = 46;
 
 local function ShowTooltip()
-	ILW_HelpFrame.Tooltip:Show();
+	ShowUIPanel(ILW_HelpFrame.Tooltip);
 	ILW_HelpFrame.Box:Hide();
-	ILW_HelpFrame.GlowFrame:Show();
+	ShowUIPanel(ILW_HelpFrame.GlowFrame);
 end
 
 local function HideTooltip()
 	ILW_HelpFrame.Tooltip:Hide();
-	ILW_HelpFrame.Box:Show();
+	ShowUIPanel(ILW_HelpFrame.Box);
 	ILW_HelpFrame.GlowFrame:Hide();
 end
 
@@ -22,7 +22,8 @@ local function CreateButtonAnimation(self)
 	self.animGroup_Show.translate = self.animGroup_Show:CreateAnimation("Translation");
 	self.animGroup_Show.translate:SetSmoothing("IN");
 	self.animGroup_Show.alpha = self.animGroup_Show:CreateAnimation("Alpha");
-	self.animGroup_Show.alpha:SetChange(-1);
+	self.animGroup_Show.alpha:SetFromAlpha(1);
+	self.animGroup_Show.alpha:SetToAlpha(0);
 	self.animGroup_Show.alpha:SetSmoothing("IN");
 	self.animGroup_Show.parent = self;
 end
@@ -38,11 +39,14 @@ local function ShowButtonAnimation(self)
 	self.animGroup_Show:Play(true);
 end
 
-function _help:Initialise(parent, data)
+function _help:Initialize(parent, data)
 	ILW_HelpFrame:SetParent(parent);
 	ILW_HelpFrame:ClearAllPoints();
 	ILW_HelpFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", data.FramePos.x, data.FramePos.y);
 	ILW_HelpFrame:SetSize(data.FrameSize.width, data.FrameSize.height);
+	
+	ILW_HelpFrame.Box:SetScript("OnEnter", ShowTooltip);
+	ILW_HelpFrame.GlowFrame:SetScript("OnLeave", HideTooltip);
 
 	local subData = data[1];
 	ILW_HelpFrame.Box:ClearAllPoints();
@@ -60,6 +64,9 @@ function _help:Initialise(parent, data)
 	ILW_HelpFrame.Button:SetScript("OnEnter", ShowTooltip);
 	ILW_HelpFrame.Button:SetScript("OnLeave", HideTooltip);
 	
+	ILW_HelpFrame.Button.HelpIGlow:Hide();
+	ILW_HelpFrame.Button.BgGlow:Hide();
+	
 	local tt = ILW_HelpFrame.Tooltip;
 	tt:ClearAllPoints();
 	tt:SetPoint("TOP", ILW_HelpFrame.Button, "BOTTOM", 0, -10);
@@ -69,7 +76,7 @@ function _help:Initialise(parent, data)
 end
 
 function _help:ShowTutorial()
-	ILW_HelpFrame:Show();
+	ShowUIPanel(ILW_HelpFrame);
 end
 
 function _help:HideTutorial()
