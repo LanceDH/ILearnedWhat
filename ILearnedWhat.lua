@@ -19,22 +19,22 @@ local ILWBroker = LibStub("LibDataBroker-1.1"):NewDataObject(_addonName, {
 	text = "I Learned What?",
 	icon = "Interface/ICONS/Spell_Holy_SurgeOfLight",
 	OnClick = function(self, button, down)
-		if (InCombatLockdown()) then
-			return;
-		end
+		-- if (InCombatLockdown()) then
+			-- return;
+		-- end
 		if (ILW_UnlockContainer:IsShown()) then
 			HideUIPanel(ILW_UnlockContainer);
 		else
-			ShowUIPanel(ILW_UnlockContainer);
+			ILW_UnlockContainer:Open();
 		end
 	end,
 	OnTooltipShow = function(tt)
 		tt:AddLine("I Learned What?", 1, 1, 1);
-		if (InCombatLockdown()) then
-			tt:AddLine(_L["TOOLTIP_COMBAT"]);
-		else
+		-- if (InCombatLockdown()) then
+			-- tt:AddLine(_L["TOOLTIP_COMBAT"]);
+		-- else
 			tt:AddLine(_L["MINIMAP_TOOLTIP"]);
-		end
+		-- end
 	end	
 })
 local _icon = LibStub("LibDBIcon-1.0")
@@ -42,7 +42,6 @@ local _icon = LibStub("LibDBIcon-1.0")
 local _defaults = {
 	["global"] = {	
 		showPopup = true,
-		spellbook = true,
 		minimap = {
 			hide = false,
 		},
@@ -69,18 +68,15 @@ local _trackers = {
 		["Battlegrounds"] = true,
 		["UI"] = true
 	}
-
-
-local _classSkills = {};
-local _ridingSkills = {};
-local _specLastLevel = {};
-local _InstanceLevels = {};
-local _PvPLevels = {};
-local _classSpecs = {};
-local _playerLeveled = false;
-local _openedDuringCombat = false;
-
-
+	
+local _trackerLabels = {
+		["Spells"] = _L["TRACKER_SPELLS"]
+		,["Talents"] = _L["TRACKER_TALENTS"]
+		,["Dungeons"] = _L["TRACKER_DUNGEONS"]
+		,["Riding"] = _L["TRACKER_RIDING"]
+		,["Battlegrounds"] = _L["TRACKER_BATTLEGROUNDS"]
+		,["UI"] = _L["TRACKER_UI"]
+	}
 
 _addonData.help = {}
 local _help = _addonData.help;
@@ -100,8 +96,6 @@ local ICON_UI = "Interface/ICONS/INV_Scroll_02";
 local UNLOCK_SUBTYPE_TUTORIAL = 0;
 local UNLOCK_SUBTYPE_UPCOMMING = 1;
 
-
-
 local _helpPlate = {
 	FramePos = { x = 5,	y = -25 },
 	FrameSize = { width = 440, height = 495	},
@@ -113,11 +107,12 @@ local _typeIcons = {
 		,[UNLOCKTYPE_DUNGEON] = {["left"] = 0.6875, ["right"] = 0.75, ["top"] = 0.2637, ["bottom"] = 0.326}
 		,[UNLOCKTYPE_RAID] = {["left"] = 0.75, ["right"] = 0.8125, ["top"] = 0.2637, ["bottom"] = 0.326}
 		,[UNLOCKTYPE_TALENT] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.8066, ["bottom"] = 0.8691}
-		--,[UNLOCKTYPE_PVP] = {["left"] = 0.75, ["right"] = 0.875, ["top"] = 0.875, ["bottom"] = 1}
 		,[UNLOCKTYPE_PVP] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.7441, ["bottom"] = 0.8066}
 		,[UNLOCKTYPE_RIDING] = {["left"] = 0.6875, ["right"] = 0.75, ["top"] = 0.2012, ["bottom"] = 0.2637}
 	};
 
+	
+	
 function ILW_ShowHelpUnlocks(show)
 	local unlocklist = ILWAddon.db.char.unlockedList;
 	
@@ -169,6 +164,7 @@ function ILW_DATA_MIXIN:Initialize()
 	self.upcomming = {};
 	self.upcommingLevel = 0;
 	self.filteredList = {};
+	self.unlockData = _addonData.unlockData;
 	
 	self.quickFilters = {
 			[UNLOCKTYPE_DUNGEON] = function() return ILWAddon.db.global.trackers["Dungeons"] end
@@ -203,79 +199,66 @@ function ILW_DATA_MIXIN:AddUnlocksOfLevel(level, list)
 	end
 	
 	-- Check for skills
-	--if trackOptions.Spells then
-		
-		unlocks = _classSkills[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				-- always show if not spec specific
-				if unlock.specs == nil then
-					self:AddUnlock(list, UNLOCKTYPE_SPELL, unlock, level, nil)
-					addedNew = true;
-				-- Otherwise, if you have a spec, check if it's the same as yours
-				elseif spec ~= nil then
-					for specKey, cSpec in ipairs(unlock.specs) do
-						if cSpec == GetPlayerSpec() then
-							self:AddUnlock(list, UNLOCKTYPE_SPELL, unlock, level, spec)
-							addedNew = true;
-						end
+	unlocks = self.unlockData.skills[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			-- always show if not spec specific
+			if unlock.specs == nil then
+				self:AddUnlock(list, UNLOCKTYPE_SPELL, unlock, level, nil)
+				addedNew = true;
+			-- Otherwise, if you have a spec, check if it's the same as yours
+			elseif spec ~= nil then
+				for specKey, cSpec in ipairs(unlock.specs) do
+					if cSpec == GetPlayerSpec() then
+						self:AddUnlock(list, UNLOCKTYPE_SPELL, unlock, level, spec)
+						addedNew = true;
 					end
 				end
 			end
 		end
-	--end
+	end
 	
 	-- Check for talents
-	--if trackOptions.Talents then
-		if (_talentLevels[level]) then
-			self:AddUnlock(list, UNLOCKTYPE_TALENT, nil, level);
-			addedNew = true;
-		end
-	--end
+	if (self.unlockData.talents[level]) then
+		self:AddUnlock(list, UNLOCKTYPE_TALENT, nil, level);
+		addedNew = true;
+	end
 
 	-- Check for riding skills
-	--if trackOptions.Riding then
-		unlocks = _ridingSkills[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				self:AddUnlock(list, UNLOCKTYPE_RIDING, unlock, level)
-				addedNew = true;
-			end
+	unlocks = self.unlockData.riding[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			self:AddUnlock(list, UNLOCKTYPE_RIDING, unlock, level)
+			addedNew = true;
 		end
-	--end
+	end
 	
 	-- Check for UI
-	--if trackOptions.UI then
-		unlocks = _UIUnlocks[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				self:AddUnlock(list, UNLOCKTYPE_UI, unlock, level, unlock.func);
-				addedNew = true;
-			end
+	unlocks = self.unlockData.UI[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			self:AddUnlock(list, UNLOCKTYPE_UI, unlock, level, unlock.func);
+			addedNew = true;
 		end
-	--end
+	end
 	
 	-- Check for dungeons
-	--if trackOptions.Dungeons then
-		unlocks = _InstanceLevels[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				self:AddUnlock(list, (unlock.isRaid and UNLOCKTYPE_RAID or UNLOCKTYPE_DUNGEON), unlock, level);
-				addedNew = true;
-			end
+	unlocks = self.unlockData.instances[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			self:AddUnlock(list, (unlock.isRaid and UNLOCKTYPE_RAID or UNLOCKTYPE_DUNGEON), unlock, level);
+			addedNew = true;
 		end
-	--end
+	end
 	
 	-- Check for PvP
-	--if trackOptions.Battlegrounds then
-		unlocks = _PvPLevels[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				self:AddUnlock(list, UNLOCKTYPE_PVP, unlock, level);
-				addedNew = true;
-			end
+	unlocks = self.unlockData.PVP[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			self:AddUnlock(list, UNLOCKTYPE_PVP, unlock, level);
+			addedNew = true;
 		end
-	--end
+	end
 	
 	return addedNew;
 end
@@ -311,7 +294,6 @@ function ILW_DATA_MIXIN:AddUnlock(list, typeID, unlock, level, extra)
 		id = unlock.id;
 		icon = unlock.icon;
 		name = unlock.name;
-		--spec = extra;
 		subText = unlock.subText;
 	end
 	if (typeID == UNLOCKTYPE_SPELL or typeID == UNLOCKTYPE_RIDING) then
@@ -357,7 +339,7 @@ end
 function ILW_DATA_MIXIN:CheckSpecMissedUnlocks(level, spec)
 
 	if ILWAddon.db.global.trackers["Spells"] then
-		local unlocks = _classSkills[level]
+		local unlocks = self.unlockData.skills[level]
 		if (unlocks) then
 			for k, unlock in ipairs(unlocks) do
 				if (unlock.specs) then
@@ -477,15 +459,10 @@ function ILW_UNLOCK_MIXIN:OnClick(button)
 	elseif (self.unlockType == UNLOCKTYPE_PVP) then
 		ShowUIPanel(PVEFrame);
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
-		-- if (GroupFinderFrame == nil or not GroupFinderFrame:IsShown()) then
-			-- PVEFrame_ToggleFrame();
-		-- end
-		-- 
 	elseif (self.unlockType == UNLOCKTYPE_UI) then
 		if (self.data.func) then 
 			self.data.func()
 		end
-		
 	end
 	
 	ILW_UnlockContainer:UpdateUnlockDisplay();
@@ -523,9 +500,8 @@ function ILW_UNLOCK_MIXIN:Reset()
 	local iconTexture = _G[name.."IconTexture"];
 	iconTexture:Hide();
 	iconTexture:SetTexture("");
-	self:Disable();
-	--self:SetAlpha(0);
-	HideUIPanel(self);
+	self.Blocker:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT");
+	self:SetAlpha(0);
 	self.SpellName:SetText("");
 	self.SpellName:SetHeight(self.SpellName:GetStringHeight());
 	self.unlockType = nil;
@@ -544,7 +520,7 @@ function ILW_UNLOCK_MIXIN:Update(unlock, showLevel)
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
 	self:SetAlpha(1);
-	self:Enable();
+	self.Blocker:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
 	
 	iconTexture:Show();
 	iconTexture:SetTexture(unlock.icon);
@@ -628,16 +604,12 @@ ILW_CORE_MIXIN = {}
 
 function ILW_CORE_MIXIN:OnShow()
 	HideUIPanel(ILW_AlertPopup);
-	ILW_SpellBookTab:SetChecked(true);
 	self:UpdateUnlockDisplay();
-	--PlaySound("igSpellBookOpen");
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 end
 
 function ILW_CORE_MIXIN:OnHide()
-	--PlaySound("igSpellBookClose");
 	HideUIPanel(ILW_HelpFrame);
-	ILW_SpellBookTab:SetChecked(false);
 	ILW_ShowHelpUnlocks(false);
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
@@ -664,7 +636,6 @@ function ILW_CORE_MIXIN:OnLoad()
 	
 	SetPortraitToTexture(ILW_UnlockContainerPortrait, "Interface\\ICONS\\Spell_Holy_SurgeOfLight");
 	ILW_UnlockContainerTitleText:SetText("I Learned What?")
-	ILW_UnlockContainerCloseButton:SetScript("OnMouseUp", function() ILW_SpellBookTab:SetChecked(false); end );
 	
 	ButtonFrameTemplate_HideButtonBar(self);
 	ButtonFrameTemplate_HideAttic(self);
@@ -688,6 +659,10 @@ function ILW_CORE_MIXIN:ClearButton_OnClick()
 	self:UpdateUnlockDisplay();
 end
 
+function ILW_CORE_MIXIN:Open()
+	ShowUIPanel(self);
+end
+
 function ILW_CORE_MIXIN:LevelUp(level)
 	self.dataProvider:ClearUpcommingFromList();
 	local newUnlocks = self.dataProvider:AddUnlocksOfLevel(level);
@@ -707,7 +682,6 @@ function ILW_CORE_MIXIN:ResetButtons()
 	for i=1, 6 do
 		local button = _G["ILW_UnlockContainerUnlock"..i];
 		button:Reset();
-		
 	end
 	
 	self.Navigation:Update();
@@ -722,7 +696,6 @@ function ILW_CORE_MIXIN:UpdateUnlockDisplay()
 	if (#unlockedList == 0) then 
 		self.dataProvider:LoadUpcommingUnlocks();
 		self.dataProvider:UpdateFilteredList();
-		
 	end
 	
 	if (#unlockedList == 0) then
@@ -751,12 +724,38 @@ function ILW_CORE_MIXIN:UpdateUnlockDisplay()
 			local button = _G["ILW_UnlockContainerUnlock"..count];
 			button:Update(unlock, (unlock.level~=prevDisplayLevel));
 			prevDisplayLevel = unlock.level;
-			
-			
+
 		count = count +1;
 	end
 
 	self.Navigation:Update();
+end
+
+function ILW_CORE_MIXIN:SpecChanged()
+	local spec = GetPlayerSpec();
+	local level = UnitLevel("player");
+	
+	if (spec == nil) then return; end
+	
+	local lastLevel = ILWAddon.db.char.specLastLevel[spec];
+	lastLevel = (lastLevel or 1);
+	
+	-- add spec specific unlocks since last time the spec was used
+	for i = (lastLevel + 1), level do
+		self.dataProvider:CheckSpecMissedUnlocks(i, spec);
+	end
+	
+	-- sort unlocks by level to get new spec abilities in the right position
+	table.sort(ILWAddon.db.char.unlockedList, function(a, b) return a.level < b.level end)
+
+	ILWAddon.db.char.specLastLevel[spec] = level;
+	
+	self.dataProvider:UpdateFilteredList();
+	if (not self:IsShown()) then
+		ILW_AlertPopup:Present();
+	end
+	
+	self:UpdateUnlockDisplay();
 end
 
 
@@ -766,7 +765,6 @@ ILW_NAVIGATION_MIXIN = {};
 
 function ILW_NAVIGATION_MIXIN:PrevPageButton_OnClick()
 	if (self.CurrentPage == 1) then return; end
-	--PlaySound("igAbiliityPageTurn");
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	self.CurrentPage = self.CurrentPage - 1;
 	self.Text:SetText("Page ".. self.CurrentPage);
@@ -775,7 +773,6 @@ end
 
 function ILW_NAVIGATION_MIXIN:NextPageButton_OnClick()
 	if (self.CurrentPage >= ceil(#ILW_UnlockContainer.dataProvider.filteredList/UNLOCKS_PER_PAGE)) then return; end
-	--PlaySound("igAbiliityPageTurn");
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	self.CurrentPage = self.CurrentPage + 1;
 	self.Text:SetText("Page ".. self.CurrentPage);
@@ -810,6 +807,7 @@ end
 
 
 
+
 function ILWAddon:InitFilter(dd, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;	
@@ -825,19 +823,6 @@ function ILWAddon:InitFilter(dd, level)
 						end
 					end 
 		info.checked = not ILWAddon.db.global.minimap.hide;
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-		
-		info.text = _L["OPTION_SPELLBOOK"];
-		info.func = function(_, _, _, value)
-						ILWAddon.db.global.spellbook = value;
-						if (ILWAddon.db.global.spellbook) then
-							ShowUIPanel(ILW_SpellBookTab);
-						else
-							HideUIPanel(ILW_SpellBookTab);
-						end
-					end 
-		info.checked = ILWAddon.db.global.spellbook;
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 
@@ -883,7 +868,7 @@ function ILWAddon:InitFilter(dd, level)
 		
 		info.notCheckable = false;
 		for k, v in pairs(_trackers) do
-			info.text = k;
+			info.text = _trackerLabels[k];
 			info.func = function(_, _, _, value)
 								ILWAddon.db.global.trackers[k] = value;
 								ILW_UnlockContainer:UpdateUnlockDisplay();
@@ -912,7 +897,7 @@ end
 
 function ILW_POPUP_MIXIN:OnClick(button)
 	if(button == "LeftButton") then
-		ShowUIPanel(ILW_UnlockContainer);
+		ILW_UnlockContainer:Open();
 	end
 	HideUIPanel(self)
 end
@@ -920,7 +905,11 @@ end
 function ILW_POPUP_MIXIN:Present()
 	local list = ILW_UnlockContainer.dataProvider.filteredList;
 	if (#list > 0 and list[1].subType == UNLOCK_SUBTYPE_UPCOMMING) then return; end;
-	if (ILW_UnlockContainer:IsShown() or #list == 0 or not ILWAddon.db.global.showPopup or InCombatLockdown()) then return; end
+	if (ILW_UnlockContainer:IsShown() or #list == 0 or not ILWAddon.db.global.showPopup ) then return; end
+	if (InCombatLockdown()) then
+		self.shownDuringCombat = true;
+		return;
+	end
 	self.text:SetText(_L["POPUP_FORMAT"]:format(#list));
 	ShowUIPanel(self);
 end
@@ -928,61 +917,7 @@ end
 
 
 
-local function CreateSpellbookIcon()
 
-	local L_ILW_SpellBookTab = CreateFrame("CheckButton", "ILW_SpellBookTab", SpellBookSideTabsFrame, "SpellBookSkillLineTabTemplate");
-	L_ILW_SpellBookTab:SetPoint("bottomleft", SpellBookSideTabsFrame, "bottomright", 0, 50);
-	ShowUIPanel(L_ILW_SpellBookTab);
-	-- overwrite scripts from template
-	L_ILW_SpellBookTab:SetScript("OnEnter", function(self) 
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-		GameTooltip:SetText(_L["TOOLTIP_SPELLBOOK_ICON"]);
-	end);
-	L_ILW_SpellBookTab:SetScript("OnClick", function() 
-			if (ILW_UnlockContainer:IsShown()) then
-				HideUIPanel(ILW_UnlockContainer);
-			else
-				ShowUIPanel(ILW_UnlockContainer);
-			end
-		end);
-
-	L_ILW_SpellBookTab.icon = L_ILW_SpellBookTab:CreateTexture("ILW_SpellBookTabIcon");
-	L_ILW_SpellBookTab.icon:SetPoint("center", L_ILW_SpellBookTab);
-	L_ILW_SpellBookTab.icon:SetSize(32, 32);
-	L_ILW_SpellBookTab.icon:SetTexture("Interface\\ICONS\\Spell_Holy_SurgeOfLight");
-	
-	
-end
-
-local function SpecChanged()
-	local spec = GetPlayerSpec();
-	local level = UnitLevel("player");
-	
-	if (spec == nil) then return; end
-	
-	-- local lastLevel = _specLastLevel[""..spec];
-	local lastLevel = ILWAddon.db.char.specLastLevel[spec];
-	lastLevel = (lastLevel or 1);
-	
-	-- add spec specific unlocks since last time the spec was used
-	for i = (lastLevel + 1), level do
-		--CheckSpecMissedUnlocks(i, spec);
-		ILW_UnlockContainer.dataProvider:CheckSpecMissedUnlocks(i, spec);
-	end
-	
-	-- sort unlocks by level to get new spec abilities in the right position
-	table.sort(ILWAddon.db.char.unlockedList, function(a, b) return a.level < b.level end)
-
-	ILWAddon.db.char.specLastLevel[spec] = level;
-	
-	ILW_UnlockContainer.dataProvider:UpdateFilteredList();
-	if (not ILW_UnlockContainer:IsShown()) then
-		ILW_AlertPopup:Present();
-	end
-	
-	ILW_UnlockContainer:UpdateUnlockDisplay();
-	
-end
 
 function ILWAddon:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ILWDB", _defaults, true);
@@ -996,10 +931,6 @@ function ILWAddon:OnInitialize()
 end
 
 function ILWAddon:OnEnable()
-	if (not ILWAddon.db.global.spellbook) then
-		ILW_SpellBookTab:Hide();
-	end
-	
 	local spec = GetPlayerSpec();
 	if (spec ~= nil) then
 		self.db.char.specLastLevel[spec] = UnitLevel("player");
@@ -1011,7 +942,7 @@ function ILWAddon:OnEnable()
 	-- This has to be done here as some info (mainly BGs) is not available before the addon is done loading.
 	
 	-- Get names for official instances
-	for level, instances in pairs(_addonData.Instances) do
+	for level, instances in pairs(_addonData.unlockData.instances) do
 		for k, instance in ipairs(instances) do
 			if (instance.subText == _L["DUNGEON"]) then
 				instance.name = EJ_GetInstanceInfo(instance.id);
@@ -1020,7 +951,7 @@ function ILWAddon:OnEnable()
 	end
 	
 	-- Official names
-	for level, unlocks in pairs(_addonData.Pvp) do
+	for level, unlocks in pairs(_addonData.unlockData.PVP) do
 		for k, unlock in ipairs(unlocks) do
 			if (unlock.subText == _L["BATTLEGROUND"]) then
 				unlock.name = GetBattlegroundInfo(unlock.id);
@@ -1029,6 +960,10 @@ function ILWAddon:OnEnable()
 			end
 		end
 	end
+	
+	-- Opening the frame once allows it to be used during combat. for some reason
+	ShowUIPanel(ILW_UnlockContainer);
+	HideUIPanel(ILW_UnlockContainer);
 end
 
 local L_ILWhat_LoadFrame = CreateFrame("FRAME", "ILWhat_LoadFrame"); 
@@ -1041,11 +976,7 @@ ILWhat_LoadFrame:RegisterEvent("PLAYER_LOGOUT");
 ILWhat_LoadFrame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 
 function ILWhat_LoadFrame:PLAYER_LEVEL_UP(level, hp, mp, talentPoints, strength, agility, stamina, intellect, spirit)
-	if InCombatLockdown() then
-		_playerLeveled = true;
-	else
-		ILW_UnlockContainer:LevelUp(level);
-	end
+	ILW_UnlockContainer:LevelUp(level);
 end
 
 function ILWhat_LoadFrame:PLAYER_REGEN_DISABLED()
@@ -1054,20 +985,15 @@ function ILWhat_LoadFrame:PLAYER_REGEN_DISABLED()
 end
 
 function ILWhat_LoadFrame:PLAYER_REGEN_ENABLED()
-	if _playerLeveled then
-		ILW_UnlockContainer:LevelUp(UnitLevel("player"));
-		_playerLeveled = false;
-	end
-	
-	if _openedDuringCombat then
-		ShowUnlockContainer();
-		_openedDuringCombat = false;
+	if ILW_AlertPopup.shownDuringCombat then
+		ILW_AlertPopup:Present();
+		ILW_AlertPopup.shownDuringCombat = false;
 	end
 end
 
 function ILWhat_LoadFrame:PLAYER_SPECIALIZATION_CHANGED(player)
 	if(player == "player") then
-		SpecChanged();
+		ILW_UnlockContainer:SpecChanged();
 	end
 end
 
@@ -1079,16 +1005,6 @@ function ILWhat_LoadFrame:ADDON_LOADED(loadedAddon)
 	if (loadedAddon ~= _addonName) then return; end
 	
 	ILWhat_LoadFrame:UnregisterEvent("ADDON_LOADED")
-	
-	_classSkills = _addonData.Skills;
-	_classSpecs = _addonData.Specs;
-	_talentLevels = _addonData.Talents;
-	_InstanceLevels = _addonData.Instances;
-	_PvPLevels = _addonData.Pvp;
-	_ridingSkills = _addonData.Riding;
-	_UIUnlocks = _addonData.UI;
-
-	CreateSpellbookIcon();
 	
 	_help:Initialize(ILW_UnlockContainer, _helpPlate);
 
@@ -1102,15 +1018,10 @@ SLASH_ILEARNEDWHAT1 = '/ilwhat';
 SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
 SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
-	-- wipe(ILW_UnlockContainer.dataProvider.unlockedList )
-	-- for i=1, 110 do
-		-- ILW_UnlockContainer:LevelUp(i)
-	-- end
-	-- print(ILW_UnlockContainer.dataProvider:LoadUpcommingUnlocks());
 	if (ILW_UnlockContainer:IsShown()) then
 		HideUIPanel(ILW_UnlockContainer);
-	elseif(not InCombatLockdown()) then
-		ShowUIPanel(ILW_UnlockContainer);
+	else--if(not InCombatLockdown()) then
+		ILW_UnlockContainer:Open();
 	end
 end
 SlashCmdList["ILEARNEDWHAT"] = slashcmd

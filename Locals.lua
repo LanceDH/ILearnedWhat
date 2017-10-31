@@ -3,7 +3,6 @@ local addonName, addon = ...
 local L = {}
 local locale = GetLocale();
 
-L["TOOLTIP_COMBAT"] = "|cFFFF5555Can't open during combat|r";
 L["HELP_INFO"] = "As you level up you will unlock new content such as new abilities, talent points and dungeons.\n\nLeft clicking the unlocks will open related windows and remove them from the list.\n\nLeft clicking or dragging abilities allows you to move them to your action bars.\n\nRight clicking the unlocks will remove them from the list."
 L["ERROR_OPEN_IN_COMBAT"] = "|cFFFFD100ILWhat:|r |cFFFF5555Can't open that during combat. It will open once you leave combat.|r";
 L["TOOLTIP_TALENT"] = "You can pick a new talent.";
@@ -42,6 +41,13 @@ L["NONEW_TITLE "] = "... everything!"
 L["NEW"] = " New! "
 L["MINIMAP_TOOLTIP"] = "Click to open."
 
+L["TRACKER_SPELLS"] = "Spells"
+L["TRACKER_TALENTS"] = "Talents"
+L["TRACKER_DUNGEONS"] = "Dungeons"
+L["TRACKER_RIDING"] = "Riding"
+L["TRACKER_BATTLEGROUNDS"] = "Battlegrounds"
+L["TRACKER_UI"] = "UI"
+
 L["RAIDS_CLASSIC"] = "Classic Raids"
 L["HEROIC_OUTLAND"] = "Heroic: Outland Dungeons"
 L["RAID_OUTLAND"] = "Outland Raids"
@@ -58,12 +64,10 @@ L["MYTHIC_LEGION"] = "Mythic: Legion Dungeons"
 L["RAID_LEGION"] = "Legion Raids"
 
 if locale == "deDE" then
-
 	-- for k, v in pairs(L) do
 		-- L[k] = "|cFFFF00FF" .. v .. "|r"
 	
 	-- end
-
 end
 
 addon.L = L;

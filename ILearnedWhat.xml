@@ -22,6 +22,7 @@
 
 	<CheckButton name="ILW_UnlockButtonTemplate" mixin="ILW_UNLOCK_MIXIN" hidden="true" inherits="SecureFrameTemplate" virtual="true">
 		<Size x="37" y="37"/>
+		
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot" parentKey="EmptySlot">
@@ -129,6 +130,15 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		
+		<Frames>
+			<Frame name="$parentBlocker" hidden="false" enableMouse="true" parentKey="Blocker">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+			</Frame>
+		</Frames>
 		
 		<Animations>
 			<AnimationGroup parentKey="animation" looping="NONE">
