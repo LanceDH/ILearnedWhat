@@ -14,6 +14,10 @@
 	<Script file="UnlockInfo.lua"/>
 	<Script file="ILearnedWhat.lua"/>
 	 
+	 <Font name="ILW_GameFontLightGraySmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.75" g="0.75" b="0.75"/>
+	</Font>
+	 
 	<Texture name="ILW_DigitBGTemplate" file="Interface\LFGFRAME\UI-LFG-FILIGREE" virtual="true" >
 		<Size x="80" y="30"/>	
 		<TexCoords left="0.021484375" right="0.35" top="0.59375" bottom="1"/>	
@@ -163,11 +167,174 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
+	<Frame name="ILW_ChartBlock_Template" parentArray="BlockArray" mixin="ILW_CHART_BLOCK_MIXIN" virtual="true">
+		<Size x="25" y="52" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Progress" alpha="0">
+					<Size y="5" />
+					<Anchors>
+						<Anchor point="LEFT" y="-5"/>
+						<Anchor point="RIGHT" y="-5"/>
+					</Anchors>
+					<Color r="0.8" g="0.6" b="0" a="1" />
+				</Texture>
+			
+				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Level" >
+					<Size y="15" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" y="-2"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Number" >
+					<Size y="15" />
+					<Anchors>
+						<Anchor point="TOP" y="-12"/>
+					</Anchors>
+				</FontString>
+				
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\ENCOUNTERJOURNAL\UI-EncounterJournalTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Progress" y="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Progress" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.957" right="0.995" top="0.0234" bottom="0.045"/>
+				</Texture>
+			</Layer>
+			
+			<Layer level="BACKGROUND">
+				<Texture >
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Progress" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Progress"/>
+					</Anchors>
+					<Color r="0.1" g="0.1" b="0.1" a="1" />
+				</Texture>
+			</Layer>
+			
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				
+				<Texture parentKey="NumberBG" file="Interface\LEVELUP\LEVELUPTEX" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="LEFT" />
+						<Anchor point="RIGHT" />
+						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" />
+					</Anchors>
+					<TexCoords left="0.05" right="0.5164" top="0.8" bottom="0.25" />
+				</Texture>
+			
+				<Texture parentKey="LevelFlag" file="Interface\BUTTONS\UI-Quickslot" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Progress" relativePoint="BOTTOMLEFT" x="1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Progress" relativePoint="TOPRIGHT" x="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<TexCoords left="0.1875" right="0.7969" top="0.2969" bottom="0.7969" />
+				</Texture>
+			</Layer>	
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="HighlightTop" file="Interface\LEVELUP\LEVELUPTEX" alpha="0">
+					<Anchors>
+						<Anchor point="LEFT" />
+						<Anchor point="RIGHT" />
+						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" y="2"/>
+						<Anchor point="TOP" />
+					</Anchors>
+					<TexCoords left="0.5664" right="1" top="0.2304" bottom="0.42" />
+				</Texture>
+				
+				<Texture parentKey="HighlightBottom" file="Interface\LEVELUP\LEVELUPTEX" alpha="0">
+					<Anchors>
+						<Anchor point="LEFT" />
+						<Anchor point="RIGHT" />
+						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" y="-2"/>
+						<Anchor point="BOTTOM" y="10"/>
+					</Anchors>
+					<TexCoords left="0.5664" right="1" top="0.4" bottom="0.2304" />
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<Scripts>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ILW_InsetShadow_Light" virtual="true" >
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="OverlayShadowTopLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 
+				<Texture parentKey="OverlayShadowTop" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="13"/>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-13"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="0" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowTopRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" />
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-13"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" y="13"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottomLeft" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="-13"/>
+						<Anchor point="BOTTOMRIGHT" y="13"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0.9999" bottom="1"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottomRight" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+
+				<Texture parentKey="OverlayShadowBottom" atlas="collections-background-shadow-small" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="13"/>
+						<Anchor point="BOTTOMRIGHT" x="-13"/>
+					</Anchors>
+					<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Frame name="ILW_UnlockContainer" mixin="ILW_CORE_MIXIN" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size x="450" y="525"/>
 		<Layers>
 			<Layer level="Background">
+				<!--
 				<Texture file="Interface\TALENTFRAME\spec-paper-bg" parentKey="bg">
 					<Size x="50" y="43"/>
 					<Anchors>
@@ -175,6 +342,14 @@
 						<Anchor point="bottomright" x="-7" y="0"/>
 					</Anchors>
 					<TexCoords left="0" right="0.7617" top="0" bottom="0.859"/>
+				</Texture>
+				-->
+				<Texture file="Interface\SPELLBOOK\Spellbook-Page-1" parentKey="bg">
+					<Anchors>
+						<Anchor point="topleft" x="4" y="-25"/>
+						<Anchor point="bottomright" x="-7" y="55"/>
+					</Anchors>
+					<TexCoords left="0.05" right="1" top="0.01" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="overlay">
@@ -297,11 +472,13 @@
 				</Anchors>
 			</CheckButton>
 
+			
 			<CheckButton name="ILW_UnlockContainerUnlock6" inherits="ILW_UnlockButtonTemplate" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ILW_UnlockContainerUnlock5" relativePoint="bottomleft" y="-29" />
 				</Anchors>
 			</CheckButton>
+			
 
 			<Frame name="$parentNothingNewFrame" hidden="true" parentKey="NoNew">
 				<Size x="250" y="125"/>
@@ -352,10 +529,128 @@
 				</Layers>
 			</Frame>
 		
+			<Frame name="ILW_Chart" parentKey="Chart" mixin="ILW_CHART_MIXIN" enableMouse="true">
+				<Size y="75" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="ILW_UnlockContainer" relativepoint="BOTTOMLEFT" x="8" y="7"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ILW_UnlockContainer" relativepoint="BOTTOMRIGHT" x="-10" y="7"/>
+				</Anchors>
+		
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Garrison\GarrisonMissionParchment" vertTile="true" horizTile="true" parentKey="BG" />
+					</Layer>
+					
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture file="Interface\LEVELUP\BossBanner" alpha="0.75" desaturated="true">
+							<Size y="35" />
+							<TexCoords left="0.3" right="0.56594" top="0.2285" bottom="0.4434" />
+							<Anchors>
+								<Anchor point="LEFT"  y="-3"/>
+								<Anchor point="RIGHT" y="-3" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					
+					<Layer level="OVERLAY">
+						<Texture parentKey="DividerLeft" file="Interface\HELPFRAME\HelpFrameDivider">
+							<Size x="256" y="21" />
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="TOPLEFT" x="-7" />
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.3333"/>
+						</Texture>
+						
+						<Texture parentKey="DividerRight" file="Interface\HELPFRAME\HelpFrameDivider">
+							<Size x="64" y="21" />
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="5" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.254" top="0.6667" bottom="0.9844"/>
+						</Texture>
+						
+						<Texture parentKey="DividerCenter" file="Interface\HELPFRAME\HelpFrameDivider">
+							<Size y="21" />
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.DividerLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.DividerRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.254" top="0.3333" bottom="0.6667"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				
+				<Frames>
+					<Frame parentKey="ShadowInset" inherits="ILW_InsetShadow_Light" >
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+					</Frame>
+				
+					<Slider parentKey="Slider" mixin="ILW_CHARTSLIDER_MIXIN">
+						<Size y="15" parentKey="Slider"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="3" y="2"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+						</Anchors>
+						<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\BUTTONS\UI-SILVER-BUTTON-UP">
+							<Size x="65" y="11"/>
+							<TexCoords left="0.0156" right="0.6016" top="0.0625" bottom="0.75"/>
+						</ThumbTexture>
+						
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BG" >
+									<Size y="7"/>
+									<Anchors>
+										<Anchor point="LEFT" x="-5" />
+										<Anchor point="RIGHT" x="5" />
+									</Anchors>
+									<Color r="0" g="0" b="0" a="0.3" />
+								</Texture>
+							</Layer>
+							
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BG" >
+									<Size y="2"/>
+									<Anchors>
+										<Anchor point="LEFT" />
+										<Anchor point="RIGHT" />
+									</Anchors>
+									<Color r="0" g="0" b="0" a="0.5" />
+								</Texture>
+							</Layer>
+							
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="Progress" >
+									<Size x="1" y="2"/>
+									<Anchors>
+										<Anchor point="LEFT" y="0"/>
+									</Anchors>
+									<Color r="1" g="0.82" b="0" a="0.35" />
+								</Texture>
+							</Layer>
+						</Layers>
+						
+						<Scripts>
+							<OnLoad method="OnLoad" />
+							<OnValueChanged method="OnValueChanged" />
+						</Scripts>
+						
+					</Slider>
+				</Frames>
+		
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnMouseWheel method="OnMouseWheel" />
+				</Scripts>
+			</Frame>
+		
 			<Frame name="$parentNavigationFrame" mixin="ILW_NAVIGATION_MIXIN" parentKey="Navigation">
 				<Size x="100" y="50"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-20" y="12"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Chart" relativePoint="TOPRIGHT" x="-20" y="12"/>
 				</Anchors>
 			
 				<Layers>
@@ -423,7 +718,7 @@
 		<Layers>
 			<Layer level="Background">
 
-				<Texture file="Interface\ACHIEVEMENTFRAME\UI-Achievement-Alert-Background" parentKey="bg">
+				<Texture parentKey="bg" file="Interface\ACHIEVEMENTFRAME\UI-Achievement-Alert-Background">
 					<Anchors>
 						<Anchor point="topleft"/>
 						<Anchor point="bottomright"/>
@@ -494,7 +789,6 @@
 				<Alpha parentKey="alphaDim" childKey="highlight" fromAlpha="1" toAlpha="0" Duration="0.3" order="2" smoothing="IN"/>
 			</AnimationGroup>
 		</Animations>
-
 		
 		<Scripts>
 			<OnLoad> 
@@ -507,7 +801,7 @@
 			<OnClick method="OnClick" />
 		</Scripts>
 	</Button>
-	
+
  </Ui>
  
  
