@@ -94,6 +94,15 @@ local UNLOCK_SUBTYPE_UPCOMMING = 1;
 
 local UNLOCKS_PER_PAGE = 5;
 
+local MAXLEVEL = GetMaxPlayerLevel();
+local MINLEVEL = 1;
+local _playerClass = select(2, UnitClass("player"));
+if (_playerClass == "DEATHKNIGHT") then
+	MINLEVEL = 55
+elseif (_playerClass == "DEMONHUNTER") then
+	MINLEVEL = 98
+end
+
 local _helpPlate = {
 	FramePos = { x = 5,	y = -25 },
 	FrameSize = { width = 440, height = 495	},
@@ -172,6 +181,8 @@ function ILW_DATA_MIXIN:Initialize()
 	self.upcommingLevel = 0;
 	self.filteredList = {};
 	self.unlockData = _addonData.unlockData;
+	self.unlockTables = {};
+	
 	
 	self.quickFilters = {
 			[UNLOCKTYPE_DUNGEON] = function() return ILWAddon.db.global.trackers["Dungeons"] end
@@ -182,6 +193,23 @@ function ILW_DATA_MIXIN:Initialize()
 			,[UNLOCKTYPE_TALENT] = function() return ILWAddon.db.global.trackers["Talents"] end
 			,[UNLOCKTYPE_UI] = function() return ILWAddon.db.global.trackers["UI"] end
 		}
+end
+
+function ILW_DATA_MIXIN:InitUnlockTable()
+
+	local newTable = nil;
+	for i = MINLEVEL, MAXLEVEL do
+		if newTable == nil then
+			newTable = {};
+		end
+		
+		self:AddUnlocksOfLevel(i, newTable);
+		
+		if #newTable > 0 then
+			self.unlockTables[i] = newTable;
+			newTable = nil;
+		end
+	end
 end
 
 function ILW_DATA_MIXIN:UpdateFilteredList()
@@ -273,13 +301,12 @@ end
 
 function ILW_DATA_MIXIN:LoadUpcommingUnlocks()
 	local level = UnitLevel("player");
-	local maxLevel = 110;
 	if (level == self.upcommingLevel) then return; end
 	
 	wipe(self.upcomming);
 	self.upcommingLevel = level;
 	
-	while (level < maxLevel and #self.upcomming == 0) do
+	while (level < MAXLEVEL and #self.upcomming == 0) do
 		level = level + 1;
 		self:AddUnlocksOfLevel(level, self.upcomming)
 	end
@@ -770,6 +797,36 @@ function ILW_CORE_MIXIN:SpecChanged()
 	self:UpdateUnlockDisplay();
 end
 
+function ILW_CORE_MIXIN:UpdateChartTooltip()
+	local hightledBlock = self.Chart.hightledBlock;
+	if (hightledBlock) == nil then return; end
+	GameTooltip:SetOwner(hightledBlock, "ANCHOR_RIGHT");
+	GameTooltip:SetText("Level " .. hightledBlock.blockLevel);
+	
+	if (not hightledBlock.unlocks) then return end;
+	local lastType;
+	local iconString = "";
+	
+	for k, unlock in ipairs(hightledBlock.unlocks) do
+		if (unlock.type ~= lastType) then
+		
+			local texSize = 512;
+			local texCoords = _typeIcons[unlock.type];
+			local x1 = texCoords.left * texSize;
+			local x2 = texCoords.right * texSize;
+			local y1 = texCoords.top * texSize;
+			local y2 = texCoords.bottom * texSize;
+			
+			iconString = "|TInterface\\MINIMAP\\ObjectIconsAtlas:0:0:0:0:"..texSize..":"..texSize..":"..x1..":"..x2..":"..y1..":"..y2..":|t ";
+			lastType = unlock.type;
+		end
+		
+		GameTooltip:AddLine(iconString .. unlock.name, 1, 1, 1);
+	end
+	GameTooltip:Show();
+end
+
+
 
 
 
@@ -947,27 +1004,21 @@ function ILW_CHART_MIXIN:OnLoad()
 		end
 		lastBlock = block;
 	end
-
-	self.BlockArray[3].Number:SetText(3);
-	self.BlockArray[3].NumberBG:SetAlpha(1);
 	
 	self.offset = 0;
 	self.playerLevel = UnitLevel("player");
 	self.playerSpec = GetPlayerSpec();
 	
-	-- local value = self.playerLevel - 5;
-	-- value = max(value, 0);
-	-- value = min(value, 110 - NUM_CHART_BLOCKS);
-	-- self.offset = value;
-	-- self.Slider:SetValue(value);
+	self.setSliderSize = true;
 end
 
 function ILW_CHART_MIXIN:OnMouseWheel(delta)
-	self.offset = self.offset + delta;
-	self.offset = max(self.offset, 0);
-	self.offset = min(self.offset, 110 - NUM_CHART_BLOCKS);
+	self.offset = self.offset + delta * -1;
+	self.offset = max(self.offset, MINLEVEL-1);
+	self.offset = min(self.offset, MAXLEVEL - NUM_CHART_BLOCKS);
 	
 	self:Update();
+	ILW_UnlockContainer:UpdateChartTooltip();
 end
 
 function ILW_CHART_MIXIN:GetOrCreateBlock(index)
@@ -984,11 +1035,24 @@ function ILW_CHART_MIXIN:GetOrCreateBlock(index)
 end
 
 function ILW_CHART_MIXIN:Update(fromSlider)
+	if self.setSliderSize then 
+		local sliderWidth = ILW_Chart.Slider:GetWidth();
+		local sliderButtonWidth = NUM_CHART_BLOCKS/(MAXLEVEL - MINLEVEL-1) * sliderWidth;
+		if (sliderButtonWidth >= sliderWidth) then
+			ILW_Chart.Slider.ThumbTexture:SetAlpha(0);
+		end
+		sliderButtonWidth = min(sliderButtonWidth, sliderWidth);
+		ILW_Chart.Slider.ThumbTexture:SetWidth(sliderButtonWidth);
+		
+		self.setSliderSize = false;
+	end
+
 	if (not self.BlockArray) then return; end
-	self.offset = max(self.offset, 0);
-	self.offset = min(self.offset, GetMaxPlayerLevel() - NUM_CHART_BLOCKS);
+	self.offset = max(self.offset, MINLEVEL-1);
+	self.offset = min(self.offset, MAXLEVEL - NUM_CHART_BLOCKS);
 	if (not fromSlider) then
 		self.Slider:SetValue(self.offset);
+		local minValue, maxValue = self.Slider:GetMinMaxValues();
 	end
 	
 	for i=1, NUM_CHART_BLOCKS do
@@ -1002,9 +1066,11 @@ end
 
 function ILW_CHART_MIXIN:SetToLevel()
 	self.playerLevel = UnitLevel("player");
+	local minValue, maxValue = self.Slider:GetMinMaxValues();
+	
 	local value = self.playerLevel - 5;
-	value = max(value, 0);
-	value = min(value, GetMaxPlayerLevel() - NUM_CHART_BLOCKS);
+	value = max(value, minValue);
+	value = min(value, maxValue);
 	self.offset = value;
 	self:Update();
 end
@@ -1033,12 +1099,11 @@ function ILW_CHART_BLOCK_MIXIN:Update()
 	end
 	
 	-- unlocks
-	wipe(self.unlocks);
-	ILW_UnlockContainer.dataProvider:AddUnlocksOfLevel(self.blockLevel, self.unlocks, true);
+	self.unlocks = ILW_UnlockContainer.dataProvider.unlockTables[self.blockLevel];
 	
 	self.Number:SetText("");
 	self.NumberBG:SetAlpha(0);
-	if (#self.unlocks > 0) then
+	if (self.unlocks) then
 		self.Number:SetText(#self.unlocks);
 		self.NumberBG:SetAlpha(1);
 		
@@ -1050,47 +1115,16 @@ end
 
 function ILW_CHART_BLOCK_MIXIN:OnEnter()
 	
-	
 	self.HighlightTop:SetAlpha(1);
 	self.HighlightBottom:SetAlpha(1);
 	
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText("Level " .. self.blockLevel);
+	self:GetParent().hightledBlock = self;
 	
-	if (#self.unlocks == 0) then return end;
-	
-	local lastType;
-	local iconString = "";
-	
-	for k, unlock in ipairs(self.unlocks) do
-		
-		if (unlock.type ~= lastType) then
-		
-			local texSize = 512;
-			local texCoords = _typeIcons[unlock.type];
-			local x1 = texCoords.left * texSize;
-			local x2 = texCoords.right * texSize;
-			local y1 = texCoords.top * texSize;
-			local y2 = texCoords.bottom * texSize;
-			
-			iconString = "|TInterface\\MINIMAP\\ObjectIconsAtlas:0:0:0:0:"..texSize..":"..texSize..":"..x1..":"..x2..":"..y1..":"..y2..":|t ";
-			lastType = unlock.type;
-		end
-		
-		local color = 1;
-		-- Make spells not for our current spec darker
-		-- if (unlock.type == UNLOCKTYPE_SPELL) then
-			-- if	(unlock.spec ~= ILW_Chart.playerSpec) then
-				-- color = 0.75;
-			-- end
-		-- end
-		
-		GameTooltip:AddLine(iconString .. unlock.name, color, color, color);
-	end
-	GameTooltip:Show();
+	ILW_UnlockContainer:UpdateChartTooltip();
 end
 
 function ILW_CHART_BLOCK_MIXIN:OnLeave()
+	self:GetParent().hightledBlock = nil;
 	GameTooltip:Hide();
 	self.HighlightTop:SetAlpha(0);
 	self.HighlightBottom:SetAlpha(0);
@@ -1103,7 +1137,12 @@ ILW_CHARTSLIDER_MIXIN = {}
 
 function ILW_CHARTSLIDER_MIXIN:OnLoad()
 	self:SetOrientation("HORIZONTAL")
-	self:SetMinMaxValues(0, GetMaxPlayerLevel() - NUM_CHART_BLOCKS);
+
+	
+	
+	local maxValue = max(NUM_CHART_BLOCKS, MAXLEVEL - NUM_CHART_BLOCKS)
+	local minValue = min(MINLEVEL-1, maxValue);
+	self:SetMinMaxValues(minValue, maxValue);
 	self:SetValueStep(1);
 	self:SetValue(UnitLevel("player")-5);
 end
@@ -1112,14 +1151,17 @@ function ILW_CHARTSLIDER_MIXIN:OnValueChanged(value, playerSet)
 	local parent = self:GetParent();
 	value = floor(value);
 	if (not playerSet or value == parent.offset) then return; end
-	
+
 	ILW_Chart.offset = value;
 	ILW_Chart:Update(true);
 end
 
 function ILW_CHARTSLIDER_MIXIN:UpdateProgress()
+	
+	--local minValue, maxValue = self.:GetMinMaxValues();
+	
 	local width = self:GetWidth();
-	local progress = (UnitLevel("player")) / GetMaxPlayerLevel();
+	local progress = (UnitLevel("player") - MINLEVEL + 1) / (MAXLEVEL - MINLEVEL );
 	self.Progress:SetWidth(progress * width)
 end
 
@@ -1148,7 +1190,6 @@ function ILWAddon:OnEnable()
 	
 	-- Get official names for dungeons, battlegounds and worldPVP zones
 	-- This has to be done here as some info (mainly BGs) is not available before the addon is done loading.
-	
 	-- Get names for official instances
 	for level, instances in pairs(_addonData.unlockData.instances) do
 		for k, instance in ipairs(instances) do
@@ -1168,6 +1209,11 @@ function ILWAddon:OnEnable()
 			end
 		end
 	end
+	
+	ILW_UnlockContainer.dataProvider:InitUnlockTable();
+	
+	
+	
 	
 	-- Opening the frame once allows it to be used during combat. for some reason
 	ShowUIPanel(ILW_UnlockContainer);
@@ -1227,7 +1273,7 @@ SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
 SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
 
-	for i=10, 110 do
+	for i=10, MAXLEVEL do
 		ILW_UnlockContainer:LevelUp(i);
 	end
 

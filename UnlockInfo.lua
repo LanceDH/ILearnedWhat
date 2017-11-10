@@ -223,8 +223,8 @@ _addonData.unlockData["PVP"] = { };
 	AddUnlock(_addonData.unlockData["PVP"], 90, {["subText"] = _L["BATTLEGROUND"], ["id"] = 7, ["icon"] = "Interface/LFGFRAME/LFGIcon-SilvershardMines"});
 	AddUnlock(_addonData.unlockData["PVP"], 90, {["subText"] = _L["BATTLEGROUND"], ["id"] = 8, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleofKotmogu"});
 	AddUnlock(_addonData.unlockData["PVP"], 100, {["subText"] = _L["WORLD_PVP"], ["id"] = 3, ["icon"] = "Interface/ICONS/Achievement_Zone_Ashran"});
-
-
+	
+	
 	
 --------------------------
 -- Spells
