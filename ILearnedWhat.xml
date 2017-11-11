@@ -14,7 +14,7 @@
 	<Script file="UnlockInfo.lua"/>
 	<Script file="ILearnedWhat.lua"/>
 	 
-	 <Font name="ILW_GameFontLightGraySmall" inherits="GameFontNormalSmall" virtual="true">
+	 <Font name="ILW_GameFontLightGraySmall" inherits="GameFontNormalSmal" virtual="true">
 		<Color r="0.75" g="0.75" b="0.75"/>
 	</Font>
 	 
@@ -167,7 +167,7 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	
-	<Frame name="ILW_ChartBlock_Template" parentArray="BlockArray" mixin="ILW_CHART_BLOCK_MIXIN" virtual="true">
+	<Frame name="ILW_ChartBlock_Template" parentArray="BlockArray" mixin="ILW_CHART_BLOCK_MIXIN" virtual="true" flattenRenderLayers="true">
 		<Size x="25" y="52" />
 		<Layers>
 			<Layer level="ARTWORK">
@@ -183,14 +183,14 @@
 				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Level" >
 					<Size y="15" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" y="-2"/>
+						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" y="-3"/>
 					</Anchors>
 				</FontString>
 				
 				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Number" >
 					<Size y="15" />
 					<Anchors>
-						<Anchor point="TOP" y="-12"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" y="5"/>
 					</Anchors>
 				</FontString>
 				
@@ -201,7 +201,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Progress" y="1"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Progress" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.957" right="0.995" top="0.0234" bottom="0.045"/>
+					<TexCoords left="0.957" right="0.995" top="0.023" bottom="0.045"/>
 				</Texture>
 			</Layer>
 			
@@ -219,19 +219,29 @@
 				
 				<Texture parentKey="NumberBG" file="Interface\LEVELUP\LEVELUPTEX" alpha="0">
 					<Anchors>
-						<Anchor point="TOP" />
+						<Anchor point="TOP" y="-4"/>
 						<Anchor point="LEFT" />
 						<Anchor point="RIGHT" />
 						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" />
 					</Anchors>
-					<TexCoords left="0.05" right="0.5164" top="0.8" bottom="0.25" />
+					<TexCoords left="0.05" right="0.5164" top="0.65" bottom="0.25" />
+				</Texture>
+				
+				<Texture parentKey="NumberBG2" file="Interface\PLAYERACTIONBARALT\NATURAL" alpha="0">
+					<Anchors>
+						<Anchor point="TOP" y="-4" />
+						<Anchor point="LEFT" x="1"/>
+						<Anchor point="RIGHT" x="-2"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP"/>
+					</Anchors>
+					<TexCoords left="0.3146" right="0.3926" top="0.3652" bottom="0.4531" />
 				</Texture>
 			
 				<Texture parentKey="LevelFlag" file="Interface\BUTTONS\UI-Quickslot" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Progress" relativePoint="BOTTOMLEFT" x="1"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Progress" relativePoint="TOPRIGHT" x="0"/>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="BOTTOM" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.1875" right="0.7969" top="0.2969" bottom="0.7969" />
 				</Texture>
@@ -370,18 +380,16 @@
 		</Layers>
 
 		<Frames>
-		
 			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ILW_UnlockContainer" x="39" y="20" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ILW_TutorialButton_OnClick();
+						self:GetParent():TutorialButton_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>
-		
 			<Button name="$parentClearButton" parentKey="Clear" >
 				<Size x="32" y="32"/>
 				<HitRectInsets left="5" top="5" right="5" bottom="5"/>
@@ -546,8 +554,8 @@
 							<Size y="35" />
 							<TexCoords left="0.3" right="0.56594" top="0.2285" bottom="0.4434" />
 							<Anchors>
-								<Anchor point="LEFT"  y="-3"/>
-								<Anchor point="RIGHT" y="-3" />
+								<Anchor point="LEFT"  y="-4"/>
+								<Anchor point="RIGHT" y="-4" />
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -589,13 +597,13 @@
 					</Frame>
 				
 					<Slider parentKey="Slider" mixin="ILW_CHARTSLIDER_MIXIN">
-						<Size y="15" parentKey="Slider"/>
+						<Size x="424" y="15" parentKey="Slider"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="3" y="2"/>
-							<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+							<Anchor point="BOTTOMLEFT" x="4" y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="-4" y="1"/>
 						</Anchors>
 						<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\BUTTONS\UI-SILVER-BUTTON-UP">
-							<Size x="65" y="11"/>
+							<Size x="65" y="12"/>
 							<TexCoords left="0.0156" right="0.6016" top="0.0625" bottom="0.75"/>
 						</ThumbTexture>
 						
@@ -612,13 +620,13 @@
 							</Layer>
 							
 							<Layer level="BACKGROUND">
-								<Texture parentKey="BG" >
+								<Texture parentKey="BG2" >
 									<Size y="2"/>
 									<Anchors>
 										<Anchor point="LEFT" />
 										<Anchor point="RIGHT" />
 									</Anchors>
-									<Color r="0" g="0" b="0" a="0.5" />
+									<Color r="0" g="0" b="0" a="0.6" />
 								</Texture>
 							</Layer>
 							

@@ -4,6 +4,7 @@ local L = {}
 local locale = GetLocale();
 
 L["HELP_INFO"] = "As you level up you will unlock new content such as new abilities, talent points and dungeons.\n\nLeft clicking the unlocks will open related windows and remove them from the list.\n\nLeft clicking or dragging abilities allows you to move them to your action bars.\n\nRight clicking the unlocks will remove them from the list."
+L["HELP_INFO_CHAR"] = "This chart gives an overview of your leveling progression and what is yet to come."
 L["ERROR_OPEN_IN_COMBAT"] = "|cFFFFD100ILWhat:|r |cFFFF5555Can't open that during combat. It will open once you leave combat.|r";
 L["TOOLTIP_TALENT"] = "You can pick a new talent.";
 L["TOOLTIP_RIDING"]= "You can now learn this riding skill at a riding trainer.";

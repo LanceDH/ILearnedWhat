@@ -3,13 +3,9 @@
      xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../../FrameXML/UI.xsd">
 	
 
-	<Frame name="ILW_HelpFrame" toplevel="true" enableMouse="true" hidden="true" parent="ILW_UnlockContainer" inherits="SecureFrameTemplate" frameStrata="MEDIUM">
-		<Size>
-			<AbsDimension x="410" y="420"/>
-		</Size>
-		
-		<Frames>
-			<Frame name="$parentBox" toplevel="true" enableMouse="true" hidden="false" inherits="HelpPlateBox" parentKey="Box">
+	<Frame name="ILW_HelpRegionTemplate" virtual="true" >
+	<Frames>
+		<Frame name="$parentBox" toplevel="true" enableMouse="true" hidden="false" inherits="HelpPlateBox" parentKey="Box">
 				<Scripts>
 					<OnEnter>
 						
@@ -60,7 +56,7 @@
 				</Layers>
 				
 				<Frames>
-					<Frame name="$parentArrowDown" toplevel="true" enableMouse="true" hidden="false"  parentKey="Arrow">
+					<Frame name="$parentArrowDown" toplevel="true" enableMouse="true" hidden="true"  parentKey="ArrowDown">
 						<Size x="53" y="21"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativePoint="TOP" y="-3"/>
@@ -76,12 +72,35 @@
 									
 						</Layers>
 					</Frame>
+					
+					<Frame name="$parentArrowDown" toplevel="true" enableMouse="true" hidden="true"  parentKey="ArrowUp">
+						<Size x="53" y="21"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="3"/>
+						</Anchors>
+						 <Layers>
+						<Layer level="ARTWORK">
+							<Texture name="$parentArrow" inherits="HelpPlateArrowDOWN">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+								</Texture>
+							</Layer>
+									
+						</Layers>
+					</Frame>
 				</Frames>
 			</Frame>
-		</Frames>
+			</Frames>
+	</Frame>
+	
+	<Frame name="ILW_HelpFrame" toplevel="true" enableMouse="true" hidden="true" parent="ILW_UnlockContainer" inherits="SecureFrameTemplate" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="410" y="420"/>
+		</Size>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3)
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 5)
 			</OnLoad>
 		</Scripts>
 	</Frame>

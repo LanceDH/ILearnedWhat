@@ -106,7 +106,8 @@ end
 local _helpPlate = {
 	FramePos = { x = 5,	y = -25 },
 	FrameSize = { width = 440, height = 495	},
-	[1] = { ButtonPos = { x = 200,	y = -95}, HighLightBox = { x = 20, y = -85, width = 405, height = 420 }, ToolTipDir = "DOWN", ToolTipText = _L["HELP_INFO"] }
+	[1] = { ButtonPos = { x = 210,	y = -95}, HighLightBox = { x = 30, y = -85, width = 395, height = 348 }, ToolTipDir = "DOWN", ToolTipText = _L["HELP_INFO"] }
+	,[2] = { ButtonPos = { x = 210,	y = -445}, HighLightBox = { x = 10, y = -445, width = 430, height = 70 }, ToolTipDir = "UP", ToolTipText = _L["HELP_INFO_CHAR"] }
 }
 local _typeIcons = {
 		[UNLOCKTYPE_SPELL] = {["left"] = 0.7555, ["right"] = 0.818, ["top"] = 0.4, ["bottom"] = 0.4629}
@@ -153,17 +154,6 @@ function ILW_ShowHelpUnlocks(show)
 	ILW_UnlockContainer:UpdateUnlockDisplay();
 end
 
-function ILW_TutorialButton_OnClick()
-	if ILW_HelpFrame:IsShown() then
-		_help:HideTutorial();
-		ILW_ShowHelpUnlocks(false);
-	else
-		_help:ShowTutorial();
-		ILW_ShowHelpUnlocks(true);
-	end
-end
-
-
 local function GetPlayerSpec()
 	if (GetSpecialization() ~= nil) then
 		return GetSpecializationInfo(GetSpecialization());
@@ -182,7 +172,7 @@ function ILW_DATA_MIXIN:Initialize()
 	self.filteredList = {};
 	self.unlockData = _addonData.unlockData;
 	self.unlockTables = {};
-	
+	self.playerLevel = UnitLevel("player");
 	
 	self.quickFilters = {
 			[UNLOCKTYPE_DUNGEON] = function() return ILWAddon.db.global.trackers["Dungeons"] end
@@ -195,8 +185,9 @@ function ILW_DATA_MIXIN:Initialize()
 		}
 end
 
-function ILW_DATA_MIXIN:InitUnlockTable()
-
+function ILW_DATA_MIXIN:LoadUnlockTable()
+	wipe(self.unlockTables)
+	
 	local newTable = nil;
 	for i = MINLEVEL, MAXLEVEL do
 		if newTable == nil then
@@ -218,6 +209,28 @@ function ILW_DATA_MIXIN:UpdateFilteredList()
 		if (self.quickFilters[unlock.type]() or unlock.subType == UNLOCK_SUBTYPE_UPCOMMING) then
 			table.insert(self.filteredList, unlock);
 		end
+	end
+end
+
+function ILW_DATA_MIXIN:ClearList()
+	local list = self.unlockedList 
+	for i = #list, 1, -1 do
+		if list[i].subType ~= UNLOCK_SUBTYPE_UPCOMMING then
+			table.remove(list, i);
+		end
+	end
+	
+	self.upcommingLevel = 0;
+end
+
+function ILW_DATA_MIXIN:LoadUnlocksForLevel(level)
+	self:ClearUpcommingFromList();
+	local newUnlocks = self.unlockTables[level or self.playerLevel];
+	if newUnlocks then
+		for k, unlock in ipairs(newUnlocks) do
+			table.insert(self.unlockedList, unlock);
+		end
+		self:UpdateFilteredList();
 	end
 end
 
@@ -300,18 +313,26 @@ function ILW_DATA_MIXIN:AddUnlocksOfLevel(level, list, ignoreSpec)
 end
 
 function ILW_DATA_MIXIN:LoadUpcommingUnlocks()
-	local level = UnitLevel("player");
+	local level = self.playerLevel;
 	if (level == self.upcommingLevel) then return; end
-	
-	wipe(self.upcomming);
 	self.upcommingLevel = level;
-	
-	while (level < MAXLEVEL and #self.upcomming == 0) do
+	local numUnlocks = 0;
+	local unlockTable = nil;
+	-- find the first next unlock
+	while (level < MAXLEVEL and numUnlocks == 0) do
 		level = level + 1;
-		self:AddUnlocksOfLevel(level, self.upcomming)
+		unlockTable = self.unlockTables[level];
+		if unlockTable then
+			numUnlocks = #self.unlockTables[level];
+		end
 	end
 	
-	if #self.upcomming > 0 then
+	if numUnlocks > 0 then
+		-- wipe it, we want copies of these unlocks so we can change the subType without changing the origional
+		wipe(self.upcomming)
+		
+		self:AddUnlocksOfLevel(level, self.upcomming);
+		
 		for k, unlock in ipairs(self.upcomming) do
 			unlock.subType = UNLOCK_SUBTYPE_UPCOMMING;
 			table.insert(self.unlockedList, unlock);
@@ -320,7 +341,7 @@ function ILW_DATA_MIXIN:LoadUpcommingUnlocks()
 	
 	self:UpdateFilteredList();
 	
-	return #self.upcomming, level;
+	return self.upcomming and #self.upcomming or 0, level;
 end
 
 function ILW_DATA_MIXIN:AddUnlock(list, typeID, unlock, level, extra)
@@ -373,25 +394,28 @@ end
 
 function ILW_DATA_MIXIN:CheckSpecMissedUnlocks(level, spec)
 
+	self:ClearUpcommingFromList();
+	
 	if ILWAddon.db.global.trackers["Spells"] then
 		local unlocks = self.unlockData.skills[level]
-		if (unlocks) then
-			for k, unlock in ipairs(unlocks) do
-				if (unlock.specs) then
-					local isForSpec = false;
-					for specKey, cSpec in ipairs(unlock.specs) do
-						if cSpec == GetPlayerSpec() then
-							isForSpec = true;
-							break;
-						end
+		if (not unlocks) then return; end
+		
+		for k, unlock in ipairs(unlocks) do
+			if (unlock.specs) then
+				local isForSpec = false;
+				for specKey, cSpec in ipairs(unlock.specs) do
+					if cSpec == GetPlayerSpec() then
+						isForSpec = true;
+						break;
 					end
-					if (isForSpec) then
-						self:AddUnlock(self.unlockedList, UNLOCKTYPE_SPELL, unlock, level, spec)
-					end
+				end
+				if (isForSpec) then
+					self:AddUnlock(self.unlockedList, UNLOCKTYPE_SPELL, unlock, level, spec)
 				end
 			end
 		end
 	end
+	
 	
 end
 
@@ -533,6 +557,7 @@ end
 function ILW_UNLOCK_MIXIN:Reset()
 	local name = self:GetName();
 	local iconTexture = _G[name.."IconTexture"];
+	self.animation:Stop();
 	iconTexture:Hide();
 	iconTexture:SetTexture("");
 	self.Blocker:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT");
@@ -544,7 +569,6 @@ function ILW_UNLOCK_MIXIN:Reset()
 	self.unlockId = nil;
 	self.read = false;
 	self.new = true;
-	self.animation:Stop();
 	self.NewText:SetText("");
 	self.NewTextBG:Hide();
 	self.Level:Hide();
@@ -688,12 +712,7 @@ function ILW_CORE_MIXIN:OnMouseWheel(delta)
 end
 
 function ILW_CORE_MIXIN:ClearButton_OnClick()
-	local list = self.dataProvider.unlockedList 
-	for i = #list, 1, -1 do
-		if list[i].subType ~= UNLOCK_SUBTYPE_UPCOMMING then
-			table.remove(list, i);
-		end
-	end
+	self.dataProvider:ClearList(); 
 	self:UpdateUnlockDisplay();
 end
 
@@ -702,14 +721,10 @@ function ILW_CORE_MIXIN:Open()
 end
 
 function ILW_CORE_MIXIN:LevelUp(level)
-	self.dataProvider:ClearUpcommingFromList();
-	local newUnlocks = self.dataProvider:AddUnlocksOfLevel(level);
-	if newUnlocks then
-		self.dataProvider:UpdateFilteredList();
-	end
+	self.dataProvider:LoadUnlocksForLevel(level);
 	if (ILW_UnlockContainer:IsShown()) then
 		self:UpdateUnlockDisplay();
-		ILW_Chart:SetToLevel();
+		ILW_Chart:SetToLevel(level);
 	else 
 		if (newUnlocks) then
 			ILW_AlertPopup:Present();
@@ -732,7 +747,7 @@ function ILW_CORE_MIXIN:UpdateUnlockDisplay()
 	self:ResetButtons();
 	self.dataProvider:UpdateFilteredList();
 	local unlockedList = self.dataProvider.filteredList;
-	if (#unlockedList == 0) then 
+	if (#unlockedList == 0) then
 		self.dataProvider:LoadUpcommingUnlocks();
 		self.dataProvider:UpdateFilteredList();
 	end
@@ -789,6 +804,10 @@ function ILW_CORE_MIXIN:SpecChanged()
 
 	ILWAddon.db.char.specLastLevel[spec] = level;
 	
+	-- Update unlock chart unlocks for new spec
+	self.dataProvider:LoadUnlockTable();
+	self.Chart:Update();
+	
 	self.dataProvider:UpdateFilteredList();
 	if (not self:IsShown()) then
 		ILW_AlertPopup:Present();
@@ -824,6 +843,17 @@ function ILW_CORE_MIXIN:UpdateChartTooltip()
 		GameTooltip:AddLine(iconString .. unlock.name, 1, 1, 1);
 	end
 	GameTooltip:Show();
+end
+
+function ILW_CORE_MIXIN:TutorialButton_OnClick()
+	if InCombatLockdown() then return; end
+	if ILW_HelpFrame:IsShown() then
+		_help:HideTutorial();
+		ILW_ShowHelpUnlocks(false);
+	else
+		_help:ShowTutorial();
+		ILW_ShowHelpUnlocks(true);
+	end
 end
 
 
@@ -987,12 +1017,12 @@ end
 
 
 
-local NUM_CHART_BLOCKS = 17;
+local NUM_CHART_BLOCKS = 15;
 
 ILW_CHART_MIXIN = {}
 
 function ILW_CHART_MIXIN:OnLoad()
-	self:SetFrameLevel(ILW_UnlockContainer:GetFrameLevel()+10);
+	self:SetFrameLevel(ILW_UnlockContainer:GetFrameLevel()+3);
 	
 	local lastBlock = nil;
 	for i=1, NUM_CHART_BLOCKS do
@@ -1008,6 +1038,16 @@ function ILW_CHART_MIXIN:OnLoad()
 	self.offset = 0;
 	self.playerLevel = UnitLevel("player");
 	self.playerSpec = GetPlayerSpec();
+	
+	local sliderWidth = ILW_Chart.Slider:GetWidth();
+		local sliderButtonWidth = NUM_CHART_BLOCKS/(MAXLEVEL - MINLEVEL-1) * sliderWidth;
+		if (sliderButtonWidth >= sliderWidth) then
+			ILW_Chart.Slider.ThumbTexture:SetAlpha(0);
+		end
+		sliderButtonWidth = min(sliderButtonWidth, sliderWidth);
+		ILW_Chart.Slider.ThumbTexture:SetWidth(sliderButtonWidth);
+		
+		self.setSliderSize = nil;
 	
 	self.setSliderSize = true;
 end
@@ -1030,23 +1070,12 @@ function ILW_CHART_MIXIN:GetOrCreateBlock(index)
 
 	block = CreateFrame("FRAME", nil, self, "ILW_ChartBlock_Template");
 	block.unlocks = {};
+	block:SetWidth((432-6)/NUM_CHART_BLOCKS)
 
 	return block;
 end
 
 function ILW_CHART_MIXIN:Update(fromSlider)
-	if self.setSliderSize then 
-		local sliderWidth = ILW_Chart.Slider:GetWidth();
-		local sliderButtonWidth = NUM_CHART_BLOCKS/(MAXLEVEL - MINLEVEL-1) * sliderWidth;
-		if (sliderButtonWidth >= sliderWidth) then
-			ILW_Chart.Slider.ThumbTexture:SetAlpha(0);
-		end
-		sliderButtonWidth = min(sliderButtonWidth, sliderWidth);
-		ILW_Chart.Slider.ThumbTexture:SetWidth(sliderButtonWidth);
-		
-		self.setSliderSize = false;
-	end
-
 	if (not self.BlockArray) then return; end
 	self.offset = max(self.offset, MINLEVEL-1);
 	self.offset = min(self.offset, MAXLEVEL - NUM_CHART_BLOCKS);
@@ -1064,8 +1093,8 @@ function ILW_CHART_MIXIN:Update(fromSlider)
 	self.Slider:UpdateProgress();
 end
 
-function ILW_CHART_MIXIN:SetToLevel()
-	self.playerLevel = UnitLevel("player");
+function ILW_CHART_MIXIN:SetToLevel(level)
+	self.playerLevel = ILW_UnlockContainer.dataProvider.playerLevel;
 	local minValue, maxValue = self.Slider:GetMinMaxValues();
 	
 	local value = self.playerLevel - 5;
@@ -1103,11 +1132,18 @@ function ILW_CHART_BLOCK_MIXIN:Update()
 	
 	self.Number:SetText("");
 	self.NumberBG:SetAlpha(0);
+	self.NumberBG2:SetAlpha(0);
 	if (self.unlocks) then
 		self.Number:SetText(#self.unlocks);
-		self.NumberBG:SetAlpha(1);
+		self.NumberBG:SetAlpha(0.75);
 		
-		self.NumberBG:SetDesaturated(not lightUp);
+		self.NumberBG2:SetDesaturated(not lightUp);
+		self.NumberBG2:SetAlpha(1);
+		-- if lightUp then
+		-- self.NumberBG2:SetVertexColor(1, 0.82, 0, 1);
+		-- else
+		-- self.NumberBG2:SetVertexColor(0, 0, 0, 1);
+		-- end
 		self.Number:SetFontObject(lightUp and GameFontNormalSmall or ILW_GameFontLightGraySmall);
 	end
 	
@@ -1210,7 +1246,7 @@ function ILWAddon:OnEnable()
 		end
 	end
 	
-	ILW_UnlockContainer.dataProvider:InitUnlockTable();
+	ILW_UnlockContainer.dataProvider:LoadUnlockTable();
 	
 	
 	
@@ -1230,6 +1266,8 @@ ILWhat_LoadFrame:RegisterEvent("PLAYER_LOGOUT");
 ILWhat_LoadFrame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 
 function ILWhat_LoadFrame:PLAYER_LEVEL_UP(level, hp, mp, talentPoints, strength, agility, stamina, intellect, spirit)
+	ILW_UnlockContainer.dataProvider.playerLevel = level;
+
 	ILW_UnlockContainer:LevelUp(level);
 end
 
@@ -1272,12 +1310,6 @@ SLASH_ILEARNEDWHAT1 = '/ilwhat';
 SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
 SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
-
-	for i=10, MAXLEVEL do
-		ILW_UnlockContainer:LevelUp(i);
-	end
-
-	if true then return end
 	
 	if (ILW_UnlockContainer:IsShown()) then
 		HideUIPanel(ILW_UnlockContainer);
