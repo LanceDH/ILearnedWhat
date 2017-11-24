@@ -107,7 +107,7 @@ local _helpPlate = {
 	FramePos = { x = 5,	y = -25 },
 	FrameSize = { width = 440, height = 495	},
 	[1] = { ButtonPos = { x = 210,	y = -95}, HighLightBox = { x = 30, y = -85, width = 395, height = 348 }, ToolTipDir = "DOWN", ToolTipText = _L["HELP_INFO"] }
-	,[2] = { ButtonPos = { x = 210,	y = -445}, HighLightBox = { x = 10, y = -445, width = 430, height = 70 }, ToolTipDir = "UP", ToolTipText = _L["HELP_INFO_CHAR"] }
+	,[2] = { ButtonPos = { x = 210,	y = -445}, HighLightBox = { x = 10, y = -445, width = 430, height = 70 }, ToolTipDir = "UP", ToolTipText = _L["HELP_INFO_CHART"] }
 }
 local _typeIcons = {
 		[UNLOCKTYPE_SPELL] = {["left"] = 0.7555, ["right"] = 0.818, ["top"] = 0.4, ["bottom"] = 0.4629}
@@ -643,7 +643,11 @@ function ILW_UNLOCK_MIXIN:Update(unlock, showLevel)
 		
 		unlock.new = (unlock.new == nil and true or unlock.new );
 		if (not self.read) then
+		
 			self.NewText:SetText(_L["NEW"]);
+			if (self.NewText:GetWidth() > self:GetWidth()) then
+				self.NewText:SetTextHeight(13);
+			end
 			self.NewTextBG:Show();
 		end
 		-- set unlock as read
@@ -820,7 +824,7 @@ function ILW_CORE_MIXIN:UpdateChartTooltip()
 	local hightledBlock = self.Chart.hightledBlock;
 	if (hightledBlock) == nil then return; end
 	GameTooltip:SetOwner(hightledBlock, "ANCHOR_RIGHT");
-	GameTooltip:SetText("Level " .. hightledBlock.blockLevel);
+	GameTooltip:SetText(UNIT_LEVEL_TEMPLATE:format(hightledBlock.blockLevel));
 	
 	if (not hightledBlock.unlocks) then return end;
 	local lastType;
@@ -866,7 +870,7 @@ function ILW_NAVIGATION_MIXIN:PrevPageButton_OnClick()
 	if (self.CurrentPage == 1) then return; end
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	self.CurrentPage = self.CurrentPage - 1;
-	self.Text:SetText("Page ".. self.CurrentPage);
+	self.Text:SetText(PAGE_NUMBER:format(self.CurrentPage));
 	ILW_UnlockContainer:UpdateUnlockDisplay();
 end
 
@@ -874,7 +878,7 @@ function ILW_NAVIGATION_MIXIN:NextPageButton_OnClick()
 	if (self.CurrentPage >= ceil(#ILW_UnlockContainer.dataProvider.filteredList/UNLOCKS_PER_PAGE)) then return; end
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 	self.CurrentPage = self.CurrentPage + 1;
-	self.Text:SetText("Page ".. self.CurrentPage);
+	self.Text:SetText(PAGE_NUMBER:format(self.CurrentPage));
 	ILW_UnlockContainer:UpdateUnlockDisplay();
 end
 
@@ -887,7 +891,7 @@ function ILW_NAVIGATION_MIXIN:Update()
 		self.CurrentPage = 1;
 	end
 
-	self.Text:SetText("Page ".. self.CurrentPage);
+	self.Text:SetText(PAGE_NUMBER:format(self.CurrentPage));
 	
 	self.Prev:Enable();
 	self.Next:Enable();
@@ -1310,7 +1314,6 @@ SLASH_ILEARNEDWHAT1 = '/ilwhat';
 SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
 SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
-	
 	if (ILW_UnlockContainer:IsShown()) then
 		HideUIPanel(ILW_UnlockContainer);
 	else--if(not InCombatLockdown()) then

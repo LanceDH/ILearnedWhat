@@ -2,8 +2,7 @@
 ## Title: ILearnedWhat
 ## Notes: Keep track of the things you learn and unlock while leveling.
 ## Author: LanceDH
-## Version: 7.3.02
-## SavedVariablesPerCharacter: ILW_SavedData
+## Version: 7.3.03
 ## SavedVariables: ILWDB
 ILearnedWhat.xml
 HelpFrame.xml

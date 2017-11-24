@@ -13,8 +13,8 @@
 	<Script file="Locals.lua"/>
 	<Script file="UnlockInfo.lua"/>
 	<Script file="ILearnedWhat.lua"/>
-	 
-	 <Font name="ILW_GameFontLightGraySmall" inherits="GameFontNormalSmal" virtual="true">
+
+	<Font name="ILW_GameFontLightGraySmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="0.75" g="0.75" b="0.75"/>
 	</Font>
 	 
@@ -118,9 +118,9 @@
 					</Anchors>
 					<TexCoords left="0.05" right="0.95" top="1" bottom="0"/>
 				</Texture>
-				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="NewText" text=" New! ">
+				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" justiceV="MIDDLE" parentKey="NewText" text=" New! ">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="0" y="2"/>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				
@@ -183,14 +183,14 @@
 				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Level" >
 					<Size y="15" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" y="-3"/>
+						<Anchor point="TOP" relativeKey="$parent.Progress" relativePoint="BOTTOM" x="1" y="-3"/>
 					</Anchors>
 				</FontString>
 				
 				<FontString inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" parentKey="Number" >
 					<Size y="15" />
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP" x="1" y="5"/>
 					</Anchors>
 				</FontString>
 				
@@ -231,7 +231,7 @@
 					<Anchors>
 						<Anchor point="TOP" y="-4" />
 						<Anchor point="LEFT" x="1"/>
-						<Anchor point="RIGHT" x="-2"/>
+						<Anchor point="RIGHT" x="0"/>
 						<Anchor point="BOTTOM" relativeKey="$parent.Progress" relativePoint="TOP"/>
 					</Anchors>
 					<TexCoords left="0.3146" right="0.3926" top="0.3652" bottom="0.4531" />
