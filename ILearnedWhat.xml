@@ -118,9 +118,9 @@
 					</Anchors>
 					<TexCoords left="0.05" right="0.95" top="1" bottom="0"/>
 				</Texture>
-				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" justiceV="MIDDLE" parentKey="NewText" text=" New! ">
+				<FontString name="$parentNewText" inherits="GameFontNormalSmall" hidden="false" justifyH="CENTER" justiceV="MIDDLE" parentKey="NewText" text="New!">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="2"/>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="1" y="2"/>
 					</Anchors>
 				</FontString>
 				

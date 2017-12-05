@@ -48,6 +48,7 @@ local _defaults = {
 			["Riding"] = true,
 			["UI"] = true,
 			["Battlegrounds"] = true,
+			["Zones"] = true,
 		}
 	}
 	,["char"] = {
@@ -57,12 +58,13 @@ local _defaults = {
 }
 
 local _trackers = {
-		["Spells"] = true,
-		["Talents"] = true,
-		["Dungeons"] = true,
-		["Riding"] = true,
-		["Battlegrounds"] = true,
-		["UI"] = true
+		["Spells"] = true
+		,["Talents"] = true
+		,["Dungeons"] = true
+		,["Riding"] = true
+		,["Battlegrounds"] = true
+		,["UI"] = true
+		,["Zones"] = true
 	}
 	
 local _trackerLabels = {
@@ -72,6 +74,7 @@ local _trackerLabels = {
 		,["Riding"] = _L["TRACKER_RIDING"]
 		,["Battlegrounds"] = _L["TRACKER_BATTLEGROUNDS"]
 		,["UI"] = _L["TRACKER_UI"]
+		,["Zones"] = _L["TRACKER_ZONES"]
 	}
 
 _addonData.help = {}
@@ -85,6 +88,7 @@ local UNLOCKTYPE_PVP = 5;
 local UNLOCKTYPE_RIDING = 6;
 local UNLOCKTYPE_UI = 7;
 local UNLOCKTYPE_TUTORIAL = 8;
+local UNLOCKTYPE_ZONES = 9;
 
 local ICON_TALENT = "Interface/ICONS/Ability_Marksmanship";
 local ICON_UI = "Interface/ICONS/INV_Scroll_02";
@@ -117,19 +121,9 @@ local _typeIcons = {
 		,[UNLOCKTYPE_TALENT] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.8066, ["bottom"] = 0.8691}
 		,[UNLOCKTYPE_PVP] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.7441, ["bottom"] = 0.8066}
 		,[UNLOCKTYPE_RIDING] = {["left"] = 0.6875, ["right"] = 0.75, ["top"] = 0.2012, ["bottom"] = 0.2637}
+		,[UNLOCKTYPE_ZONES] = {["left"] = 0.55273, ["right"] = 0.61914, ["top"] = 0.4648, ["bottom"] = 0.5293}
 	};
 
-local TYPE_LABEL = {
-		[UNLOCKTYPE_DUNGEON] = "Dungeons"
-		,[UNLOCKTYPE_RAID] = "Raids"
-		,[UNLOCKTYPE_PVP] = "Battlegrounds"
-		,[UNLOCKTYPE_RIDING] = "Riding"
-		,[UNLOCKTYPE_SPELL] = "Spells"
-		,[UNLOCKTYPE_TALENT] = "Talents"
-		,[UNLOCKTYPE_UI] = "UI"
-	}
-	
-	
 function ILW_ShowHelpUnlocks(show)
 	local unlocklist = ILWAddon.db.char.unlockedList;
 	
@@ -170,6 +164,7 @@ function ILW_DATA_MIXIN:Initialize()
 	self.upcomming = {};
 	self.upcommingLevel = 0;
 	self.filteredList = {};
+	self.filteredChart = {};
 	self.unlockData = _addonData.unlockData;
 	self.unlockTables = {};
 	self.playerLevel = UnitLevel("player");
@@ -182,7 +177,9 @@ function ILW_DATA_MIXIN:Initialize()
 			,[UNLOCKTYPE_SPELL] = function() return ILWAddon.db.global.trackers["Spells"] end
 			,[UNLOCKTYPE_TALENT] = function() return ILWAddon.db.global.trackers["Talents"] end
 			,[UNLOCKTYPE_UI] = function() return ILWAddon.db.global.trackers["UI"] end
+			,[UNLOCKTYPE_ZONES] = function() return ILWAddon.db.global.trackers["Zones"] end
 		}
+		
 end
 
 function ILW_DATA_MIXIN:LoadUnlockTable()
@@ -208,6 +205,20 @@ function ILW_DATA_MIXIN:UpdateFilteredList()
 	for k, unlock in ipairs(self.unlockedList) do
 		if (self.quickFilters[unlock.type]() or unlock.subType == UNLOCK_SUBTYPE_UPCOMMING) then
 			table.insert(self.filteredList, unlock);
+		end
+	end
+end
+
+function ILW_DATA_MIXIN:UpdateFilteredChart()
+	wipe(self.filteredChart);
+	for level, list in pairs(self.unlockTables) do
+		for k, unlock in ipairs(list) do
+			if (self.quickFilters[unlock.type]()) then
+				if not self.filteredChart[level] then
+					self.filteredChart[level]  = {};
+				end
+				table.insert(self.filteredChart[level], unlock);
+			end
 		end
 	end
 end
@@ -287,6 +298,15 @@ function ILW_DATA_MIXIN:AddUnlocksOfLevel(level, list, ignoreSpec)
 	if (unlocks) then
 		for k, unlock in ipairs(unlocks) do
 			self:AddUnlock(list, UNLOCKTYPE_UI, unlock, level, unlock.func);
+			addedNew = true;
+		end
+	end
+	
+	-- Check for zones
+	unlocks = self.unlockData.zones[level]
+	if (unlocks) then
+		for k, unlock in ipairs(unlocks) do
+			self:AddUnlock(list, UNLOCKTYPE_ZONES, unlock, level);
 			addedNew = true;
 		end
 	end
@@ -386,6 +406,9 @@ function ILW_DATA_MIXIN:AddUnlock(list, typeID, unlock, level, extra)
 	elseif (typeID == UNLOCKTYPE_UI) then
 		icon = ICON_UI;
 		func = extra
+	elseif (typeID == UNLOCKTYPE_ZONES) then
+		name = GetMapNameByID(unlock.id);
+		subText = ZONE .. ", " .. GetMapNameByID(unlock.continentID);
 	end
 	
 	table.insert(list, {["type"] = typeID, ["level"] = level, ["id"] = id, ["icon"] = icon, ["name"] = name ,["spec"] = spec, ["func"] = func, ["subText"] = subText});
@@ -427,8 +450,16 @@ function ILW_DATA_MIXIN:ClearUpcommingFromList()
 	end
 end
 
-
-
+function ILW_DATA_MIXIN:RemoveUnlock(data)
+	local unlockItem;
+	for i=1, #self.unlockedList do
+		unlockItem = self.unlockedList[i];
+		if (unlockItem.type == data.type and unlockItem.id == data.id) then
+			table.remove(self.unlockedList, i);
+			return;
+		end
+	end	
+end
 
 
 
@@ -444,16 +475,16 @@ function ILW_UNLOCK_MIXIN:OnClick(button)
 	end
 	
 	-- find the clicked unlock and remove it from the list
-	local nr = string.match(self:GetName(), "(%d+)");
-	nr = nr + ((ILW_UnlockContainer.Navigation.CurrentPage - 1) * UNLOCKS_PER_PAGE);
-	table.remove(ILWAddon.db.char.unlockedList, nr);
+	ILW_UnlockContainer.dataProvider:RemoveUnlock(self.data);
 	
 	-- Don't have to open anything if it's right mouse
 	if (button == "RightButton") then
+		
 		ILW_UnlockContainer:UpdateUnlockDisplay();
 		return;
+	end
 	-- Open spellbook if spell
-	elseif (self.unlockType == UNLOCKTYPE_SPELL) then
+	if (self.unlockType == UNLOCKTYPE_SPELL) then
 		PickupSpell(self.unlockId);
 	-- Open talents
 	elseif (self.unlockType == UNLOCKTYPE_TALENT) then
@@ -522,6 +553,9 @@ function ILW_UNLOCK_MIXIN:OnClick(button)
 		if (self.data.func) then 
 			self.data.func()
 		end
+	elseif (self.unlockType == UNLOCKTYPE_ZONES) then
+		ShowUIPanel(WorldMapFrame);
+		SetMapByID(self.data.id);
 	end
 	
 	ILW_UnlockContainer:UpdateUnlockDisplay();
@@ -549,6 +583,8 @@ function ILW_UNLOCK_MIXIN:OnEnter(motion)
 			GameTooltip:AddLine(_L["TOOLTIP_PVP"]);
 		elseif (self.unlockType == UNLOCKTYPE_UI) then
 			GameTooltip:AddLine(_L["TOOLTIP_UI"]);
+		elseif (self.unlockType == UNLOCKTYPE_ZONES) then
+			GameTooltip:AddLine(_L["TOOLTIP_ZONE"]);
 		end
 	end
 	GameTooltip:Show();
@@ -778,10 +814,9 @@ function ILW_CORE_MIXIN:UpdateUnlockDisplay()
 	local nrToShow = (#unlockedList-start) > UNLOCKS_PER_PAGE and UNLOCKS_PER_PAGE or #unlockedList-start;
 	for i = start + 1, (start + nrToShow) do
 		unlock = unlockedList[i];
-
-			local button = _G["ILW_UnlockContainerUnlock"..count];
-			button:Update(unlock, (unlock.level~=prevDisplayLevel));
-			prevDisplayLevel = unlock.level;
+		local button = _G["ILW_UnlockContainerUnlock"..count];
+		button:Update(unlock, (unlock.level~=prevDisplayLevel));
+		prevDisplayLevel = unlock.level;
 
 		count = count +1;
 	end
@@ -810,6 +845,7 @@ function ILW_CORE_MIXIN:SpecChanged()
 	
 	-- Update unlock chart unlocks for new spec
 	self.dataProvider:LoadUnlockTable();
+	self.dataProvider:UpdateFilteredChart();
 	self.Chart:Update();
 	
 	self.dataProvider:UpdateFilteredList();
@@ -956,7 +992,9 @@ function ILWAddon:InitFilter(dd, level)
 		info.func = function()
 						ILWAddon:SetAllSourcesTo(true);
 						UIDropDownMenu_Refresh(dd, 1, 2);
+						ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 						ILW_UnlockContainer:UpdateUnlockDisplay();
+						ILW_Chart:Update();
 					end
 		UIDropDownMenu_AddButton(info, level)
 		
@@ -964,7 +1002,9 @@ function ILWAddon:InitFilter(dd, level)
 		info.func = function()
 						ILWAddon:SetAllSourcesTo(false);
 						UIDropDownMenu_Refresh(dd, 1, 2);
+						ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 						ILW_UnlockContainer:UpdateUnlockDisplay();
+						ILW_Chart:Update();
 					end
 		UIDropDownMenu_AddButton(info, level)
 
@@ -974,7 +1014,9 @@ function ILWAddon:InitFilter(dd, level)
 			info.text = _trackerLabels[k];
 			info.func = function(_, _, _, value)
 								ILWAddon.db.global.trackers[k] = value;
+								ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 								ILW_UnlockContainer:UpdateUnlockDisplay();
+								ILW_Chart:Update();
 							end
 			info.checked = function() return ILWAddon.db.global.trackers[k] end;
 			UIDropDownMenu_AddButton(info, level);			
@@ -1132,7 +1174,7 @@ function ILW_CHART_BLOCK_MIXIN:Update()
 	end
 	
 	-- unlocks
-	self.unlocks = ILW_UnlockContainer.dataProvider.unlockTables[self.blockLevel];
+	self.unlocks = ILW_UnlockContainer.dataProvider.filteredChart[self.blockLevel];
 	
 	self.Number:SetText("");
 	self.NumberBG:SetAlpha(0);
@@ -1251,7 +1293,7 @@ function ILWAddon:OnEnable()
 	end
 	
 	ILW_UnlockContainer.dataProvider:LoadUnlockTable();
-	
+	ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 	
 	
 	
