@@ -6,6 +6,7 @@
 local _addonName, _addonData = ...;
 local _L = _addonData.L;
 local _version = GetAddOnMetadata(_addonName, "version");
+local _aVar = _addonData.variables;
 
 -- Globals to use in xml
 ILW_BANNER_TEXT = _L["BANNER_UNLOCKED"];
@@ -179,7 +180,6 @@ function ILW_DATA_MIXIN:Initialize()
 			,[UNLOCKTYPE_UI] = function() return ILWAddon.db.global.trackers["UI"] end
 			,[UNLOCKTYPE_ZONES] = function() return ILWAddon.db.global.trackers["Zones"] end
 		}
-		
 end
 
 function ILW_DATA_MIXIN:LoadUnlockTable()
@@ -239,7 +239,11 @@ function ILW_DATA_MIXIN:LoadUnlocksForLevel(level)
 	local newUnlocks = self.unlockTables[level or self.playerLevel];
 	if newUnlocks then
 		for k, unlock in ipairs(newUnlocks) do
+		-- Skip if already on the list
+		if (not self:AlreadyContainsUnlock(self.unlockedList, unlock)) then
 			table.insert(self.unlockedList, unlock);
+		end
+		
 		end
 		self:UpdateFilteredList();
 	end
@@ -372,6 +376,7 @@ function ILW_DATA_MIXIN:AddUnlock(list, typeID, unlock, level, extra)
 		name = unlock.name;
 		subText = unlock.subText;
 	end
+	
 	if (typeID == UNLOCKTYPE_SPELL or typeID == UNLOCKTYPE_RIDING) then
 		local spellName, rank, spellIcon, castingTime, minRange, maxRange, spellID = GetSpellInfo(unlock.id);
 		local isRank = rank:match("%d");
@@ -413,6 +418,15 @@ function ILW_DATA_MIXIN:AddUnlock(list, typeID, unlock, level, extra)
 	
 	table.insert(list, {["type"] = typeID, ["level"] = level, ["id"] = id, ["icon"] = icon, ["name"] = name ,["spec"] = spec, ["func"] = func, ["subText"] = subText});
 	ILW_UnlockContainer:UpdateUnlockDisplay();
+end
+
+function ILW_DATA_MIXIN:AlreadyContainsUnlock(list, toCheck)
+	for key, unlock in ipairs(list) do
+		if (unlock.id == toCheck.id and unlock.type == toCheck.type) then
+			return true;
+		end
+	end
+	return false;
 end
 
 function ILW_DATA_MIXIN:CheckSpecMissedUnlocks(level, spec)
@@ -461,6 +475,22 @@ function ILW_DATA_MIXIN:RemoveUnlock(data)
 	end	
 end
 
+function ILW_DATA_MIXIN:SortUnlockedList()
+	table.sort(self.unlockedList, function(a, b)
+			if (a.level == b.level) then
+				if (a.type == b.type) then
+					return a.name < b.name;
+				end
+				return a.type < b.type;
+			end
+			return a.level < b.level;
+		end
+	);
+	
+	self:UpdateFilteredList();
+end
+
+
 
 
 ILW_UNLOCK_MIXIN = {};
@@ -475,6 +505,9 @@ function ILW_UNLOCK_MIXIN:OnClick(button)
 	end
 	
 	-- find the clicked unlock and remove it from the list
+	--local nr = string.match(self:GetName(), "(%d+)");
+	--nr = nr + ((ILW_UnlockContainer.Navigation.CurrentPage - 1) * UNLOCKS_PER_PAGE);
+	--table.remove(ILWAddon.db.char.unlockedList, nr);
 	ILW_UnlockContainer.dataProvider:RemoveUnlock(self.data);
 	
 	-- Don't have to open anything if it's right mouse
@@ -760,11 +793,13 @@ function ILW_CORE_MIXIN:Open()
 	ShowUIPanel(self);
 end
 
-function ILW_CORE_MIXIN:LevelUp(level)
+function ILW_CORE_MIXIN:LevelUp(level, skipChartUpdate)
 	self.dataProvider:LoadUnlocksForLevel(level);
 	if (ILW_UnlockContainer:IsShown()) then
 		self:UpdateUnlockDisplay();
-		ILW_Chart:SetToLevel(level);
+		if (not skipChartUpdate) then
+			ILW_Chart:SetToLevel(level);
+		end
 	else 
 		if (newUnlocks) then
 			ILW_AlertPopup:Present();
@@ -814,9 +849,10 @@ function ILW_CORE_MIXIN:UpdateUnlockDisplay()
 	local nrToShow = (#unlockedList-start) > UNLOCKS_PER_PAGE and UNLOCKS_PER_PAGE or #unlockedList-start;
 	for i = start + 1, (start + nrToShow) do
 		unlock = unlockedList[i];
-		local button = _G["ILW_UnlockContainerUnlock"..count];
-		button:Update(unlock, (unlock.level~=prevDisplayLevel));
-		prevDisplayLevel = unlock.level;
+		unlock.displayID = i;
+			local button = _G["ILW_UnlockContainerUnlock"..count];
+			button:Update(unlock, (unlock.level~=prevDisplayLevel));
+			prevDisplayLevel = unlock.level;
 
 		count = count +1;
 	end
@@ -948,7 +984,7 @@ end
 
 
 function ILWAddon:InitFilter(dd, level)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = Lib_UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = true;	
 
 	if level == 1 then
@@ -963,7 +999,7 @@ function ILWAddon:InitFilter(dd, level)
 					end 
 		info.checked = not ILWAddon.db.global.minimap.hide;
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
+		Lib_UIDropDownMenu_AddButton(info, level)
 
 		info.text = _L["OPTION_POPUP"];
 		info.func = function(_, _, _, value)
@@ -971,7 +1007,7 @@ function ILWAddon:InitFilter(dd, level)
 					end 
 		info.checked = ILWAddon.db.global.showPopup;
 		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
+		Lib_UIDropDownMenu_AddButton(info, level)
 	
 		info.checked = 	nil;
 		info.isNotRadio = nil;
@@ -981,7 +1017,7 @@ function ILWAddon:InitFilter(dd, level)
 		
 		info.text = _L["OPTION_TRACKERS"];
 		info.value = 1;
-		UIDropDownMenu_AddButton(info, level)
+		Lib_UIDropDownMenu_AddButton(info, level)
 	else --if level == 2 then
 		
 		info.hasArrow = false;
@@ -991,22 +1027,22 @@ function ILWAddon:InitFilter(dd, level)
 		info.text = CHECK_ALL
 		info.func = function()
 						ILWAddon:SetAllSourcesTo(true);
-						UIDropDownMenu_Refresh(dd, 1, 2);
+						Lib_UIDropDownMenu_Refresh(dd, 1, 2);
 						ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 						ILW_UnlockContainer:UpdateUnlockDisplay();
 						ILW_Chart:Update();
 					end
-		UIDropDownMenu_AddButton(info, level)
+		Lib_UIDropDownMenu_AddButton(info, level)
 		
 		info.text = UNCHECK_ALL
 		info.func = function()
 						ILWAddon:SetAllSourcesTo(false);
-						UIDropDownMenu_Refresh(dd, 1, 2);
+						Lib_UIDropDownMenu_Refresh(dd, 1, 2);
 						ILW_UnlockContainer.dataProvider:UpdateFilteredChart();
 						ILW_UnlockContainer:UpdateUnlockDisplay();
 						ILW_Chart:Update();
 					end
-		UIDropDownMenu_AddButton(info, level)
+		Lib_UIDropDownMenu_AddButton(info, level)
 
 		
 		info.notCheckable = false;
@@ -1019,7 +1055,7 @@ function ILWAddon:InitFilter(dd, level)
 								ILW_Chart:Update();
 							end
 			info.checked = function() return ILWAddon.db.global.trackers[k] end;
-			UIDropDownMenu_AddButton(info, level);			
+			Lib_UIDropDownMenu_AddButton(info, level);			
 		end
 	end
 end
@@ -1212,6 +1248,14 @@ function ILW_CHART_BLOCK_MIXIN:OnLeave()
 	self.HighlightBottom:SetAlpha(0);
 end
 
+function ILW_CHART_BLOCK_MIXIN:OnMouseUp(button)
+	if (button ~= "LeftButton" or  self.blockLevel > ILW_UnlockContainer.dataProvider.playerLevel or not self.unlocks or #self.unlocks == 0) then
+		return;
+	end
+	ILW_UnlockContainer:LevelUp(self.blockLevel, true);
+	ILW_UnlockContainer.dataProvider:SortUnlockedList();
+	ILW_UnlockContainer:UpdateUnlockDisplay();
+end
 
 
 
@@ -1268,7 +1312,7 @@ function ILWAddon:OnEnable()
 		self.db.char.specLastLevel[spec] = UnitLevel("player");
 	end
 	
-	UIDropDownMenu_Initialize(ILW_UnlockContainerOptionsDropDown, function(self, level) ILWAddon:InitFilter(self, level) end, "MENU");
+	Lib_UIDropDownMenu_Initialize(ILW_UnlockContainerOptionsDropDown, function(self, level) ILWAddon:InitFilter(self, level) end, "MENU");
 	
 	-- Get official names for dungeons, battlegounds and worldPVP zones
 	-- This has to be done here as some info (mainly BGs) is not available before the addon is done loading.
@@ -1356,6 +1400,19 @@ SLASH_ILEARNEDWHAT1 = '/ilwhat';
 SLASH_ILEARNEDWHAT2 = '/ilearnedwhat';
 SLASH_ILEARNEDWHAT3 = '/ilw';
 local function slashcmd(msg, editbox)
+--[[
+	if msg then
+		local start, stop = msg:match("(%d+) (%d+)");
+		if not stop then
+			stop = msg:match("%d+");
+		end
+		for i=(tonumber(start) or MINLEVEL), (tonumber(stop) or MAXLEVEL) do
+			ILW_UnlockContainer:LevelUp(i);
+		end
+		return;
+	end
+	]]--
+
 	if (ILW_UnlockContainer:IsShown()) then
 		HideUIPanel(ILW_UnlockContainer);
 	else--if(not InCombatLockdown()) then
