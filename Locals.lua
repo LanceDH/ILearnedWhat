@@ -66,10 +66,72 @@ L["HEROIC_LEGION"] = "Heroic: Legion Dungeons"
 L["MYTHIC_LEGION"] = "Mythic: Legion Dungeons"
 L["RAID_LEGION"] = "Legion Raids"
 
-if locale == "deDE" then
-	-- for k, v in pairs(L) do
-		-- L[k] = "|cFFFF00FF" .. v .. "|r"
-	-- end
+if locale == "koKR" then
+	L["BANNER_NEXT"] = "다음 잠금 해제..."
+L["BANNER_UNLOCKED"] = "잠금이 해제되었습니다..."
+L["BATTLEGROUND"] = "PvP 전장"
+L["DUNGEON"] = "던전"
+L["DUNGEON_HEROIC"] = "영웅 던전"
+L["DUNGEON_MYTHIC"] = "신화 던전"
+L["ERROR_OPEN_IN_COMBAT"] = "|cFFFFD100ILWhat:|r |cFFFF5555전투 중에는 열 수 없습니다. 일단 전투가 풀리면 열립니다.|r"
+L["EXAMPLE_ABILITY"] = "예시 능력"
+L["EXAMPLE_DUNGEON"] = "예시 던전"
+L["EXAMPLE_PASSIVE"] = "예시 지속효과"
+L["HELP_INFO"] = [=[레벨이 오르면 새 능력, 특성 점수 및 던전과 같은 새로운 컨텐츠를 잠금 해제합니다.
+
+잠금 해제 항목을 좌클릭하면 관련 창이 열리고 목록에서 제거합니다.
+
+능력을 좌클릭하거나 드래그하여 행동 단축바에 옮길 수 있습니다.
+
+잠금 해제 항목을 우클릭하면 목록에서 제거합니다.]=]
+L["HELP_INFO_CHART"] = "이 차트는 레벨업 진행과 아직 도달하지 못한 레벨에 대한 개요를 제공합니다."
+L["HEROIC_CATACLYSM"] = "영웅: 대격변 던전"
+L["HEROIC_DRAENOR"] = "영웅: 드레노어 던전"
+L["HEROIC_LEGION"] = "영웅: 군단 던전"
+L["HEROIC_NORTHREND"] = "영웅: 노스렌드 던전"
+L["HEROIC_OUTLAND"] = "영웅: 아웃랜드 던전"
+L["HEROIC_PANDARIA"] = "영웅: 판다리아 던전"
+L["INTERFACE_FEATURE"] = "인터페이스 기능"
+L["MINIMAP_TOOLTIP"] = "열려면 클릭하세요."
+L["MYTHIC_LEGION"] = "신화: 군단 던전"
+L["NEW"] = "신규!"
+L["NONEW_INFO"] = "레벨별 잠금 해제가 끝났습니다!|n... 지금은."
+L["NONEW_TITLE "] = "... 모두!"
+L["OPTION_MINIMAP"] = "미니맵 버튼"
+L["OPTION_POPUP"] = "팝업 사용"
+L["OPTION_SPELLBOOK"] = "마법책 버튼"
+L["OPTION_TRACKERS"] = "추적기"
+L["POPUP_FORMAT"] = "%d |4읽지 않은 잠금 해제:읽지 않은 잠금 해제;!"
+L["RAID"] = "공격대"
+L["RAID_CATACLYSM"] = "대격변 공격대"
+L["RAID_DRAENOR"] = "드레노어 공격대"
+L["RAID_LEGION"] = "군단 공격대"
+L["RAID_NORTHRED"] = "노스렌드 공격대"
+L["RAID_OUTLAND"] = "아웃랜드 공격대"
+L["RAID_PANDARIA"] = "판다리아 공격대"
+L["RAIDS_CLASSIC"] = "오리지널 공격대"
+L["REQUIRES TRAINING"] = "훈련 필요"
+L["TALENT_POINT"] = "특성 점수"
+L["TOOLTIP_CLEARBUTTON"] = "읽지 않은 모든 잠금 해제를 제거합니다."
+L["TOOLTIP_COMBAT"] = "|cFFFF5555전투 중에는 열 수 없습니다.|r"
+L["TOOLTIP_INSTANCE"] = "새로운 인스턴스가 열렸습니다."
+L["TOOLTIP_PVP"] = "새로운 전장에서 승리할 준비가 되었습니다."
+L["TOOLTIP_RIDING"] = "이제 전문 기수에게 이 타기 기술을 배울 수 있습니다."
+L["TOOLTIP_SPELLBOOK_ICON"] = "잠금 해제된 컨텐츠"
+L["TOOLTIP_TALENT"] = "새로운 특성을 고를 수 있습니다."
+L["TOOLTIP_UI"] = "UI의 새 부분이 잠금 해제되었습니다."
+L["TRACKER_BATTLEGROUNDS"] = "전장"
+L["TRACKER_DUNGEONS"] = "던전"
+L["TRACKER_RIDING"] = "타기 기술"
+L["TRACKER_SPELLS"] = "주문"
+L["TRACKER_TALENTS"] = "특성"
+L["TRACKER_UI"] = "UI"
+L["UI_EQUIPMENT"] = "장비 관리창"
+L["UI_GROUP_FINDER"] = "파티 찾기"
+L["UI_GUIDE"] = "모험 안내서"
+L["UI_TALENTS"] = "전문화 & 특성"
+L["WORLD_PVP"] = "필드 PvP"
+
 end
 
 
