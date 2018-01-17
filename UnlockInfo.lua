@@ -81,9 +81,9 @@ _addonData.unlockData["riding"] = { };
 	AddUnlock(_addonData.unlockData["riding"], 60, {["id"] = 90267});
 	AddUnlock(_addonData.unlockData["riding"], 70, {["id"] = 34091});
 	AddUnlock(_addonData.unlockData["riding"], 80, {["id"] = 90265});
-	AddUnlock(_addonData.unlockData["riding"], 68, {["id"] = 54197});
-	AddUnlock(_addonData.unlockData["riding"], 85, {["id"] = 115913});
-	AddUnlock(_addonData.unlockData["riding"], 90, {["id"] = 191645});
+	--AddUnlock(_addonData.unlockData["riding"], 68, {["id"] = 54197});
+	--AddUnlock(_addonData.unlockData["riding"], 85, {["id"] = 115913});
+	--AddUnlock(_addonData.unlockData["riding"], 90, {["id"] = 191645});
 
 --------------------------
 -- Instances
@@ -1208,28 +1208,28 @@ AddUnlock(_addonData.unlockData["zones"], 30, {["id"] = 26, ["continentID"] = 14
 AddUnlock(_addonData.unlockData["zones"], 25, {["id"] = 16, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_ArathiHighlands_01"}); -- Arathi Highlands
 AddUnlock(_addonData.unlockData["zones"], 84, {["id"] = 700, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_TwilightHighlands"}); -- Twilight Highlands
 AddUnlock(_addonData.unlockData["zones"], 80, {["id"] = 613, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Vashjir"}); -- Vash'jir
-AddUnlock(_addonData.unlockData["zones"], 44, {["id"] = 17, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Badlands_01"}); -- Badlands
-AddUnlock(_addonData.unlockData["zones"], 47, {["id"] = 28, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_SearingGorge_01"}); -- Searing Gorge
-AddUnlock(_addonData.unlockData["zones"], 49, {["id"] = 29, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_BurningSteppes_01"}); -- Burning Steppes
-AddUnlock(_addonData.unlockData["zones"], 51, {["id"] = 38, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_SwampSorrows_01"}); -- Swamp of Sorrows
-AddUnlock(_addonData.unlockData["zones"], 55, {["id"] = 19, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_BlastedLands_01"}); -- Blasted Lands
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 17, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Badlands_01"}); -- Badlands
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 28, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_SearingGorge_01"}); -- Searing Gorge
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 29, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_BurningSteppes_01"}); -- Burning Steppes
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 38, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_SwampSorrows_01"}); -- Swamp of Sorrows
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 19, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_BlastedLands_01"}); -- Blasted Lands
 AddUnlock(_addonData.unlockData["zones"], 25, {["id"] = 37, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Stranglethorn_01"}); -- Northren Stranglethorn
 AddUnlock(_addonData.unlockData["zones"], 30, {["id"] = 673, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Stranglethorn_01"}); -- Cape of Stranglethorn
 
 
-AddUnlock(_addonData.unlockData["zones"], 50, {["id"] = 281, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Winterspring"}); -- Winterspring
-AddUnlock(_addonData.unlockData["zones"], 45, {["id"] = 182, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Felwood"}); -- Felwood
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 281, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Winterspring"}); -- Winterspring
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 182, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Felwood"}); -- Felwood
 AddUnlock(_addonData.unlockData["zones"], 80, {["id"] = 606, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Mount Hyjal"}); -- Mount Hyjal
-AddUnlock(_addonData.unlockData["zones"], 20, {["id"] = 13, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Ashenvale_01"}); -- Ashenvale
-AddUnlock(_addonData.unlockData["zones"], 25, {["id"] = 81, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Stonetalon_01"}); -- Stonetalon
+AddUnlock(_addonData.unlockData["zones"], 15, {["id"] = 13, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Ashenvale_01"}); -- Ashenvale
+AddUnlock(_addonData.unlockData["zones"], 20, {["id"] = 81, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Stonetalon_01"}); -- Stonetalon
 AddUnlock(_addonData.unlockData["zones"], 30, {["id"] = 101, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Desolace"}); -- Desolace
-AddUnlock(_addonData.unlockData["zones"], 30, {["id"] = 607, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Barrens_01"}); -- Southern Barrens
+AddUnlock(_addonData.unlockData["zones"], 25, {["id"] = 607, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Barrens_01"}); -- Southern Barrens
 AddUnlock(_addonData.unlockData["zones"], 35, {["id"] = 141, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_DustwallowMarsh"}); -- Dustwallow
 AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 61, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_ThousandNeedles_01"}); -- Thousand Needles
 AddUnlock(_addonData.unlockData["zones"], 35, {["id"] = 121, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Feralas"}); -- Feralas
-AddUnlock(_addonData.unlockData["zones"], 55, {["id"] = 261, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Silithus_01"}); -- Silithus
-AddUnlock(_addonData.unlockData["zones"], 50, {["id"] = 201, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_UnGoroCrater_01"}); -- Un'Goro
-AddUnlock(_addonData.unlockData["zones"], 45, {["id"] = 161, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Tanaris_01"}); -- Tanaris
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 261, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Silithus_01"}); -- Silithus
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 201, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_UnGoroCrater_01"}); -- Un'Goro
+AddUnlock(_addonData.unlockData["zones"], 40, {["id"] = 161, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Tanaris_01"}); -- Tanaris
 AddUnlock(_addonData.unlockData["zones"], 83, {["id"] = 720, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Uldum"}); -- Uldum
 
 AddUnlock(_addonData.unlockData["zones"], 82, {["id"] = 640, ["continentID"] = 751, ["icon"] = "Interface/ICONS/Achievement_Zone_DeepHolm"}); -- Deepholm
@@ -1239,24 +1239,24 @@ AddUnlock(_addonData.unlockData["zones"], 60, {["id"] = 467, ["continentID"] = 4
 AddUnlock(_addonData.unlockData["zones"], 62, {["id"] = 478, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_Terrokar"}); -- Terrokar
 AddUnlock(_addonData.unlockData["zones"], 64, {["id"] = 477, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_Nagrand_01"}); -- Nagrand
 AddUnlock(_addonData.unlockData["zones"], 65, {["id"] = 475, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_BladesEdgeMtns_01"}); -- Blade's Edge
-AddUnlock(_addonData.unlockData["zones"], 66, {["id"] = 479, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_Netherstorm_01"}); -- Netherstorm
+AddUnlock(_addonData.unlockData["zones"], 67, {["id"] = 479, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_Netherstorm_01"}); -- Netherstorm
 AddUnlock(_addonData.unlockData["zones"], 67, {["id"] = 473, ["continentID"] = 466, ["icon"] = "Interface/ICONS/Achievement_Zone_Shadowmoon"}); -- Shadowmoon
 
-AddUnlock(_addonData.unlockData["zones"], 68, {["id"] = 486, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_BoreanTundra_01"}); -- Borean Tundra
-AddUnlock(_addonData.unlockData["zones"], 68, {["id"] = 491, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_HowlingFjord_01"}); -- Howling Fjord
-AddUnlock(_addonData.unlockData["zones"], 71, {["id"] = 488, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_DragonBlight_01"}); -- DragonBlight
-AddUnlock(_addonData.unlockData["zones"], 73, {["id"] = 490, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_GrizzlyHills_01"}); -- Grizzly Hiils
-AddUnlock(_addonData.unlockData["zones"], 73, {["id"] = 496, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_ZulDrak_01"}); -- Zul'drak
-AddUnlock(_addonData.unlockData["zones"], 75, {["id"] = 493, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_Sholazar_01"}); -- Sholazar
-AddUnlock(_addonData.unlockData["zones"], 77, {["id"] = 495, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_StormPeaks_01"}); -- Storm Peaks
-AddUnlock(_addonData.unlockData["zones"], 77, {["id"] = 492, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_IceCrown_01"}); -- Icerown
+AddUnlock(_addonData.unlockData["zones"], 58, {["id"] = 486, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_BoreanTundra_01"}); -- Borean Tundra
+AddUnlock(_addonData.unlockData["zones"], 58, {["id"] = 491, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_HowlingFjord_01"}); -- Howling Fjord
+AddUnlock(_addonData.unlockData["zones"], 61, {["id"] = 488, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_DragonBlight_01"}); -- DragonBlight
+AddUnlock(_addonData.unlockData["zones"], 63, {["id"] = 490, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_GrizzlyHills_01"}); -- Grizzly Hiils
+AddUnlock(_addonData.unlockData["zones"], 64, {["id"] = 496, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_ZulDrak_01"}); -- Zul'drak
+AddUnlock(_addonData.unlockData["zones"], 65, {["id"] = 493, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_Sholazar_01"}); -- Sholazar
+AddUnlock(_addonData.unlockData["zones"], 67, {["id"] = 495, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_StormPeaks_01"}); -- Storm Peaks
+AddUnlock(_addonData.unlockData["zones"], 67, {["id"] = 492, ["continentID"] = 485, ["icon"] = "Interface/ICONS/Achievement_Zone_IceCrown_01"}); -- Icerown
 
-AddUnlock(_addonData.unlockData["zones"], 85, {["id"] = 806, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_JadeForest"}); -- The Jade Forest
-AddUnlock(_addonData.unlockData["zones"], 86, {["id"] = 807, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_ValleyofFourWinds"}); -- Valley of Four Winds
-AddUnlock(_addonData.unlockData["zones"], 86, {["id"] = 857, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_KrasarangWilds"}); -- Krasarang Wilds
-AddUnlock(_addonData.unlockData["zones"], 86, {["id"] = 809, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_KunLaiSummit"}); -- Kun-Lai Summit
-AddUnlock(_addonData.unlockData["zones"], 88, {["id"] = 810, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_TownlongSteppes"}); -- Townlong Steppes
-AddUnlock(_addonData.unlockData["zones"], 89, {["id"] = 858, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_DreadWastes"}); -- Dread Wastes
+AddUnlock(_addonData.unlockData["zones"], 80, {["id"] = 806, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_JadeForest"}); -- The Jade Forest
+AddUnlock(_addonData.unlockData["zones"], 81, {["id"] = 807, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_ValleyofFourWinds"}); -- Valley of Four Winds
+AddUnlock(_addonData.unlockData["zones"], 81, {["id"] = 857, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_KrasarangWilds"}); -- Krasarang Wilds
+AddUnlock(_addonData.unlockData["zones"], 82, {["id"] = 809, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_KunLaiSummit"}); -- Kun-Lai Summit
+AddUnlock(_addonData.unlockData["zones"], 83, {["id"] = 810, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_TownlongSteppes"}); -- Townlong Steppes
+AddUnlock(_addonData.unlockData["zones"], 84, {["id"] = 858, ["continentID"] = 862, ["icon"] = "Interface/ICONS/Achievement_Zone_DreadWastes"}); -- Dread Wastes
 
 AddUnlock(_addonData.unlockData["zones"], 90, {["id"] = 941, ["continentID"] = 962, ["icon"] = "Interface/ICONS/Achievement_Zone_Frostfire"}); -- Frostfire Ridge
 AddUnlock(_addonData.unlockData["zones"], 90, {["id"] = 947, ["continentID"] = 962, ["icon"] = "Interface/ICONS/Achievement_Zone_Newshadowmoonvalley"}); -- Shadowmoon
@@ -1278,14 +1278,15 @@ if (playerFaction == "Alliance") then
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 42, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Darkshore_01"}); -- Darkshore
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 39, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_WestFall_01"}); -- Westfall
 	AddUnlock(_addonData.unlockData["zones"], 20, {["id"] = 34, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Duskwood"}); -- Duskwood
-	AddUnlock(_addonData.unlockData["zones"], 20, {["id"] = 40, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Wetlands_01"}); -- Wetlands
+	AddUnlock(_addonData.unlockData["zones"], 25, {["id"] = 40, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Wetlands_01"}); -- Wetlands
 else
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 181, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Azshara_01"}); -- Azshara
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 463, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Ghostlands"}); -- Ghostlands
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 11, ["continentID"] = 13, ["icon"] = "Interface/ICONS/Achievement_Zone_Barrens_01"}); -- Northren Barrens
 	AddUnlock(_addonData.unlockData["zones"], 10, {["id"] = 21, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_Silverpine_01"}); -- Silverpine
-	AddUnlock(_addonData.unlockData["zones"], 20, {["id"] = 24, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_HillsbradFoothills"}); -- Hillsbrad
+	AddUnlock(_addonData.unlockData["zones"], 15, {["id"] = 24, ["continentID"] = 14, ["icon"] = "Interface/ICONS/Achievement_Zone_HillsbradFoothills"}); -- Hillsbrad
 end
+
 
 
 
