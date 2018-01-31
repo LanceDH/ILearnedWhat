@@ -168,7 +168,7 @@ _addonData.unlockData["instances"] = { };
 	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
 	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
 	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_NORTHREND"], ["id"] = _aVar.WOTLK_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
-	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["RAID"], ["name"] = _L["RAID_NORTHRED"], ["id"] = _aVar.TBC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
+	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["RAID"], ["name"] = _L["RAID_NORTHRED"], ["id"] = _aVar.WOTLK_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
 -- Cataclysm
 	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 66, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKCAVERNS"});
 	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 65, ["icon"] = "Interface/LFGFRAME/LFGICON-THRONEOFTHETIDES"});
