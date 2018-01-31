@@ -115,14 +115,14 @@ local _helpPlate = {
 	,[2] = { ButtonPos = { x = 210,	y = -445}, HighLightBox = { x = 10, y = -445, width = 430, height = 70 }, ToolTipDir = "UP", ToolTipText = _L["HELP_INFO_CHART"] }
 }
 local _typeIcons = {
-		[UNLOCKTYPE_SPELL] = {["left"] = 0.7555, ["right"] = 0.818, ["top"] = 0.4, ["bottom"] = 0.4629}
-		,[UNLOCKTYPE_UI] = {["left"] = 0.8828, ["right"] = 0.945, ["top"] = 0.9277, ["bottom"] = 0.99}
-		,[UNLOCKTYPE_DUNGEON] = {["left"] = 0.6875, ["right"] = 0.75, ["top"] = 0.2637, ["bottom"] = 0.326}
-		,[UNLOCKTYPE_RAID] = {["left"] = 0.75, ["right"] = 0.8125, ["top"] = 0.2637, ["bottom"] = 0.326}
-		,[UNLOCKTYPE_TALENT] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.8066, ["bottom"] = 0.8691}
-		,[UNLOCKTYPE_PVP] = {["left"] = 0.1855, ["right"] = 0.248, ["top"] = 0.7441, ["bottom"] = 0.8066}
-		,[UNLOCKTYPE_RIDING] = {["left"] = 0.6875, ["right"] = 0.75, ["top"] = 0.2012, ["bottom"] = 0.2637}
-		,[UNLOCKTYPE_ZONES] = {["left"] = 0.55273, ["right"] = 0.61914, ["top"] = 0.4648, ["bottom"] = 0.5293}
+		[UNLOCKTYPE_SPELL] = {["left"] = 0.205078125, ["right"] = 0.267578125, ["top"] = 0.9296875, ["bottom"] = 0.990234375}
+		,[UNLOCKTYPE_UI] = {["left"] = 0.46484375, ["right"] = 0.53125, ["top"] = 0.59765625, ["bottom"] = 0.6640625}
+		,[UNLOCKTYPE_DUNGEON] = {["left"] = 0.1328125, ["right"] = 0.19921875, ["top"] = 0.6590625, ["bottom"] = 0.72546875}
+		,[UNLOCKTYPE_RAID] = {["left"] = 0.1328125, ["right"] = 0.19921875, ["top"] = 0.72546875, ["bottom"] = 0.791875}
+		,[UNLOCKTYPE_TALENT] = {["left"] = 0.06640625, ["right"] = 0.1328125, ["top"] = 0.265625, ["bottom"] = 0.33203125}
+		,[UNLOCKTYPE_PVP] = {["left"] = 0, ["right"] = 0.06640625, ["top"] = 0.9296875, ["bottom"] = 0.99609375}
+		,[UNLOCKTYPE_RIDING] = {["left"] = 0.06640625, ["right"] = 0.1328125, ["top"] = 0.86328125, ["bottom"] = 0.9296875}
+		,[UNLOCKTYPE_ZONES] = {["left"] = 0.73046875, ["right"] = 0.796875, ["top"] = 0.265625, ["bottom"] = 0.33203125}
 	};
 
 function ILW_ShowHelpUnlocks(show)

@@ -34,25 +34,37 @@ end
 --------------------------
 
 _addonData.unlockData["UI"] = {};
-	AddUnlock(_addonData.unlockData["UI"], 10, {["name"] = _L["UI_TALENTS"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+	AddUnlock(_addonData.unlockData["UI"], 10, {["id"] = 1, ["name"] = _L["UI_TALENTS"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
 				if (PlayerTalentFrame == nil) then
 					LoadAddOn("Blizzard_TalentUI");
 				end
 				ShowUIPanel(PlayerTalentFrame); 
 			end});
-	AddUnlock(_addonData.unlockData["UI"], 10, {["name"] = _L["UI_GROUP_FINDER"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+	AddUnlock(_addonData.unlockData["UI"], 10, {["id"] = 2, ["name"] = _L["UI_GROUP_FINDER"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
 				ShowUIPanel(PVEFrame); 
 				GroupFinderFrame_ShowGroupFrame(_G["LFGListPVEStub"]);
 			end});
-	AddUnlock(_addonData.unlockData["UI"], 11, {["name"] = _L["UI_GUIDE"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+	AddUnlock(_addonData.unlockData["UI"], 11, {["id"] = 3, ["name"] = _L["UI_GUIDE"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
 				if (EncounterJournal == nil) then
 					LoadAddOn("Blizzard_EncounterJournal");
 				end
 				ShowUIPanel(EncounterJournal);
 			end});
-	AddUnlock(_addonData.unlockData["UI"], 15, {["name"] = _L["UI_EQUIPMENT"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+	AddUnlock(_addonData.unlockData["UI"], 15, {["id"] = 4, ["name"] = _L["UI_DUNGEON_FINDER"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				ShowUIPanel(PVEFrame); 
+				GroupFinderFrame_ShowGroupFrame(_G["LFDParentFrame"]);
+			end});
+	AddUnlock(_addonData.unlockData["UI"], 15, {["id"] = 5, ["name"] = _L["UI_EQUIPMENT"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
 				ShowUIPanel(CharacterFrame); 
 				PaperDollFrame_SetSidebar(nil, 3);
+			end});
+	AddUnlock(_addonData.unlockData["UI"], 85, {["id"] = 6, ["name"] = _L["UI_SCENARIOS"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				ShowUIPanel(PVEFrame); 
+				GroupFinderFrame_ShowGroupFrame(_G["ScenarioFinderFrame"]);
+			end});
+	AddUnlock(_addonData.unlockData["UI"], 85, {["id"] = 7, ["name"] = _L["UI_RAID_FINDER"], ["subText"] = _L["INTERFACE_FEATURE"], ["func"] = function() 
+				ShowUIPanel(PVEFrame); 
+				GroupFinderFrame_ShowGroupFrame(_G["RaidFinderFrame"]);
 			end});
 --------------------------
 -- Talent Points
@@ -94,8 +106,8 @@ _addonData.unlockData["instances"] = { };
 -- Vanilla
 	AddUnlock(_addonData.unlockData["instances"], 15, {["subText"] = _L["DUNGEON"], ["id"] = 226, ["icon"] = "Interface/LFGFRAME/LFGICON-RAGEFIRECHASM"});
 	AddUnlock(_addonData.unlockData["instances"], 15, {["subText"] = _L["DUNGEON"], ["id"] = 63, ["icon"] = "Interface/LFGFRAME/LFGICON-DEADMINES"});
-	AddUnlock(_addonData.unlockData["instances"], 15, {["subText"] = _L["DUNGEON"], ["id"] = 240, ["icon"] = "Interface/LFGFRAME/LFGICON-WAILINGCAVERNS"});
-	AddUnlock(_addonData.unlockData["instances"], 16, {["subText"] = _L["DUNGEON"], ["id"] = 64, ["icon"] = "Interface/LFGFRAME/LFGICON-SHADOWFANGKEEP"});
+	AddUnlock(_addonData.unlockData["instances"], 17, {["subText"] = _L["DUNGEON"], ["id"] = 240, ["icon"] = "Interface/LFGFRAME/LFGICON-WAILINGCAVERNS"});
+	AddUnlock(_addonData.unlockData["instances"], 17, {["subText"] = _L["DUNGEON"], ["id"] = 64, ["icon"] = "Interface/LFGFRAME/LFGICON-SHADOWFANGKEEP"});
 	AddUnlock(_addonData.unlockData["instances"], 20, {["subText"] = _L["DUNGEON"], ["id"] = 227, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKFATHOMDEEPS"});
 	AddUnlock(_addonData.unlockData["instances"], 20, {["subText"] = _L["DUNGEON"], ["id"] = 238, ["icon"] = "Interface/LFGFRAME/LFGICON-STORMWINDSTOCKADES"});
 	AddUnlock(_addonData.unlockData["instances"], 24, {["subText"] = _L["DUNGEON"], ["id"] = 231, ["icon"] = "Interface/LFGFRAME/LFGICON-GNOMEREGAN"});
@@ -105,11 +117,11 @@ _addonData.unlockData["instances"] = { };
 	AddUnlock(_addonData.unlockData["instances"], 30, {["subText"] = _L["DUNGEON"], ["id"] = 234, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENKRAUL"});
 	AddUnlock(_addonData.unlockData["instances"], 32, {["subText"] = _L["DUNGEON"], ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
 	AddUnlock(_addonData.unlockData["instances"], 34, {["subText"] = _L["DUNGEON"], ["id"] = 232, ["icon"] = "Interface/LFGFRAME/LFGICON-MARAUDON"});
-	AddUnlock(_addonData.unlockData["instances"], 35, {["subText"] = _L["DUNGEON"], ["id"] = 239, ["icon"] = "Interface/LFGFRAME/LFGICON-ULDAMAN"});
+	AddUnlock(_addonData.unlockData["instances"], 35, {["subText"] = _L["DUNGEON"], ["id"] = 233, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENDOWNS"});
 	AddUnlock(_addonData.unlockData["instances"], 36, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
 	AddUnlock(_addonData.unlockData["instances"], 38, {["subText"] = _L["DUNGEON"], ["id"] = 246, ["icon"] = "Interface/LFGFRAME/LFGICON-SCHOLOMANCE"});
 	AddUnlock(_addonData.unlockData["instances"], 39, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
-	AddUnlock(_addonData.unlockData["instances"], 40, {["subText"] = _L["DUNGEON"], ["id"] = 233, ["icon"] = "Interface/LFGFRAME/LFGICON-RAZORFENDOWNS"});
+	AddUnlock(_addonData.unlockData["instances"], 40, {["subText"] = _L["DUNGEON"], ["id"] = 239, ["icon"] = "Interface/LFGFRAME/LFGICON-ULDAMAN"});
 	AddUnlock(_addonData.unlockData["instances"], 42, {["subText"] = _L["DUNGEON"], ["id"] = 230, ["icon"] = "Interface/LFGFRAME/LFGICON-DIREMAUL"});
 	AddUnlock(_addonData.unlockData["instances"], 42, {["subText"] = _L["DUNGEON"], ["id"] = 236, ["icon"] = "Interface/LFGFRAME/LFGICON-STRATHOLME"});
 	AddUnlock(_addonData.unlockData["instances"], 44, {["subText"] = _L["DUNGEON"], ["id"] = 241, ["icon"] = "Interface/LFGFRAME/LFGICON-ZULFARAK"});
@@ -139,23 +151,23 @@ _addonData.unlockData["instances"] = { };
 	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_OUTLAND"], ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["RAID"], ["name"] = _L["RAID_OUTLAND"], ["id"] = _aVar.TBC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKTEMPLE"});
 -- WotLK
-	AddUnlock(_addonData.unlockData["instances"], 68, {["subText"] = _L["DUNGEON"], ["id"] = 285, ["icon"] = "Interface/LFGFRAME/LFGIcon-Utgarde"});
-	AddUnlock(_addonData.unlockData["instances"], 69, {["subText"] = _L["DUNGEON"], ["id"] = 281, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheNexus"});
-	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 272, ["icon"] = "Interface/LFGFRAME/LFGIcon-AzjolNerub"});
-	AddUnlock(_addonData.unlockData["instances"], 71, {["subText"] = _L["DUNGEON"], ["id"] = 271, ["icon"] = "Interface/LFGFRAME/LFGIcon-Ahnkalet"});
-	AddUnlock(_addonData.unlockData["instances"], 72, {["subText"] = _L["DUNGEON"], ["id"] = 273, ["icon"] = "Interface/LFGFRAME/LFGIcon-DrakTharon"});
-	AddUnlock(_addonData.unlockData["instances"], 73, {["subText"] = _L["DUNGEON"], ["id"] = 283, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheVioletHold"});
-	AddUnlock(_addonData.unlockData["instances"], 74, {["subText"] = _L["DUNGEON"], ["id"] = 274, ["icon"] = "Interface/LFGFRAME/LFGIcon-Gundrak"});
-	AddUnlock(_addonData.unlockData["instances"], 75, {["subText"] = _L["DUNGEON"], ["id"] = 277, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofStone"});
-	AddUnlock(_addonData.unlockData["instances"], 77, {["subText"] = _L["DUNGEON"], ["id"] = 275, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFLIGHTNING"});
-	AddUnlock(_addonData.unlockData["instances"], 77, {["subText"] = _L["DUNGEON"], ["id"] = 282, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheOculus"});
-	AddUnlock(_addonData.unlockData["instances"], 77, {["subText"] = _L["DUNGEON"], ["id"] = 286, ["icon"] = "Interface/LFGFRAME/LFGIcon-UtgardePinnacle"});
-	AddUnlock(_addonData.unlockData["instances"], 78, {["subText"] = _L["DUNGEON"], ["id"] = 279, ["icon"] = "Interface/LFGFRAME/LFGIcon-OldStratholme"});
-	AddUnlock(_addonData.unlockData["instances"], 78, {["subText"] = _L["DUNGEON"], ["id"] = 284, ["icon"] = "Interface/LFGFRAME/LFGIcon-ArgentDungeon"});
-	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 280, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheForgeofSouls"});
-	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
-	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
-	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_NORTHREND"], ["id"] = _aVar.TBC_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
+	AddUnlock(_addonData.unlockData["instances"], 58, {["subText"] = _L["DUNGEON"], ["id"] = 285, ["icon"] = "Interface/LFGFRAME/LFGIcon-Utgarde"});
+	AddUnlock(_addonData.unlockData["instances"], 59, {["subText"] = _L["DUNGEON"], ["id"] = 281, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheNexus"});
+	AddUnlock(_addonData.unlockData["instances"], 60, {["subText"] = _L["DUNGEON"], ["id"] = 272, ["icon"] = "Interface/LFGFRAME/LFGIcon-AzjolNerub"});
+	AddUnlock(_addonData.unlockData["instances"], 61, {["subText"] = _L["DUNGEON"], ["id"] = 271, ["icon"] = "Interface/LFGFRAME/LFGIcon-Ahnkalet"});
+	AddUnlock(_addonData.unlockData["instances"], 62, {["subText"] = _L["DUNGEON"], ["id"] = 273, ["icon"] = "Interface/LFGFRAME/LFGIcon-DrakTharon"});
+	AddUnlock(_addonData.unlockData["instances"], 63, {["subText"] = _L["DUNGEON"], ["id"] = 283, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheVioletHold"});
+	AddUnlock(_addonData.unlockData["instances"], 64, {["subText"] = _L["DUNGEON"], ["id"] = 274, ["icon"] = "Interface/LFGFRAME/LFGIcon-Gundrak"});
+	AddUnlock(_addonData.unlockData["instances"], 65, {["subText"] = _L["DUNGEON"], ["id"] = 277, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofStone"});
+	AddUnlock(_addonData.unlockData["instances"], 67, {["subText"] = _L["DUNGEON"], ["id"] = 275, ["icon"] = "Interface/LFGFRAME/LFGICON-HALLSOFLIGHTNING"});
+	AddUnlock(_addonData.unlockData["instances"], 67, {["subText"] = _L["DUNGEON"], ["id"] = 282, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheOculus"});
+	AddUnlock(_addonData.unlockData["instances"], 67, {["subText"] = _L["DUNGEON"], ["id"] = 286, ["icon"] = "Interface/LFGFRAME/LFGIcon-UtgardePinnacle"});
+	AddUnlock(_addonData.unlockData["instances"], 68, {["subText"] = _L["DUNGEON"], ["id"] = 279, ["icon"] = "Interface/LFGFRAME/LFGIcon-OldStratholme"});
+	AddUnlock(_addonData.unlockData["instances"], 68, {["subText"] = _L["DUNGEON"], ["id"] = 284, ["icon"] = "Interface/LFGFRAME/LFGIcon-ArgentDungeon"});
+	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 280, ["icon"] = "Interface/LFGFRAME/LFGIcon-TheForgeofSouls"});
+	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 278, ["icon"] = "Interface/LFGFRAME/LFGIcon-PitofSaron"});
+	AddUnlock(_addonData.unlockData["instances"], 70, {["subText"] = _L["DUNGEON"], ["id"] = 276, ["icon"] = "Interface/LFGFRAME/LFGIcon-HallsofReflection"});
+	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_NORTHREND"], ["id"] = _aVar.WOTLK_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["RAID"], ["name"] = _L["RAID_NORTHRED"], ["id"] = _aVar.TBC_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-IcecrownCitadel"});
 -- Cataclysm
 	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 66, ["icon"] = "Interface/LFGFRAME/LFGICON-BLACKROCKCAVERNS"});
@@ -168,12 +180,12 @@ _addonData.unlockData["instances"] = { };
 	AddUnlock(_addonData.unlockData["instances"], 85, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_CATACLYSM"], ["id"] = _aVar.CATA_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 	AddUnlock(_addonData.unlockData["instances"], 85, {["subText"] = _L["RAID"], ["name"] = _L["RAID_CATACLYSM"], ["id"] = _aVar.CATA_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-FallofDeathwing"});
 -- Mist of Pandaria
-	AddUnlock(_addonData.unlockData["instances"], 85, {["subText"] = _L["DUNGEON"], ["id"] = 302, ["icon"] = "Interface/LFGFRAME/LFGIcon-StormstoutBrewery"});
-	AddUnlock(_addonData.unlockData["instances"], 85, {["subText"] = _L["DUNGEON"], ["id"] = 313, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleoftheJadeSerpent"});
-	AddUnlock(_addonData.unlockData["instances"], 87, {["subText"] = _L["DUNGEON"], ["id"] = 312, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowpanMonastery"});
-	AddUnlock(_addonData.unlockData["instances"], 87, {["subText"] = _L["DUNGEON"], ["id"] = 321, ["icon"] = "Interface/LFGFRAME/LFGIcon-MogushanPalace"});
-	AddUnlock(_addonData.unlockData["instances"], 88, {["subText"] = _L["DUNGEON"], ["id"] = 303, ["icon"] = "Interface/LFGFRAME/LFGIcon-GateoftheSettingSun"});
-	AddUnlock(_addonData.unlockData["instances"], 88, {["subText"] = _L["DUNGEON"], ["id"] = 324, ["icon"] = "Interface/LFGFRAME/LFGIcon-SiegeofNizaoTemple"});
+	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 302, ["icon"] = "Interface/LFGFRAME/LFGIcon-StormstoutBrewery"});
+	AddUnlock(_addonData.unlockData["instances"], 80, {["subText"] = _L["DUNGEON"], ["id"] = 313, ["icon"] = "Interface/LFGFRAME/LFGIcon-TempleoftheJadeSerpent"});
+	AddUnlock(_addonData.unlockData["instances"], 82, {["subText"] = _L["DUNGEON"], ["id"] = 312, ["icon"] = "Interface/LFGFRAME/LFGIcon-ShadowpanMonastery"});
+	AddUnlock(_addonData.unlockData["instances"], 82, {["subText"] = _L["DUNGEON"], ["id"] = 321, ["icon"] = "Interface/LFGFRAME/LFGIcon-MogushanPalace"});
+	AddUnlock(_addonData.unlockData["instances"], 83, {["subText"] = _L["DUNGEON"], ["id"] = 303, ["icon"] = "Interface/LFGFRAME/LFGIcon-GateoftheSettingSun"});
+	AddUnlock(_addonData.unlockData["instances"], 83, {["subText"] = _L["DUNGEON"], ["id"] = 324, ["icon"] = "Interface/LFGFRAME/LFGIcon-SiegeofNizaoTemple"});
 	AddUnlock(_addonData.unlockData["instances"], 90, {["subText"] = _L["DUNGEON_HEROIC"], ["name"] = _L["HEROIC_PANDARIA"], ["id"] = _aVar.MOP_HEROIC, ["icon"] = "Interface/LFGFRAME/LFGICON-DUNGEON"});
 	AddUnlock(_addonData.unlockData["instances"], 90, {["subText"] = _L["RAID"], ["name"] = _L["RAID_PANDARIA"], ["id"] = _aVar.MOP_RAID, ["isRaid"] = true, ["icon"] = "Interface/LFGFRAME/LFGIcon-OrgrimmarGates"});
 -- WoD
